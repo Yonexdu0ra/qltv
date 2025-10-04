@@ -1,4 +1,22 @@
 {
+  "name": "quan_ly_thu_vien",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Yonexdu0ra/qltv#readme",
+  "bugs": {
+    "url": "https://github.com/Yonexdu0ra/qltv/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yonexdu0ra/qltv.git"
+  },
+  "license": "ISC",
+  "author": "Yonexdu0ra",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch --env-file .env src/index.js"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
