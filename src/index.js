@@ -1,7 +1,7 @@
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const path = require("path");
-// const routes = require("./routes");
+const routes = require("./routes");
 const cookieParser = require("cookie-parser");
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
 
@@ -25,7 +25,7 @@ app.set("layout", "layout");
 app.set("layout extractScripts", true);
 
 app.use(authenticationMiddleware);
-
+routes(app);
 app.get("/", (req, res) => {
     return res.send("Hello World");
 });
