@@ -13,10 +13,9 @@ class AuthController {
             username = username.toLowerCase().trim();
             password = password.trim();
             const { access_token, refresh_token } = await AuthServices.handleLogin(username, password);
-            const TIME_ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 7 days
-            const TIME_FIFTEEN_MINUTES = 15 * 60 * 1000; // 15 minutes
+            const TIME_ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 7 Ngày
             res.cookie('refresh_token', refresh_token, { httpOnly: true, maxAge: TIME_ONE_WEEK, sameSite: 'lax' });
-            res.cookie('access_token', access_token, { httpOnly: true, maxAge: TIME_FIFTEEN_MINUTES, sameSite: 'lax' });
+            res.cookie('access_token', access_token, { httpOnly: true, maxAge: TIME_ONE_WEEK, sameSite: 'lax' });
             return res.redirect("/");
         } catch (error) {
             console.log(error.message);
