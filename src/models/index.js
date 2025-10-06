@@ -17,7 +17,7 @@ Account.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
 // Category - Book: N-N
 Genre.belongsToMany(Book, { foreignKey: "genre_id", through: "BookCategories", as: "books" });
-Book.belongsToMany(Category, { foreignKey: "genre_id", through: "BookGenres", as: "genres" });
+Book.belongsToMany(Genre, { foreignKey: "genre_id", through: "BookGenres", as: "genres" });
 
 
 // Author - Book: N-N
