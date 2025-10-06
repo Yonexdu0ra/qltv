@@ -3,7 +3,7 @@ const expressLayouts = require("express-ejs-layouts");
 const path = require("path");
 // const routes = require("./routes");
 const cookieParser = require("cookie-parser");
-// const authMiddleware = require("./middleware/authMiddleware");
+const authenticationMiddleware = require("./middleware/authenticationMiddleware");
 
 const { sequelize } = require("./models");
 
@@ -23,6 +23,8 @@ app.use(expressLayouts);
 
 app.set("layout", "layout");
 app.set("layout extractScripts", true);
+
+app.use(authenticationMiddleware);
 
 app.get("/", (req, res) => {
     return res.send("Hello World");
