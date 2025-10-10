@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
 
 const { sequelize } = require("./models");
+// const sequelize = require("./config/database");
 
 const PORT = process.env.PORT || 3002;
 
@@ -24,18 +25,17 @@ app.use(expressLayouts);
 app.set("layout", "layout");
 app.set("layout extractScripts", true);
 
+app.use(express.static(path.join(__dirname, "public")));
 app.use(authenticationMiddleware);
 routes(app);
 app.get("/", (req, res) => {
-    return res.send("Hello World");
+    return res.render("index");
 });
 
 (async () => {
     try {
         await sequelize.authenticate();
-
         // await sequelize.sync({ force: true });
-
         console.log("Kết nối đến database thành công");
     } catch (error) {
         console.error("Không thể kết nối đến database:", error.message);

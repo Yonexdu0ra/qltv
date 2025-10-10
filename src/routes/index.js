@@ -8,7 +8,7 @@ function routes(app) {
     app.use('/genre', genreRoutes);
     app.use('/author', authorRoutes);
     app.use('/auth', loginRoutes);
-
+    app.use('/books', require('./bookRoutes'));
 }
 
 module.exports = routes;

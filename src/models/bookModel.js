@@ -69,14 +69,14 @@ const Book = sequelize.define("Books", {
         }
     },
 
-    genre_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    author_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
+    // genre_id: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false,
+    // },
+    // author_id: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false,
+    // },
     is_deleted: {
         type: DataTypes.BOOLEAN,
         defaultValue: false

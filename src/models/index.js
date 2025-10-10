@@ -16,13 +16,13 @@ User.hasOne(Account, { foreignKey: "user_id", as: "account" });
 Account.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
 // Category - Book: N-N
-Genre.belongsToMany(Book, { foreignKey: "genre_id", through: "BookCategories", as: "books" });
-Book.belongsToMany(Genre, { foreignKey: "genre_id", through: "BookGenres", as: "genres" });
+Genre.belongsToMany(Book, { foreignKey: "genre_id", otherKey: "book_id", through: "BookCategories", as: "books" });
+Book.belongsToMany(Genre, { foreignKey: "book_id", otherKey: "genre_id", through: "BookGenres", as: "genres" });
 
 
 // Author - Book: N-N
-Author.belongsToMany(Book, { foreignKey: "author_id", through: "AuthorBooks", as: "books" });
-Book.belongsToMany(Author, { foreignKey: "author_id", through: "AuthorBooks", as: "authors" });
+Author.belongsToMany(Book, { foreignKey: "author_id", otherKey: "book_id", through: "AuthorBooks", as: "books" });
+Book.belongsToMany(Author, { foreignKey: "book_id", otherKey: "author_id", through: "AuthorBooks", as: "authors" });
 
 // Borrow - Reader: N-1
 Borrow.belongsTo(User, { foreignKey: "borrower_id", as: "borrower" });
