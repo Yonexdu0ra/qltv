@@ -2,7 +2,7 @@ const AuthServices = require("../services/authServices");
 
 class AuthController {
     static renderViewLogin(req, res) {
-        return res.render("auth/login", { title: "Đăng nhập", layout: null });
+        return res.render("auth/login", { title: "Đăng nhập", layout: false });
     }
 
     static async handleLogin(req, res) {
