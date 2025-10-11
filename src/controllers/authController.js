@@ -19,7 +19,7 @@ class AuthController {
             return res.redirect("/");
         } catch (error) {
             console.log(error.message);
-            return res.render("auth/login", { title: "Đăng nhập", layout: null, error: error.message });
+            return res.render("auth/login", { title: "Đăng nhập", layout: false, error: error.message });
         }
     }
 }

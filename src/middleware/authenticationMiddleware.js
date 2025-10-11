@@ -5,7 +5,15 @@ const authenticationMiddleware = async (req, res, next) => {
         const access_token = req.cookies.access_token;
         const refresh_token = req.cookies.refresh_token;
         const isPathLogin = req.path.startsWith("/auth/login");
-
+        if (
+            req.path.startsWith("/css") ||
+            req.path.startsWith("/js") ||
+            req.path.startsWith("/images") ||
+            req.path.startsWith("/fonts") ||
+            req.path === "/favicon.ico"
+        ) {
+            return next();
+        }
         let decodedAccessToken = access_token ? await decodeJWT(access_token, process.env.JWT_SECRET) : null;
         const decodedRefreshToken = refresh_token ? await decodeJWT(refresh_token, process.env.JWT_SECRET) : null;
 
