@@ -3,11 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <title></title>
-     <link href="styles.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet" />
   </head>
-  <body>
-    <%- body %>
-    <%- script %>
+  <body class="flex flex-col min-h-screen bg-gray-100">
+    <%- include("partials/header") %>
+
+    <div class="flex flex-1">
+      <!-- Sidebar -->
+      <%- include("partials/sidebar") %>
+
+      <!-- Main -->
+      <main class="flex-1 p-6"><%- body %></main>
+    </div>
+
+    <!-- Footer -->
+    <%- include("partials/footer") %>
   </body>
 </html>
-
