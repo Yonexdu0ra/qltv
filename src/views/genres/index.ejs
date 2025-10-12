@@ -2,16 +2,16 @@
   <h2 class="text-2xl font-bold text-gray-700">Quản lý thể loại</h2>
   <a href="/genre/add" class="text-blue-600 hover:underline ">Thêm thể loại</a>
   <div class="flex flex-col gap-4">
-    <div class="flex  gap-2">
-      <input type="text" placeholder="Tìm kiếm thể loại" class="flex-1 border rounded px-3 py-2" />
-      <select class="flex-1 border rounded px-3 py-2" name="" id="">
+    <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-2">
+      <input name="search" type="text" placeholder="Tìm kiếm thể loại" class="flex-1 border rounded px-3 py-2 max-w-md" />
+      <select class="flex-1 border rounded px-3 py-2 max-w-md" name="sort" id="sort">
         <option  value="">Sắp xếp theo tên A-Z</option>
         <option value="">Sắp xếp theo tên Z-A</option>
         <option value="">Mới nhất</option>
         <option value="">Cũ nhất</option>
       </select>
+      <button class="bg-blue-600 w-25 text-white px-4 py-2 rounded">Tìm kiếm</button>
     </div>
-    <button class="bg-blue-600 w-25 text-white px-4 py-2 rounded">Tìm kiếm</button>
   </div>
   <div class="overflow-x-auto relative">
     <table class="min-w-full bg-white border rounded border-gray-200 relative z-0">
