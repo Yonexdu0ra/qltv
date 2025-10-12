@@ -6,9 +6,12 @@ const router = Router();
 
 router.get("/", authController.renderViewAuthor);  
 
-router.post("/create", authController.handleCreateAuthor);
-router.put("/update/:id", authController.handleUpdateAuthor);
-router.delete("/delete/:id", authController.handleDeleteAuthor);
+router.get("/add", authController.renderViewCreateAuthor);
+router.post("/add", authController.handleCreateAuthor);
+router.get("/edit/:id", authController.renderViewUpdateAuthor);
+router.post("/edit/:id", authController.handleUpdateAuthor);
+router.get("/delete/:id", authController.renderViewDeleteAuthor);
+router.post("/delete/:id", authController.handleDeleteAuthor);
 router.get("/detail/:id", authController.renderViewDetailAuthor);
 
 

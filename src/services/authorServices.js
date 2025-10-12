@@ -70,7 +70,13 @@ class AuthorServices {
             throw error;
         }
     }
-
+    static async getAuthorById(id) {
+        try {
+            return await authorRepository.findAuthorById(id);
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 
