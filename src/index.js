@@ -25,12 +25,16 @@ app.use(expressLayouts);
 app.set("layout", "layout");
 app.set("layout extractScripts", true);
 
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use(authenticationMiddleware);
+app.use((req, res, next) => {
+    res.locals.user = req.user || {};
+    res.locals.currentPath = req.path;
+    next();
+})
 routes(app);
-app.get("/", (req, res) => {
-    return res.render("index");
-});
+
 
 (async () => {
     try {

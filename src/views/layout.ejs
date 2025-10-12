@@ -2,21 +2,25 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title || "Trang quản trị" %></title>
     <link href="/css/styles.css" rel="stylesheet" />
   </head>
-  <body class="flex flex-col min-h-screen bg-gray-100">
+
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- HEADER -->
     <%- include("partials/header") %>
 
-    <div class="flex flex-1">
-      <!-- Sidebar -->
+    <!-- BODY -->
+    <div class="flex flex-1 relative overflow-hidden">
+      <!-- SIDEBAR -->
       <%- include("partials/sidebar") %>
 
-      <!-- Main -->
-      <main class="flex-1 p-6"><%- body %> <%- script %></main>
+      <!-- MAIN -->
+      <main class="flex-1 p-6 overflow-x-auto"><%- body %> <%-script%></main>
     </div>
 
-    <!-- Footer -->
+    <!-- FOOTER -->
     <%- include("partials/footer") %>
   </body>
 </html>
