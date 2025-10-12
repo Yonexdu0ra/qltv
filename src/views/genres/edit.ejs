@@ -1,0 +1,14 @@
+<div class="max-w-lg mx-auto p-6">
+  <h1 class="text-xl font-semibold mb-4">Sửa thể loại</h1>
+  <form action="/genres/<%= genre.id %>/edit" method="POST" class="space-y-3">
+    <input
+      type="text"
+      name="name"
+      value="<%= genre.name %>"
+      required
+      class="w-full border rounded px-3 py-2"
+    />
+    <button class="bg-yellow-500 text-white px-4 py-2 rounded">Cập nhật</button>
+    <a href="/genre" class="text-gray-600 hover:underline ml-3">Hủy</a>
+  </form>
+</div>
