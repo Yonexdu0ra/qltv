@@ -1,0 +1,14 @@
+<div class="bg-green-100 text-green-700 p-3 rounded mb-4" id="success-message"></div>
+
+<script>
+  const successElement = document.getElementById("success-message");
+  const urlSuccess = new URL(window.location.href);
+  const paramsSuccess = new URLSearchParams(urlSuccess.search);
+  const successMessage = paramsSuccess.get("success");
+  if(successMessage) {
+    successElement.textContent = decodeURIComponent(atob(successMessage));
+    successElement.style.display = "block";
+  } else {
+    successElement.style.display = "none";
+  }
+</script>

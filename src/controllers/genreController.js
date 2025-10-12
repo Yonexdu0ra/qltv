@@ -12,41 +12,41 @@ class GenreController {
         }
     }
 
-    static async renderViewCreateGenre(req, res) { 
+    static async renderViewCreateGenre(req, res) {
         try {
-            return res.render("genres/add", { title: "Thêm thể loại" });
+            return res.render("genres/add", { title: "Thêm thể loại", genre: {} });
         } catch (error) {
-            return res.redirect('/genres?error=' + encodeBase64(error.message));
+            return res.redirect('/genre?error=' + encodeBase64(error.message));
         }
     }
-    static async renderViewUpdateGenre(req, res) { 
+    static async renderViewUpdateGenre(req, res) {
         try {
             const { id } = req.params;
             const genre = await GenreServices.getGenreById(id);
             if (!genre) throw new Error("Thể loại không tồn tại");
             return res.render("genres/edit", { title: "Sửa thể loại", genre });
         } catch (error) {
-            return res.redirect('/genres?error=' + encodeBase64(error.message));
+            return res.redirect('/not-found?error=' + encodeBase64(error.message));
         }
     }
-    static async renderViewDeleteGenre(req, res) { 
+    static async renderViewDeleteGenre(req, res) {
         try {
             const { id } = req.params;
             const genre = await GenreServices.getGenreById(id);
             if (!genre) throw new Error("Thể loại không tồn tại");
             return res.render("genres/delete", { title: "Xoá thể loại", genre });
         } catch (error) {
-            return res.redirect('/genres?error=' + encodeBase64(error.message));
+            return res.redirect('/not-found?error=' + encodeBase64(error.message));
         }
     }
-    static async renderViewDetailGenre(req, res) { 
+    static async renderViewDetailGenre(req, res) {
         try {
             const { id } = req.params;
             const genre = await GenreServices.getGenreById(id);
             if (!genre) throw new Error("Thể loại không tồn tại");
             return res.render("genres/detail", { title: "Chi tiết thể loại", genre });
         } catch (error) {
-            return res.redirect('/genres?error=' + encodeBase64(error.message));
+            return res.redirect('/not-found?error=' + encodeBase64(error.message));
         }
     }
     static async handleCreateGenre(req, res) {
@@ -54,9 +54,9 @@ class GenreController {
             const { name } = req.body;
             if (!name) throw new Error("Vui lòng nhập tên thể loại");
             const genre = await GenreServices.createGenre({ name });
-            return res.json({ message: "Tạo thể loại thành công", genre });
+            return res.redirect("/genre?success=" + encodeBase64("Thêm thể loại thành công"));
         } catch (error) {
-            return res.json({ message: error.message });
+            return res.render("genres/add", { title: "Thêm thể loại", error: error.message, genre: req.body, })
         }
     }
 
@@ -66,13 +66,10 @@ class GenreController {
         try {
             if (!name) throw new Error("Vui lòng nhập tên thể loại");
             const isUpdated = await GenreServices.updateGenre(id, { name });
-            console.log(isUpdated);
-
             if (!isUpdated) throw new Error("Cập nhật thể loại thất bại");
-            return res.json({ message: "Cập nhật thể loại thành công" });
+            return res.redirect("/genre?success=" + encodeBase64("Cập nhật thể loại thành công"));
         } catch (error) {
-
-            return res.json({ message: error.message });
+            return res.render("genres/edit", { title: "Sửa thể loại", error: error.message, genre: { id, ...req.body } })
         }
 
     }
@@ -81,9 +78,9 @@ class GenreController {
         try {
             const isDeleted = await GenreServices.deleteGenre(id);
             if (!isDeleted) throw new Error("Xoá thể loại thất bại");
-            return res.json({ message: "Xoá thể loại thành công" });
+            return res.redirect("/genre?success=" + encodeBase64("Xoá thể loại thành công"));
         } catch (error) {
-            return res.json({ message: error.message });
+            return res.redirect('/genre?error=' + encodeBase64(error.message));
         }
     }
 

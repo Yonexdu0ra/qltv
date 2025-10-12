@@ -1,0 +1,14 @@
+<div class="bg-red-100 text-red-700 p-3 rounded mb-4" id="error-message"></div>
+
+<script>
+  const errorElement = document.getElementById("error-message");
+  const url = new URL(window.location.href);
+  const params = new URLSearchParams(url.search);
+  const errorMessage = params.get("error");
+  if(errorMessage) {
+    errorElement.textContent = decodeURIComponent(atob(errorMessage));
+    errorElement.style.display = "block";
+  } else {
+    errorElement.style.display = "none";
+  }
+</script>
