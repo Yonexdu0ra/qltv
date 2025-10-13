@@ -1,0 +1,20 @@
+<div class="flex justify-center gap-4 items-center mt-4">
+  <% const prevDisabled = page <= 1; %>
+  <% const nextDisabled = page >= totals; %>
+
+  <a
+    href="<%= !prevDisabled ? `?page=${page - 1}&sort=${query.sort || ''}&q=${query.q || ''}` : '#' %>"
+    class="p-2 rounded text-white <%= prevDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600' %>"
+  >
+    Trang trước
+  </a>
+
+  <p><span><%= page %></span> / <span><%= totals %></span></p>
+
+  <a
+    href="<%= !nextDisabled ? `?page=${page + 1}&sort=${query.sort || ''}&q=${query.q || ''}` : '#' %>"
+    class="p-2 rounded text-white <%= nextDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600' %>"
+  >
+    Trang sau
+  </a>
+</div>

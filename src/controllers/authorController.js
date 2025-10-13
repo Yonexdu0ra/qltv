@@ -7,10 +7,12 @@ class AuthorController {
 
     static async renderViewAuthor(req, res) {
         try {
-            const authors = await AuthorService.getAllAuthors(req.query);
-            return res.render("authors/index", { authors, title: "Quản lý tác giả" });
+            const { rows: authors, count: totals} = await AuthorService.getAuthorsPagination(req.query);
+            const totalPages = Math.ceil(totals / (req.query.limit || 10));
+            const page = parseInt(req.query.page) || 1;
+            return res.render("authors/index", { authors, totals: totalPages, title: "Quản lý tác giả", page, query: req.query } );
         } catch (error) {
-            return res.render("authors/index", { authors: [], title: "Quản lý tác giả", error: error.message });
+            return res.render("authors/index", { authors: [], totals: 0, page: 1, title: "Quản lý tác giả", error: error.message, query: req.query } );
         }
     }
     static renderViewCreateAuthor(req, res) {

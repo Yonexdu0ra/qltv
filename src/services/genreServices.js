@@ -82,7 +82,27 @@ class GenreServices {
             throw error;
         }
     }
+    static async getGenresPagination(options) {
+        try {
+            const where = {}
+            if (options.q) {
+                where.name = {
+                    [Op.like]: `%${options.q}%`
+                }
+            }
+            const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 5 : 5
+            const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
+            const offset = (page - 1) * limit
 
+
+            const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["name", "ASC"]
+
+            const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
+            return await GenreRepository.findGenresPagination({ where, limit, offset, order });
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = GenreServices;

@@ -6,7 +6,7 @@ const authorRoutes = require("./authorRoutes");
 function routes(app) {
 
     app.use('/genre', genreRoutes);
-    app.use('/author', authorRoutes);
+    app.use('/authors', authorRoutes);
     app.use('/auth', loginRoutes);
     app.use('/books', require('./bookRoutes'));
 }

@@ -5,10 +5,13 @@ class GenreController {
 
     static async renderViewGenre(req, res) {
         try {
-            const genres = await GenreServices.getAllGenres();
-            return res.render("genres/index", { title: "Quản lý thể loại", genres });
+            const limit = req.query.limit ? req.query.limit > 0 ? parseInt(req.query.limit) : 5 : 5
+            const { count: totals, rows: genres } = await GenreServices.getGenresPagination({...req.query, limit });
+            const totalPages = Math.ceil(totals / limit);
+            const page = parseInt(req.query.page) || 1;
+            return res.render("genres/index", { title: "Quản lý thể loại", genres, totals: totalPages, page, query: req.query });
         } catch (error) {
-            return res.redirect('/genres?error=' + encodeBase64(error.message));
+            return res.render("genres/index", { title: "Quản lý thể loại", genres: [], totals: 0, totalPages: 0, page: 1, error: error.message, query: req.query});
         }
     }
 

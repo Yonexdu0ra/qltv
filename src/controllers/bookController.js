@@ -1,22 +1,21 @@
 const BookService = require("../services/bookServices");
-const GenreService = require("../services/GenreServices");
-const AuthorService = require("../services/AuthorServices");
 const encodeBase64 = require("../utils/base64");
 
 class BookController {
     static async renderViewBooks(req, res) {
         try {
-
-            const { rows: books, count: total } = await BookService.getBooksWithAuthorsAndGenresPagination({ ...req.query });
-            return res.render("books/index", { books, total, query: req.query, title: "Quản lý sách" });
+            const limit = req.query.limit ? req.query.limit > 0 ? parseInt(req.query.limit) : 5 : 5
+            const { rows: books, count: totals } = await BookService.getBooksPagination({ ...req.query, limit });
+            const totalPages = Math.ceil(totals / limit);
+            const page = parseInt(req.query.page) || 1;
+            return res.render("books/index", { books, totals: totalPages, page, query: req.query, title: "Quản lý sách" });
         } catch (error) {
-            console.error("❌ Sequelize error:", error.message);
-            console.error("🧩 SQL:", error.sql);   // thêm dòng này
+            return res.render("books/index", { books: [], totals: 0, page: 1, error: error.message, query: req.query, title: "Quản lý sách" });
         }
     }
     static async renderViewCreateBook(req, res) {
         try {
-           
+
             return res.render("books/add", { title: "Thêm sách" });
         } catch (error) {
             return res.redirect('not-found?error=' + encodeBase64(error.message))
@@ -25,9 +24,9 @@ class BookController {
     static async renderViewEditBook(req, res) {
         const { id } = req.params;
         try {
-            if(!id) throw new Error("Sách không tồn tại không thể sửa");
+            if (!id) throw new Error("Sách không tồn tại không thể sửa");
             const book = await BookService.getBookByIdWithAuthorAndGenre(id);
-            if(!book) throw new Error("Sách không tồn tại không thể sửa");
+            if (!book) throw new Error("Sách không tồn tại không thể sửa");
             return res.render("books/edit", { book, title: "Sửa sách" });
         } catch (error) {
             return res.redirect('/books?error=' + encodeBase64(error.message))
@@ -36,9 +35,9 @@ class BookController {
     static async renderViewDeleteBook(req, res) {
         const { id } = req.params;
         try {
-             if(!id) throw new Error("Sách không tồn tại không thể xóa");
+            if (!id) throw new Error("Sách không tồn tại không thể xóa");
             const book = await BookService.getBookById(id);
-            if(!book) throw new Error("Sách không tồn tại không thể sửa");
+            if (!book) throw new Error("Sách không tồn tại không thể sửa");
             return res.render("books/delete", { book, title: "Xóa sách" });
         } catch (error) {
             return res.redirect('/books?error=' + encodeBase64(error.message))
@@ -57,7 +56,7 @@ class BookController {
         const image = req.file?.path || null;
         const body = req.body || {};
         try {
-         
+
             const data = await BookService.createBook({ ...body, image_cover: image });
             return res.redirect("/books?success=" + encodeBase64("Thêm sách thành công"));
         } catch (error) {

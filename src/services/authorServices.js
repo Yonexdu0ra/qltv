@@ -13,6 +13,27 @@ class AuthorServices {
             }
         }
     }
+    static async getAuthorsPagination(options, queryOptions) {
+        try {
+            const where = {}
+            if(options.q) {
+                where.name = {
+                    [Op.like]: `%${options.q}%`
+                }
+            }
+            const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
+            const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
+            const offset = (page - 1) * limit
+            
+            
+            const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["name", "ASC"]
+            
+            const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
+            return await authorRepository.findAuthorsPagination({ where, limit, offset, order }, queryOptions);
+        } catch (error) {
+            throw error;
+        }
+    }
     static async getAllAuthors() {
         try {
             return await authorRepository.findAuthors({});
