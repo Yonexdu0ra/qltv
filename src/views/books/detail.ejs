@@ -1,0 +1,16 @@
+<div class="max-w-5xl mx-auto p-6 bg-white shadow rounded-lg space-y-2">
+  <h1 class="text-xl font-semibold mb-4">Chi tiết sách</h1>
+
+  <p><strong>Tên:</strong> <%= book.title %></p>
+  <p><strong>ISBN:</strong> <%= book.isbn %></p>
+  <p><strong>Năm xuất bản:</strong> <%= book.published_year %></p>
+  <p><strong>Tác giả:</strong> <%= book.authors.map(author => author.name).join(', ') %></p>
+  <p><strong>Thể loại:</strong> <%= book.genres.map(genre => genre.name).join(', ') %></p>
+  <p><strong>Số lượng:</strong> <%= book.quantity_total %></p>
+  <p><strong>Số lượng còn lại:</strong> <%= book.quantity_available %></p>
+  <p><strong>Mô tả:</strong> <%= book.description %></p>
+  <div>
+    <strong>Ảnh bìa:</strong>
+    <img src="<%= book.image_cover %>" alt="Ảnh bìa" class="mt-2 max-h-48">
+  </div>
+</div>

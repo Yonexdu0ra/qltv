@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const GenreRepository = require("../repositories/genreRepository");
 
 
@@ -10,7 +11,7 @@ class GenreServices {
             const genres = await GenreRepository.findGenres({});
             return genres;
         } catch (error) {
-            
+
             throw error;
         }
     }
@@ -39,12 +40,12 @@ class GenreServices {
             if (!genre) {
                 throw new Error("Thể loại không tồn tại");
             }
-            
+
             const [updatedRowsCount] = await GenreRepository.updateGenre(id, data, {
                 fields: ["name"],
                 where: { id }
             });
-            
+
             return updatedRowsCount > 0;
         } catch (error) {
             throw error;
@@ -60,6 +61,23 @@ class GenreServices {
             if (genre.books && genre.books.length > 0) throw new Error("Không thể xóa thể loại vì có sách liên quan");
             const deletedRowsCount = await GenreRepository.deleteGenre({ id });
             return deletedRowsCount > 0;
+        } catch (error) {
+            throw error;
+        }
+    }
+    static async searchGenres(query) {
+        try {
+            const where = {};
+            if (query) {
+                where.name = {
+                    [Op.like]: `%${query}%`
+                };
+            }
+            const limit = 10;
+            const offset = 0;
+            const order = [["name", "ASC"]];
+            const options = { attributes: ["id", "name"] };
+            return await GenreRepository.findGenresPagination({ where, limit, offset, order }, options);
         } catch (error) {
             throw error;
         }

@@ -83,7 +83,15 @@ class GenreController {
             return res.redirect('/genre?error=' + encodeBase64(error.message));
         }
     }
-
+    static async handleSearchGenre(req, res) {
+        try {
+            const { q } = req.query;
+            const { rows: genres, count: total } = await GenreServices.searchGenres(q || "");
+            return res.json({ success: true, data: genres, total });
+        } catch (error) {
+            return res.json({ success: false, message: error.message, data: [], total: 0 });
+        }
+    }
 
 }
 

@@ -11,7 +11,11 @@ class BookService {
         return bookRepository.findBookById(id, options);
     }
     static async getBookByIdWithAuthorAndGenre(id, options = {}) {
-        return bookRepository.findBookByIdWithAuthorAndGenre(id, options);
+        try {
+            return bookRepository.findBookByIdWithAuthorAndGenre(id, options);
+        } catch (error) {
+            throw error;
+        }
     }
     static async getBooksWithAuthorAndGenre(query, options = {}) {
         return bookRepository.findBooksWithAuthorAndGenre(query, options);
@@ -45,14 +49,14 @@ class BookService {
     static async createBook(data) {
         const transaction = await sequelize.transaction();
         try {
-            if(!data.authors || data.authors.length === 0) throw new Error("Vui lòng chọn tác giả cho sách");
-            if(!data.genres || data.genres.length === 0) throw new Error("Vui lòng chọn thể loại cho sách");
+            if (!data.authors || data.authors.length === 0) throw new Error("Vui lòng chọn tác giả cho sách");
+            if (!data.genres || data.genres.length === 0) throw new Error("Vui lòng chọn thể loại cho sách");
             const book = await bookRepository.createBook(data, {
                 fields: ["title", "isbn", "published_year", "quantity_total", "quantity_available", "description", "image_cover"]
                 , transaction
             });
             // console.log(JSON.parse(data.genre_id));
-            
+
             await book.setAuthors([...data.authors], { transaction });
             await book.setGenres([...data.genres], { transaction });
             await transaction.commit();
@@ -67,6 +71,8 @@ class BookService {
     static async updateBook(id, data) {
         const transaction = await sequelize.transaction();
         try {
+            console.log(data);
+            
             const book = await bookRepository.findBookByIdWithAuthorAndGenre(id);
 
             if (!book) throw new Error("Sách không tồn tại không thể cập nhật");
@@ -75,16 +81,12 @@ class BookService {
                 fields: ["title", "isbn", "published_year", "quantity_total", "quantity_available", "description", "image_cover"]
             });
             if (!isUpdated) throw new Error("Cập nhật sách thất bại");
-            const authors = JSON.parse(data.author_id || "{}") || book.authors;
-            const genres = JSON.parse(data.genre_id || "{}") || book.genres;
-            if (authors && authors.length > 0) {
-                await book.setAuthors([...authors], { transaction });
-            }
-            if (genres && genres.length > 0) {
-                await book.setGenres([...genres], { transaction });
-            }
+            if (!data.authors || data.authors.length === 0) throw new Error("Vui lòng chọn tác giả cho sách");
+            if (!data.genres || data.genres.length === 0) throw new Error("Vui lòng chọn thể loại cho sách");
+            await book.setAuthors([...data.authors], { transaction });
+            await book.setGenres([...data.genres], { transaction });
             await transaction.commit();
-            return 
+            return
         } catch (error) {
             await transaction.rollback();
             console.log(error.message);
@@ -99,6 +101,24 @@ class BookService {
             if (book.borrowDetails && book.borrowDetails.length > 0) throw new Error("Sách đã hoặc đang được mượn không thể xóa");
             return bookRepository.deleteBook({ id });
         } catch (error) {
+            throw error;
+        }
+    }
+    static async searchBooks(query) {
+        try {
+            const where = {};
+            if (query) {
+                where.title = {
+                    [Op.like]: `%${query}%`
+                };
+            }
+            const limit = 10;
+            const offset = 0;
+            const order = [["title", "ASC"]];
+            const options = { attributes: ["id", "title"] };
+            return await bookRepository.findBooksPagination({ where, limit, offset, order }, options);
+        }
+        catch (error) {
             throw error;
         }
     }

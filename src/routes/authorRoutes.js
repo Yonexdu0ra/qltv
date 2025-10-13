@@ -13,6 +13,7 @@ router.post("/edit/:id", authController.handleUpdateAuthor);
 router.get("/delete/:id", authController.renderViewDeleteAuthor);
 router.post("/delete/:id", authController.handleDeleteAuthor);
 router.get("/detail/:id", authController.renderViewDetailAuthor);
+router.get("/search", authController.handleSearchAuthor);
 
 
 

@@ -84,6 +84,15 @@ class AuthorController {
             return res.render("authors/index", { title: "Quản lý tác giả", error: error.message });
         }
     }
+    static async handleSearchAuthor(req, res) {
+        try {
+            const { q } = req.query;
+            const { rows: authors ,count: total} = await AuthorService.searchAuthors(q || "");
+            return res.json({ success: true, data: authors, total });
+        } catch (error) {
+            return res.json({ success: false, message: error.message, data: [], total: 0 });
+        }
+    }
 }
 
 

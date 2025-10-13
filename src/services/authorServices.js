@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const authorRepository = require("../repositories/authorRepository");
 
 class AuthorServices {
@@ -73,6 +74,23 @@ class AuthorServices {
     static async getAuthorById(id) {
         try {
             return await authorRepository.findAuthorById(id);
+        } catch (error) {
+            throw error;
+        }
+    }
+    static async searchAuthors(query) {
+        try {
+            const where = {
+                name: {
+                    [Op.like]: `%${query|| ""}%`
+                }
+            }
+            const limit = 10
+            const offset = 0
+            const order = [["name", "ASC"]]
+            const options = { attributes: ["id", "name"], distinct: true, };
+            return await authorRepository.findAuthorsPagination({ where, limit, offset, order }, options);
+
         } catch (error) {
             throw error;
         }

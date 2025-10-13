@@ -46,6 +46,7 @@ class AuthorRepository {
             offset,
             limit,
             order,
+            
             ...options
         });
     }

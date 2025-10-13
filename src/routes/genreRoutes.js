@@ -10,5 +10,6 @@ router.get("/edit/:id", authController.renderViewUpdateGenre);
 router.get("/delete/:id", authController.renderViewDeleteGenre);
 router.post("/delete/:id", authController.handleDeleteGenre);
 router.get("/detail/:id", authController.renderViewDetailGenre);
+router.get("/search", authController.handleSearchGenre);
 
 module.exports = router;
