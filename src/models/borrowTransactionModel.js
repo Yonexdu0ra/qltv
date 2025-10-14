@@ -66,14 +66,6 @@ const Borrow = sequelize.define(
       defaultValue: "REQUESTED",
     },
 
-    // book_id: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   references: {
-    //     model: "books",
-    //     key: "id",
-    //   },
-    // },
     borrower_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

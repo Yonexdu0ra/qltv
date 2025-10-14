@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-const Borrow = sequelize.define(
+const BorrowDetails = sequelize.define(
   "BorrowDetails",
   {
     id: {
@@ -39,7 +39,6 @@ const Borrow = sequelize.define(
                 args: [["BORROWED", "RETURNED"]],
                 msg: "Trạng thái không hợp lệ",
             },
-            notNull: { msg: "Trạng thái không được để trống" },
         },
     },
     returned_date: {
@@ -49,11 +48,15 @@ const Borrow = sequelize.define(
             isDate: { msg: "Ngày trả không hợp lệ" },
         },
     },
+    note: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    }
   },
   {
-    tableName: "borrow_details",
+    tableName: "borrowDetails",
     timestamps: true,
   }
 );
 
-module.exports = Borrow;
+module.exports = BorrowDetails;
