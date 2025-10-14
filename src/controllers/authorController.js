@@ -57,7 +57,7 @@ class AuthorController {
             const { name } = req.body;
             if (!name || name.trim() === "") throw new Error("Tên tác giả không được để trống");
             const newAuthor = await AuthorService.createAuthor({ name: name.trim() });
-            return res.redirect("/author?success=" + encodeBase64("Thêm tác giả thành công"));
+            return res.redirect("/authors?success=" + encodeBase64("Thêm tác giả thành công"));
         } catch (error) {
             return res.render("authors/add", { title: "Thêm tác giả", error: error.message, author: req.body });
         }

@@ -1,0 +1,36 @@
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
+<script src="/js/debounce.js"></script>
+<script src="/js/useChoice.js"></script>
+<div class="max-w-lg mx-auto p-6">
+  <h1 class="text-xl font-semibold mb-4">Thêm phiếu mượn</h1>
+  <%- include('../error') %>
+  <form  method="POST" class="space-y-3">
+    <div class="flex flex-col gap-2">
+        <label for="books">Chọn sách:</label>
+        <select name="books" id="books" multiple></select>
+    </div>
+    <div class="flex flex-col gap-2">
+        <label for="borrow_date">Chọn ngày mượn:</label>
+        <input type="date" name="borrow_date" id="borrow_date" required class="border rounded px-3 py-2">
+    </div>
+    <div class="flex flex-col gap-2">
+        <label for="due_date">Chọn ngày trả:</label>
+        <input type="date" name="due_date" id="due_date" required class="border rounded px-3 py-2">
+    </div>
+    <button class="bg-green-600 text-white px-4 py-2 rounded">Lưu</button>
+    <a href="/borrow" class="text-gray-600 hover:underline ml-3">Quay lại</a>
+  </form>
+</div>
+
+<script>
+  useChoice("#books", "/books/search", (data) => {
+    return data.data.map((book) => ({
+      value: book.id,
+      label: book.title,
+    }));
+  });
+</script>

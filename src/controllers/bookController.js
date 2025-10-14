@@ -62,7 +62,7 @@ class BookController {
         } catch (error) {
             console.log(error);
 
-            return res.render("bookss/add", { title: "Thêm sách", error: error.message, book: req.body });
+            return res.render("books/add", { title: "Thêm sách", error: error.message, book: req.body });
         }
     }
     static async handleEditBook(req, res) {

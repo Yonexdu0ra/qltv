@@ -161,7 +161,7 @@
 </script>
 
 <script>
-  useChoice("#authors", "/author/search", (data) => {
+  useChoice("#authors", "/authors/search", (data) => {
     return data.data.map((author) => ({
       value: author.id,
       label: author.name,

@@ -9,6 +9,7 @@ function routes(app) {
     app.use('/authors', authorRoutes);
     app.use('/auth', loginRoutes);
     app.use('/books', require('./bookRoutes'));
+    app.use('/borrow', require('./borrowRoutes'));
 }
 
 module.exports = routes;

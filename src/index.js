@@ -5,8 +5,8 @@ const routes = require("./routes");
 const cookieParser = require("cookie-parser");
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
 
-const { sequelize } = require("./models");
-// const sequelize = require("./config/database");
+// const { sequelize } = require("./models");
+const sequelize = require("./config/database");
 
 const PORT = process.env.PORT || 3002;
 
@@ -39,7 +39,24 @@ routes(app);
 (async () => {
     try {
         await sequelize.authenticate();
+
+        // // 🔻 Tắt kiểm tra khóa ngoại
+        // await sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+
+        // // 🔻 Lấy danh sách toàn bộ bảng trong DB
+        // const tables = await sequelize.query("SHOW TABLES", { type: sequelize.QueryTypes.SHOWTABLES });
+
+        // // 🔻 Xóa sạch toàn bộ bảng
+        // for (const table of tables) {
+        //     await sequelize.query(`DROP TABLE IF EXISTS \`${table}\``);
+        // }
+
+        // // 🔻 Bật lại kiểm tra khóa ngoại
+        // await sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+
+        // // 🔻 Tạo lại toàn bộ bảng mới
         // await sequelize.sync({ force: true });
+
         console.log("Kết nối đến database thành công");
     } catch (error) {
         console.error("Không thể kết nối đến database:", error.message);

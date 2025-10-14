@@ -12,5 +12,6 @@ router.post('/edit/:id', multer.single('image_cover'), BookController.handleEdit
 router.get('/delete/:id', BookController.renderViewDeleteBook);
 router.post('/delete/:id', BookController.handleDeleteBook);
 router.get('/detail/:id', BookController.renderViewDetailBook);
+router.get('/search', BookController.handleSearchBooks);
 
 module.exports = router;

@@ -169,7 +169,7 @@
 <script>
   
   const authorsSelected = <%- JSON.stringify(book.authors.map(a => ({ value: a.id, label: a.name}))) %>
-  useChoice("#authors", "/author/search", (data) => {
+  useChoice("#authors", "/authors/search", (data) => {
     const uniqueAuthors = [...new Map(data.data.map(item => [item['id'], item])).values()];
     return uniqueAuthors.map((author) => ({
       value: author.id,
