@@ -28,8 +28,8 @@ class BookService {
         const order = [["createdAt", sort]];
         const offset = (page - 1) * limit;
         const where = {}
-        if (params.s) {
-            where.title = { [Op.like]: `%${params.s}%` }
+        if (params.q) {
+            where.title = { [Op.like]: `%${params.q}%` }
         }
         return bookRepository.findBooksPagination({ offset, limit, order, where }, options);
     }

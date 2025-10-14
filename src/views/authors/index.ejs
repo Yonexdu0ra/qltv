@@ -64,30 +64,22 @@
           <td
             class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700 relative"
           >
-            <button
-              type="button"
-              onclick="toggleMenu(<%= author.id %>)"
-              class="p-2 rounded hover:bg-gray-200 transition"
-            >
-              tùy chọn
-            </button>
-            <div
-              id="menu-<%= author.id %>"
-              class="hidden absolute top-0 right-0 transform -translate- -translate-x-1/2 bg-white border rounded shadow-lg p-2 z-50 min-w-[100px]"
-            >
+            <div class="flex flex-col sm:flex-row flex-wrap gap-1">
               <a
                 href="/authors/edit/<%= author.id %>"
-                class="text-blue-600 hover:underline block mb-1 hover:bg-blue-100 rounded px-1"
+                class="text-center p-2 bg-blue-100 text-blue-600 hover:underline block mb-1 hover:bg-blue-200 rounded px-1"
                 >Sửa</a
               >
               <a
                 href="/authors/delete/<%= author.id %>"
-                class="text-red-600 hover:underline block mb-1 hover:bg-red-100 rounded px-1"
+                class="text-center p-2 bg-red-100 text-red-600 hover:underline block mb-1 hover:bg-red-200 rounded px-1"
                 >Xóa</a
               >
+             
+              
               <a
                 href="/authors/detail/<%= author.id %>"
-                class="text-green-600 hover:underline block mb-1 hover:bg-green-100 rounded px-1"
+                class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
                 >Chi tiết</a
               >
             </div>
@@ -96,8 +88,8 @@
         <% }) %>
       </tbody>
     </table>
-    <%- include('../partials/pagination', { totals, page, query }) %>
   </div>
+  <%- include('../partials/pagination', { totals, page, query }) %>
 
   
 </div>

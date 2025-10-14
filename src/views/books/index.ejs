@@ -1,31 +1,34 @@
+
 <div class="flex flex-col gap-4 relative">
-  <h2 class="text-2xl font-bold text-gray-700">Quản lý sách</h2>
+  <h2 class="text-2xl font-bold text-gray-700">Quản lý tác giả</h2>
   <%- include('../errorMessageWithQuery') %> <%-
   include('../successMessageWithQuery') %>
-  <a href="/books/add" class="text-blue-600 hover:underline">Thêm sách</a>
-  <div class="flex flex-col gap-4">
-    <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-2">
+  <a href="/books/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm thể loại</a>
+  <form id="search-form" class="flex flex-col gap-4">
+    <div class="flex flex-col sm:flex-row items-center flex-wrap justify-center gap-2">
       <input
-        name="search"
+        name="q"
         type="text"
         placeholder="Tìm kiếm sách"
-        class="flex-1 border rounded px-3 py-2 max-w-md"
+        value="<%= query.q || '' %>"
+        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
       />
       <select
-        class="flex-1 border rounded px-3 py-2 max-w-md"
+        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
         name="sort"
         id="sort"
       >
-        <option value="">Sắp xếp theo tên A-Z</option>
-        <option value="">Sắp xếp theo tên Z-A</option>
-        <option value="">Mới nhất</option>
-        <option value="">Cũ nhất</option>
+        <option value="">--Sắp xếp sách--</option>
+        <option value="title-asc" <%= query.sort === 'title-asc' ? 'selected' : '' %>>Sắp xếp theo tên A-Z</option>
+        <option value="title-desc" <%= query.sort === 'title-desc' ? 'selected' : '' %>>Sắp xếp theo tên Z-A</option>
+        <option value="createdAt-desc" <%= query.sort === 'createdAt-desc' ? 'selected' : '' %>>Mới nhất</option>
+        <option value="createdAt-asc" <%= query.sort === 'createdAt-asc' ? 'selected' : '' %>>Cũ nhất</option>
       </select>
-      <button class="bg-blue-600 w-25 text-white px-4 py-2 rounded">
+      <button class="bg-blue-600 w-full sm:w-25 text-white px-4 py-2 rounded">
         Tìm kiếm
       </button>
     </div>
-  </div>
+  </form>
   <div class="overflow-x-auto relative">
     <table
       class="min-w-full bg-white border rounded border-gray-200 relative z-0"
@@ -40,27 +43,27 @@
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            Ảnh
+            ảnh
           </th>
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            Tên sách
+            tên sách
           </th>
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            ISBN
+            isbn
           </th>
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            Năm xuất bản
+            năm xuất bản
           </th>
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            Số lượng
+            số lượng
           </th>
           <th
             class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600"
@@ -76,7 +79,7 @@
             <%= ++index %>
           </td>
           <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <img
+             <img
               src="<%= book.image_cover %>"
               alt="<%= book.title %>"
               class="w-12 h-12 object-cover rounded"
@@ -97,30 +100,22 @@
           <td
             class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700 relative"
           >
-            <button
-              type="button"
-              onclick="toggleMenu(<%= book.id %>)"
-              class="p-2 rounded hover:bg-gray-200 transition"
-            >
-              tùy chọn
-            </button>
-            <div
-              id="menu-<%= book.id %>"
-              class="hidden absolute top-0 right-0 transform -translate- -translate-x-1/2 bg-white border rounded shadow-lg p-2 z-50 min-w-[100px]"
-            >
+            <div class="flex flex-col sm:flex-row flex-wrap gap-1">
               <a
                 href="/books/edit/<%= book.id %>"
-                class="text-blue-600 hover:underline block mb-1"
+                class="text-center p-2 bg-blue-100 text-blue-600 hover:underline block mb-1 hover:bg-blue-200 rounded px-1"
                 >Sửa</a
               >
               <a
                 href="/books/delete/<%= book.id %>"
-                class="text-red-600 hover:underline block"
+                class="text-center p-2 bg-red-100 text-red-600 hover:underline block mb-1 hover:bg-red-200 rounded px-1"
                 >Xóa</a
               >
+             
+              
               <a
                 href="/books/detail/<%= book.id %>"
-                class="text-green-600 hover:underline block"
+                class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
                 >Chi tiết</a
               >
             </div>
@@ -129,31 +124,29 @@
         <% }) %>
       </tbody>
     </table>
-</div>
-<div class="flex justify-center gap-4 items-center mt-4">
-  <button class="p-2 bg-blue-500 rounded text-white">Trang trước</button>
-  <p><span>1</span> / <span>1</span></p>
-  <button class="p-2 bg-blue-500 rounded text-white">Trang sau</button>
-</div>
-</div>
+  </div>
+  <%- include('../partials/pagination', { totals, page, query }) %>
 
-<script>
-  function toggleMenu(id) {
-    // Ẩn tất cả menu khác
-    document.querySelectorAll('[id^="menu-"]').forEach((m) => {
-      if (m.id !== "menu-" + id) m.classList.add("hidden");
-    });
-    // Hiện / ẩn menu được chọn
-    const menu = document.getElementById("menu-" + id);
-    menu.classList.toggle("hidden");
-  }
-
-  // Ẩn menu khi click ra ngoài
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest("td")) {
-      document
-        .querySelectorAll('[id^="menu-"]')
-        .forEach((m) => m.classList.add("hidden"));
+  
+</div>
+  <script>
+    function toggleMenu(id) {
+      document.querySelectorAll('[id^="menu-"]').forEach((m) => {
+        if (m.id !== "menu-" + id) m.classList.add("hidden");
+      }); // Hiện / ẩn menu được chọn
+      const menu = document.getElementById("menu-" + id);
+      menu.classList.toggle("hidden");
     }
-  });
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("td")) {
+        document
+          .querySelectorAll('[id^="menu-"]')
+          .forEach((m) => m.classList.add("hidden"));
+      }
+    });
+  </script>
+
+<script src="js/dispatchSelectForm.js"></script>
+<script>
+  dispatchSelectForm('#search-form', '#sort');
 </script>
