@@ -10,6 +10,8 @@ function routes(app) {
     app.use('/auth', authRoutes);
     app.use('/books', require('./bookRoutes'));
     app.use('/borrow', require('./borrowRoutes'));
+    app.use('/accounts', require('./accountRoutes'));
+    app.use('/users', require('./userRoutes'));
 }
 
 module.exports = routes;

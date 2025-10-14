@@ -19,7 +19,8 @@ class AccountRepository {
             where: query,
             include: {
                 model: User,
-                as: "user"
+                as: "user",
+                ...options?.user
             },
             ...options
         });
@@ -35,7 +36,7 @@ class AccountRepository {
         });
     }
 
-    static findAccountsPagination({ where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] }, options) {
+    static findAccountsPagination({ where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] }, options = {}) {
         return Account.findAndCountAll({
             where,
             offset,
@@ -44,17 +45,34 @@ class AccountRepository {
             ...options
         });
     }
+    static findAccountsPaginationWithUser({ where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] }, options = {}) {
+        return Account.findAndCountAll({
+            where,
+            offset,
+            limit,
+            order,
+            include: {
+                model: User,
+                as: "user",
+                ...options?.user
+            },
+            ...options
+        });
+    }
 
     static async createAccount(data, options = {}) {
         return await Account.create(data, options);
     }
-    static async updateAccount(data, query, options = {}) {
-        return await Account.update(data, { where: query, ...options });
+    static async updateAccount(query, data, options = {}) {
+
+        return await Account.update({
+            ...data
+        }, { where: query, ...options });
     }
     static async deleteAccount(query, options = {}) {
         return await Account.destroy({ where: query, ...options });
     }
-   
+
 }
 
 module.exports = AccountRepository;

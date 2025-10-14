@@ -1,15 +1,15 @@
 
 <div class="flex flex-col gap-4 relative">
-  <h2 class="text-2xl font-bold text-gray-700">Quản lý mượn/trả</h2>
+  <h2 class="text-2xl font-bold text-gray-700">Quản lý độc giả</h2>
   <%- include('../errorMessageWithQuery') %> <%-
   include('../successMessageWithQuery') %>
-  <a href="/borrow/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm phiếu mượn</a>
+  <!-- <a href="/users/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm độc giả</a> -->
   <form id="search-form" class="flex flex-col gap-4">
     <div class="flex flex-col sm:flex-row items-center flex-wrap justify-center gap-2">
       <input
         name="q"
         type="text"
-        placeholder="Tìm kiếm tên sách, người mượn..."
+        placeholder="Tìm kiếm độc giả"
         value="<%= query.q || '' %>"
         class="flex-1 border rounded px-3 py-2 max-w-md w-full"
       />
@@ -18,9 +18,9 @@
         name="sort"
         id="sort"
       >
-        <option value="">--Sắp xếp mượn/trả--</option>
-        <option value="borrow_date-asc" <%= query.sort === 'borrow_date-asc' ? 'selected' : '' %>>Sắp xếp theo ngày mượn cũ dần</option>
-        <option value="borrow_date-desc" <%= query.sort === 'borrow_date-desc' ? 'selected' : '' %>>Sắp xếp theo ngày mượn mới dần</option>
+        <option value="">--Sắp xếp độc giả--</option>
+        <option value="fullname-asc" <%= query.sort === 'fullname-asc' ? 'selected' : '' %>>Sắp xếp theo tên A-Z</option>
+        <option value="fullname-desc" <%= query.sort === 'fullname-desc' ? 'selected' : '' %>>Sắp xếp theo tên Z-A</option>
         <option value="createdAt-desc" <%= query.sort === 'createdAt-desc' ? 'selected' : '' %>>Mới nhất</option>
         <option value="createdAt-asc" <%= query.sort === 'createdAt-asc' ? 'selected' : '' %>>Cũ nhất</option>
       </select>
@@ -43,30 +43,24 @@
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            ngày mượn
+           họ tên
           </th>
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            ngày lấy
+           địa chỉ
           </th>
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            hạn trả
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            trạng thái
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            người mượn
+           email
           </th>
           
-          
+          <th
+            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
+          >
+           số điện thoại
+          </th>
           <th
             class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600"
           >
@@ -75,24 +69,36 @@
         </tr>
       </thead>
       <tbody class="relative z-0">
-        <% borrows.forEach((borrow, index) => { %>
+        <% users.forEach((user, index) => { %>
         <tr class="hover:bg-gray-100 relative">
           <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
             <%= ++index %>
           </td>
+          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+            <%= user.fullname %>
+          </td>
+          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+            <%= user.address %>
+          </td>
+          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+            <%= user.email %>
+          </td>
           
+          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+            <%= user.phone %>
+          </td>
           <td
             class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700 relative"
           >
             <div class="flex flex-col sm:flex-row flex-wrap gap-1">
               <a
-                href="/borrow/edit/<%= borrow.id %>"
+                href="/users/edit/<%= user.id %>"
                 class="text-center p-2 bg-blue-100 text-blue-600 hover:underline block mb-1 hover:bg-blue-200 rounded px-1"
                 >Sửa</a
               >
               
               <a
-                href="/borrow/detail/<%= borrow.id %>"
+                href="/users/detail/<%= user.id %>"
                 class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
                 >Chi tiết</a
               >

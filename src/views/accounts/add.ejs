@@ -1,0 +1,42 @@
+<div class="max-w-lg mx-auto p-6">
+  <h1 class="text-xl font-semibold mb-4">Thêm tài khoản</h1>
+  <%- include('../error') %>
+  <form  method="POST" class="space-y-3">
+    <div class="flex flex-col gap-2">
+        <label for="username">Tài khoản</label>
+        <input type="text" id="username" name="username" placeholder="nhập tài khoản" required class="w-full border rounded px-3 py-2" value="<%= account ? account.username : '' %>"/>
+    </div>
+    <div class="flex flex-col gap-2">
+        <label for="password">Mật khẩu</label>
+        <input type="password" id="password" name="password" placeholder="nhập mật khẩu" required class="w-full border rounded px-3 py-2"/>
+    </div>
+    <div class="flex flex-col gap-2">
+        <label for="role">Vai trò</label>
+        <select name="role" id="role" class="w-full border rounded px-3 py-2" required>
+            <option value="Reader" <%= account && account.role == 'Reader' ? 'selected' : '' %>>Độc giả</option>
+            <option value="Librarian" <%= user.role !== "Admin" ? "disabled" : '' %> <%= account && account.role == 'Librarian' ? 'selected' : '' %>>Thủ thư</option>
+            <option value="Admin" <%= user.role !== "Admin" ? "disabled" : '' %> <%= account && account.role == 'Admin' ? 'selected' : '' %>>Admin</option>
+        </select>
+    </div>
+    <div class="flex flex-col gap-2">
+        <label for="fullname">Họ tên</label>
+        <input type="text" id="fullname" name="fullname" placeholder="Nhập họ tên" required class="w-full border rounded px-3 py-2" value="<%= account ? account.fullname : '' %>"/>
+    </div>
+    <div class="flex flex-col gap-2">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Nhập email" required class="w-full border rounded px-3 py-2" value="<%= account ? account.email : '' %>"/>
+    </div>
+    <div class="flex flex-col gap-2">
+        <label for="address">Địa chỉ</label>
+        <input type="text" id="address" name="address" placeholder="Nhập địa chỉ" required class="w-full border rounded px-3 py-2" value="<%= account ? account.address : '' %>"/>
+    </div>
+    <div class="flex flex-col gap-2">
+        <label for="phone">Số điện thoại</label>
+        <input type="text" id="phone" name="phone" placeholder="Nhập số điện thoại" required class="w-full border rounded px-3 py-2" value="<%= account ? account.phone : '' %>"/>
+    </div>
+    
+
+    <button class="bg-green-600 text-white px-4 py-2 rounded">Lưu</button>
+    <a href="/accounts" class="text-gray-600 hover:underline ml-3">Quay lại</a>
+  </form>
+</div>
