@@ -22,6 +22,19 @@ class AuthController {
             return res.render("auth/login", { title: "Đăng nhập", layout: false, error: error.message });
         }
     }
+    static async handleLogout(req, res) {
+        const { id } = req.params;
+        const user_id = req.user.user_id
+        try {
+            if (id != user_id) throw new Error("Đăng xuất thất bại");
+            res.clearCookie('refresh_token');
+            res.clearCookie('access_token');
+            return res.redirect("/auth/login");
+        } catch (error) {
+            console.log(error.message);
+            return res.redirect("/");
+        }
+    }
 }
 
 module.exports = AuthController;

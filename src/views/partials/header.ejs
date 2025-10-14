@@ -65,7 +65,7 @@
       >
         Đổi mật khẩu
       </a>
-      <form action="/logout" method="POST">
+      <form action="/auth/logout/<%= user.user_id %>" method="POST">
         <button
           type="submit"
           class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
