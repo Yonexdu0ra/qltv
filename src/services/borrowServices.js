@@ -196,7 +196,7 @@ class BorrowServices {
     }
     static async markAsBorrowed(id) {
         try {
-            const [rowUpdated] = await borrowRepository.updateBorrow({ id }, { status: BORROW_STATUS_CONSTANTS.BORROWED });
+            const [rowUpdated] = await borrowRepository.updateBorrow({ id }, { status: BORROW_STATUS_CONSTANTS.BORROWED, pickup_date: new Date() });
             return rowUpdated > 0;
         }
         catch (error) {
