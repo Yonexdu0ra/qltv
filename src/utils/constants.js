@@ -6,6 +6,8 @@ const STATUS_BORROW = {
   CANCELLED: "Đã hủy",
   REJECTED: "Đã từ chối",
   EXPIRED: "Quá hạn",
+  LOSTED: "Đã mất",
+  DAMAGED: "Bị hư hỏng",
 };
 
 const BORROW_STATUS_CONSTANTS = {
@@ -16,6 +18,8 @@ const BORROW_STATUS_CONSTANTS = {
   EXPIRED: "EXPIRED",
   REJECTED: "REJECTED",
   CANCELLED: "CANCELLED",
+  LOSTED: "LOSTED",
+  DAMAGED: "DAMAGED",
 }
 
 const STATUS_BORROW_REVERSE = {
@@ -26,6 +30,8 @@ const STATUS_BORROW_REVERSE = {
   "Đã hủy": "CANCELLED",
   "Đã từ chối": "REJECTED",
   "Quá hạn": "EXPIRED",
+  "Đã mất": "LOSTED",
+  "Bị hư hỏng": "DAMAGED",
 };
 
 // const STATUS
