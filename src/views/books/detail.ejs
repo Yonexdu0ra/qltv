@@ -13,4 +13,5 @@
     <strong>Ảnh bìa:</strong>
     <img src="<%= book.image_cover %>" alt="Ảnh bìa" class="mt-2 max-h-48">
   </div>
+  <a href="/borrow/add/?q=<%= encodeURIComponent(book.title) %>">Mượn sách</a>
 </div>

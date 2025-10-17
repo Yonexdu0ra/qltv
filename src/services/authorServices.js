@@ -116,6 +116,13 @@ class AuthorServices {
             throw error;
         }
     }
+    static async totalAuthors(options = {}) {
+        try {
+            return await authorRepository.countAuthors(options);
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 

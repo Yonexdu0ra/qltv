@@ -103,6 +103,13 @@ class GenreServices {
             throw error;
         }
     }
+    static async totalGenres(options = {}) {
+        try {
+            return await GenreRepository.countGenres(options);
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = GenreServices;

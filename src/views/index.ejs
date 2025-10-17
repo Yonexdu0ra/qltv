@@ -1,0 +1,121 @@
+<!-- Hero -->
+<section
+  class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white py-12 md:py-16 px-4 text-center"
+>
+  <div class="max-w-2xl mx-auto">
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">
+      Chào mừng đến với Thư viện Sách Online
+    </h2>
+    <p class="text-base md:text-lg mb-6">
+      Khám phá hàng ngàn đầu sách, tác giả và thể loại yêu thích của bạn.
+    </p>
+    <a
+      href="#books"
+      class="bg-white text-indigo-600 px-5 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+    >
+      Khám phá ngay
+    </a>
+  </div>
+</section>
+
+<!-- Thống kê -->
+<section class="py-10 bg-white">
+  <div
+    class="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-center px-4"
+  >
+    <div class="bg-indigo-50 rounded-2xl p-5 shadow-sm">
+      <h3 class="text-2xl font-bold text-indigo-600">5,240</h3>
+      <p class="text-gray-600 text-sm">Sách hiện có</p>
+    </div>
+    <div class="bg-indigo-50 rounded-2xl p-5 shadow-sm">
+      <h3 class="text-2xl font-bold text-indigo-600">1,120</h3>
+      <p class="text-gray-600 text-sm">Tác giả</p>
+    </div>
+    <div class="bg-indigo-50 rounded-2xl p-5 shadow-sm">
+      <h3 class="text-2xl font-bold text-indigo-600">890</h3>
+      <p class="text-gray-600 text-sm">Thể loại</p>
+    </div>
+    <div class="bg-indigo-50 rounded-2xl p-5 shadow-sm">
+      <h3 class="text-2xl font-bold text-indigo-600">3,412</h3>
+      <p class="text-gray-600 text-sm">Lượt mượn</p>
+    </div>
+  </div>
+</section>
+
+<!-- Thể loại nổi bật -->
+<section class="py-12 bg-gray-50 px-4">
+  <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-700">
+    Thể loại nổi bật
+  </h2>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+    <div
+      class="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition text-center"
+    >
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png"
+        class="mx-auto h-14 mb-3"
+        alt=""
+      />
+      <h3 class="font-semibold text-gray-700 text-sm md:text-base">Văn học</h3>
+    </div>
+    <div
+      class="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition text-center"
+    >
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/3798/3798139.png"
+        class="mx-auto h-14 mb-3"
+        alt=""
+      />
+      <h3 class="font-semibold text-gray-700 text-sm md:text-base">Khoa học</h3>
+    </div>
+    <div
+      class="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition text-center"
+    >
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/2436/2436844.png"
+        class="mx-auto h-14 mb-3"
+        alt=""
+      />
+      <h3 class="font-semibold text-gray-700 text-sm md:text-base">
+        Công nghệ
+      </h3>
+    </div>
+    <div
+      class="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition text-center"
+    >
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/4727/4727263.png"
+        class="mx-auto h-14 mb-3"
+        alt=""
+      />
+      <h3 class="font-semibold text-gray-700 text-sm md:text-base">Lịch sử</h3>
+    </div>
+  </div>
+</section>
+
+<!-- Sách nổi bật -->
+<section id="books" class="py-12 bg-white px-4">
+  <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-700 mb-8">
+    Sách nổi bật
+  </h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+
+
+    <% books.forEach(book => { %>
+      <div class="bg-gray-50 p-4 rounded-2xl shadow hover:shadow-lg transition">
+        <img
+          src="<%= book.image_cover || 'https://picsum.photos/200/280' %>"
+          alt="Book"
+          class="rounded-lg mb-4 w-full h-64 object-cover"
+        />
+        <h3 class="font-bold text-lg"><%= book.title %></h3>
+        <p class="text-sm text-gray-600 mb-2 truncate"><%= book.description  %></p>
+        <a href="/books/detail/<%= book.id %>"
+          class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700"
+        >
+          Xem
+        </a>
+      </div>
+    <% }) %>
+
+</section>

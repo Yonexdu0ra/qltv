@@ -1,8 +1,9 @@
 
 <div class="flex flex-col gap-4 relative">
   <h2 class="text-2xl font-bold text-gray-700">Quản lý mượn/trả</h2>
-  <%- include('../errorMessageWithQuery') %> <%-
-  include('../successMessageWithQuery') %>
+  <%- include('../error') %>
+  <%- include('../errorMessageWithQuery') %>
+  <%-include('../successMessageWithQuery') %>
   <a href="/borrow/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm phiếu mượn</a>
   <form id="search-form" class="flex flex-col gap-4">
     <div class="flex flex-col sm:flex-row items-center flex-wrap justify-center gap-2">
@@ -43,13 +44,9 @@
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
-            ngày mượn
+            ngày hẹn mượn
           </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            ngày lấy
-          </th>
+          
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
@@ -59,6 +56,11 @@
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
           >
             trạng thái
+          </th>
+          <th
+            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
+          >
+            sách
           </th>
           <th
             class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
@@ -80,21 +82,76 @@
           <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
             <%= ++index %>
           </td>
-          
+          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+            <%= borrow.borrow_date.toLocaleDateString() %>
+          </td>
+          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+            <%= borrow.due_date.toLocaleDateString() %>
+          </td>
+          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+            <%= constantsReverse[borrow.status] %>
+          </td>
+          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+            <div class="flex flex-col gap-1">
+              <% borrow.books.forEach((book) => { %>
+                <span><%= book.title %> </span>
+                <% }) %>
+              </div>
+            </td>
+            <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+              <%= borrow.borrower.fullname %>
+            </td>
+            
           <td
             class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700 relative"
           >
-            <div class="flex flex-col sm:flex-row flex-wrap gap-1">
-              <a
-                href="/borrow/edit/<%= borrow.id %>"
-                class="text-center p-2 bg-blue-100 text-blue-600 hover:underline block mb-1 hover:bg-blue-200 rounded px-1"
-                >Sửa</a
-              >
               
               <a
                 href="/borrow/detail/<%= borrow.id %>"
                 class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
                 >Chi tiết</a
+              >
+              <% if(borrow.status === constants.REQUESTED) {%>
+                <a
+                href="/borrow/mark-as-rejected/<%= borrow.id %>"
+                class="text-center p-2 bg-red-100 text-red-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
+                >Từ chối</a
+              >
+              <a
+                href="/borrow/mark-as-approved/<%= borrow.id %>"
+                class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
+                >Chấp nhận</a
+              >
+              <% }%>
+              <% if(borrow.status === constants.APPROVED) {%>
+                <a
+                href="/borrow/mark-as-borrowed/<%= borrow.id %>"
+                class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
+                >Đã lấy sách</a
+              >
+              <% }%>
+              
+              <% if(borrow.status === constants.BORROWED) {%>
+                <a
+                href="/borrow/mark-as-expired/<%= borrow.id %>"
+                class="text-center p-2 bg-red-100 text-red-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
+                >Quá hạn</a
+              >
+              <% }%>
+              <% if(borrow.status === constants.BORROWED || borrow.status === constants.EXPIRED) {%>
+               
+              <a
+                href="/borrow/mark-as-returned/<%= borrow.id %>"
+                class="text-center p-2 bg-blue-100 text-blue-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
+                >Đã trả</a
+              >
+              <% }%>
+              
+              
+              <a
+                href="/borrow/detail/<%= borrow.id %>"
+                class="text-center p-2 bg-yellow-100 text-yellow-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
+                >phạt</a
               >
             </div>
           </td>

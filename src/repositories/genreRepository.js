@@ -75,6 +75,10 @@ class GenreRepository {
     static async deleteGenre(query, options = {}) {
         return Genre.destroy({ where: query, ...options });
     }
+    static async countGenres(query = {}, options = {}) {
+        return Genre.count({ where: query, ...options });
+    }
+
 }
 
 module.exports = GenreRepository;

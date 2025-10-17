@@ -4,10 +4,10 @@ const path = require("path");
 const routes = require("./routes");
 const cookieParser = require("cookie-parser");
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
-
-// const { sequelize } = require("./models");
-const sequelize = require("./config/database");
-
+const { STATUS_BORROW, BORROW_STATUS_CONSTANTS } = require("./utils/constants")
+const { sequelize, Account, User, Genre, Author } = require("./models");
+// const sequelize = require("./config/database");
+const { importCategories, importAuthors, importAccountsAndUsers } = require("./seeders");
 const PORT = process.env.PORT || 3002;
 
 
@@ -31,6 +31,11 @@ app.use(authenticationMiddleware);
 app.use((req, res, next) => {
     res.locals.user = req.user || {};
     res.locals.currentPath = req.path;
+    const role = req?.user?.role
+    const layout = !role ? false : role === "Reader" ? "layouts/readerLayout" : "layout"
+    res.locals.layout = layout
+    res.locals.constants = BORROW_STATUS_CONSTANTS
+    res.locals.constantsReverse = STATUS_BORROW
     next();
 })
 routes(app);
@@ -54,8 +59,11 @@ routes(app);
         // // 🔻 Bật lại kiểm tra khóa ngoại
         // await sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
 
-        // // 🔻 Tạo lại toàn bộ bảng mới
+        // //🔻 Tạo lại toàn bộ bảng mới
         // await sequelize.sync({ force: true });
+        // importAccountsAndUsers(Account,User, sequelize);
+        // importCategories(Genre);
+        // importAuthors(Author);
 
         console.log("Kết nối đến database thành công");
     } catch (error) {

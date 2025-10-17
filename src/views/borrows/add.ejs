@@ -8,18 +8,30 @@
 <div class="max-w-lg mx-auto p-6">
   <h1 class="text-xl font-semibold mb-4">Thêm phiếu mượn</h1>
   <%- include('../error') %>
-  <form  method="POST" class="space-y-3">
+  <form method="POST" class="space-y-3">
     <div class="flex flex-col gap-2">
-        <label for="books">Chọn sách:</label>
-        <select name="books" id="books" multiple></select>
+      <label for="books">Chọn sách:</label>
+      <select name="books" id="books" multiple></select>
     </div>
     <div class="flex flex-col gap-2">
-        <label for="borrow_date">Chọn ngày mượn:</label>
-        <input type="date" name="borrow_date" id="borrow_date" required class="border rounded px-3 py-2">
+      <label for="borrow_date">Chọn ngày mượn:</label>
+      <input
+        type="date"
+        name="borrow_date"
+        id="borrow_date"
+        required
+        class="border rounded px-3 py-2"
+      />
     </div>
     <div class="flex flex-col gap-2">
-        <label for="due_date">Chọn ngày trả:</label>
-        <input type="date" name="due_date" id="due_date" required class="border rounded px-3 py-2">
+      <label for="due_date">Chọn ngày trả:</label>
+      <input
+        type="date"
+        name="due_date"
+        id="due_date"
+        required
+        class="border rounded px-3 py-2"
+      />
     </div>
     <button class="bg-green-600 text-white px-4 py-2 rounded">Lưu</button>
     <a href="/borrow" class="text-gray-600 hover:underline ml-3">Quay lại</a>
@@ -33,4 +45,18 @@
       label: book.title,
     }));
   });
+</script>
+<script>
+  const url = new URL(window.location.href);
+  const q = url.searchParams.get("q");
+  const inputSearchBook = document.querySelector(
+    ".choices__input.choices__input--cloned"
+  );
+  const choiceInner = document.querySelector(".choices__inner");
+  if (q && inputSearchBook) {
+    inputSearchBook.value = q;
+    const event = new Event("input", { bubbles: true });
+    inputSearchBook.dispatchEvent(event);
+    choiceInner.click();
+  }
 </script>

@@ -4,7 +4,7 @@ const { Book, Author, Genre, BorrowDetail } = require('../models');
 class BookRepository {
 
     static async findBooks(query, options = {}) {
-        return Book.findAll(query, ...options);
+        return Book.findAll(query, {...options});
     }
     static async findBookById(id, options = {}) {
         return Book.findByPk(id, { ...options });
@@ -88,7 +88,9 @@ class BookRepository {
         const row = await Book.destroy({ where: query, ...options });
         return row > 0;
     }
-
+    static async countBooks(query = {}, options = {}) {
+        return Book.count({ where: query, ...options });
+    }
 
 }
 

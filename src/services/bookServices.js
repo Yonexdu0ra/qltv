@@ -4,6 +4,9 @@ const { sequelize } = require("../models");
 
 
 class BookService {
+    static async getAllBooks(query = {}, options = {}) {
+        return bookRepository.findBooks(query, options);
+    }
     static async getBooks(query, options = {}) {
         return bookRepository.findBooks(query, options);
     }
@@ -20,18 +23,23 @@ class BookService {
     static async getBooksWithAuthorAndGenre(query, options = {}) {
         return bookRepository.findBooksWithAuthorAndGenre(query, options);
     }
-    static async getBooksPagination(params, options = {}) {
-        let { page = 1, limit = 5, sort = "DESC" } = params;
-        page = isNaN(parseInt(page)) ? 1 : parseInt(page);
-        limit = isNaN(parseInt(limit)) ? 5 : parseInt(limit);
-        sort = sort.toUpperCase() === "ASC" ? "ASC" : "DESC";
-        const order = [["createdAt", sort]];
-        const offset = (page - 1) * limit;
+    static async getBooksPagination(options = {}) {
         const where = {}
-        if (params.q) {
-            where.title = { [Op.like]: `%${params.q}%` }
+
+        if (options.q) {
+            where.title = {
+                [Op.like]: `%${options.q}%`
+            }
         }
-        return bookRepository.findBooksPagination({ offset, limit, order, where }, options);
+        const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
+        const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
+        const offset = (page - 1) * limit
+
+
+        const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["title", "ASC"]
+
+        const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
+        return bookRepository.findBooksPagination({ offset, limit, order, where });
     }
     static async getBooksWithAuthorsAndGenresPagination(params, options = {}) {
         let { page = 1, limit = 5, sort = "DESC" } = params;
@@ -72,7 +80,7 @@ class BookService {
         const transaction = await sequelize.transaction();
         try {
             console.log(data);
-            
+
             const book = await bookRepository.findBookByIdWithAuthorAndGenre(id);
 
             if (!book) throw new Error("Sách không tồn tại không thể cập nhật");
@@ -119,6 +127,35 @@ class BookService {
             return await bookRepository.findBooksPagination({ where, limit, offset, order }, options);
         }
         catch (error) {
+            throw error;
+        }
+    }
+    static async countBooks() {
+        try {
+            return await bookRepository.countBooks();
+        } catch (error) {
+            throw error;
+        }
+    }
+    static async decreaseBookStock(bookId, quantity = 1, options = {}) {
+        try {
+            const book = await bookRepository.findBookById(bookId);
+            if (!book) throw new Error("Sách không tồn tại");
+            if (book.quantity_available < quantity) throw new Error("Số lượng sách không đủ để mượn");
+            const isUpdated = await bookRepository.updateBook({ id: book.id }, { quantity_available: book.quantity_available - quantity }, { ...options });
+            return isUpdated
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async increaseBookStock(bookId, quantity = 1, options = {}) {
+        try {
+            const book = await bookRepository.findBookById(bookId);
+            if (!book) throw new Error("Sách không tồn tại");
+            const isUpdated = await bookRepository.updateBook({ id: book.id }, { quantity_available: book.quantity_available + quantity }, { ...options });
+            return isUpdated
+        } catch (error) {
             throw error;
         }
     }

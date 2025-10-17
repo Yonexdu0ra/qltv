@@ -1,4 +1,4 @@
-const { Borrow, BorrowDetail, Book } = require("../models");
+const { Borrow, BorrowDetail, Book, User } = require("../models");
 
 
 class BorrowRepository {
@@ -41,8 +41,28 @@ class BorrowRepository {
             include: [{
                 model: Book,
                 as: "books",
-                through: options.through || [],
+                through: options.through ||{ attributes: [ "id"] },
+                // where
+            }],
+            limit,
+            offset,
+            order,
+            distinct: true,
+            ...options
+        });
+    }
+    static async findBorrowPaginationWithBorrowerAndBooks({ where = {}, limit = 10, offset = 0, order = [['createdAt', 'DESC']] }, options = {}) {
+        return Borrow.findAndCountAll({
+            include: [{
+                model: Book,
+                as: "books",
+                through: options.through || { attributes: [ "id"] },
+            },
+            {
+                as: "borrower",
+                model: User,
                 where
+
             }],
             limit,
             offset,
@@ -62,6 +82,27 @@ class BorrowRepository {
                     model: Book,
                     as: "books",
                     through: options.through || []
+                }
+            ],
+            ...options
+        });
+    }
+    static findBorrowWithBooksAndBorrower(query, options = {}) {
+        return Borrow.findOne({
+            where: {
+                ...query
+            },
+            include: [
+                {
+                    model: Book,
+                    as: "books",
+                    through: options.through || []
+                }
+                ,
+                {
+                    as: "borrower",
+                    model: User,
+                    
                 }
             ],
             ...options

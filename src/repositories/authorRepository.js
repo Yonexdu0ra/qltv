@@ -83,6 +83,9 @@ class AuthorRepository {
         return Author.destroy({ where: query, ...options });
 
     }
+    static async countAuthors(query, options = {}) {
+        return Author.count({ where: query, ...options });
+    }
 }
 
 

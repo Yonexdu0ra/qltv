@@ -37,6 +37,13 @@ User.hasMany(Borrow, { foreignKey: "approver_id", as: "approvedBorrows" });
 Borrow.belongsToMany(Book, { foreignKey: "borrow_id", otherKey: "book_id", through: BorrowDetail, as: "books" });
 Book.belongsToMany(Borrow, { foreignKey: "book_id", otherKey: "borrow_id", through: BorrowDetail, as: "borrows" });
 
+// Và thêm quan hệ 1–N để dễ include khi truy vấn chi tiết
+Borrow.hasMany(BorrowDetail, { foreignKey: "borrow_id", as: "borrowDetails" });
+BorrowDetail.belongsTo(Borrow, { foreignKey: "borrow_id", as: "borrow" });
+
+Book.hasMany(BorrowDetail, { foreignKey: "book_id", as: "borrowDetails" });
+BorrowDetail.belongsTo(Book, { foreignKey: "book_id", as: "book" });
+
 // BorrowDetail - Fine: 1-1
 BorrowDetail.hasOne(Fine, { foreignKey: "borrow_detail_id", as: "fine" });
 Fine.belongsTo(BorrowDetail, { foreignKey: "borrow_detail_id", as: "borrowDetail" });

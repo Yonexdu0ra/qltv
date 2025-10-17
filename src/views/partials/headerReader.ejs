@@ -1,0 +1,52 @@
+<script>
+  function toggleMenu() {
+    document.getElementById("mobileMenu").classList.toggle("hidden");
+  }
+</script>
+<!-- Header -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="container mx-auto flex justify-between items-center px-4 py-3">
+    <h1 class="text-xl md:text-2xl font-bold text-indigo-600">Thư Viện</h1>
+
+    <!-- Nút mở menu trên mobile -->
+    <button class="md:hidden text-gray-700" onclick="toggleMenu()">☰</button>
+
+    <!-- Navbar (desktop) -->
+    <nav class="hidden md:flex items-center gap-6 font-medium">
+      <a href="#" class="hover:text-indigo-600">Trang chủ</a>
+      <a href="#" class="hover:text-indigo-600">Sách</a>
+      <a href="#" class="hover:text-indigo-600">Tác giả</a>
+      <a href="#" class="hover:text-indigo-600">Thể loại</a>
+      <a href="#" class="hover:text-indigo-600">Liên hệ</a>
+    </nav>
+
+    <div class="hidden md:flex items-center gap-3">
+      <input
+        type="text"
+        placeholder="Tìm sách..."
+        class="border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      />
+      <p><%= user.fullname %></p>
+    </div>
+  </div>
+
+  <!-- Menu mobile -->
+  <div
+    id="mobileMenu"
+    class="hidden md:hidden bg-white border-t border-gray-200"
+  >
+    <nav class="flex flex-col px-4 py-2 space-y-2 font-medium">
+      <a href="#" class="hover:text-indigo-600">Trang chủ</a>
+      <a href="#" class="hover:text-indigo-600">Sách</a>
+      <a href="#" class="hover:text-indigo-600">Tác giả</a>
+      <a href="#" class="hover:text-indigo-600">Thể loại</a>
+      <a href="#" class="hover:text-indigo-600">Liên hệ</a>
+      <input
+        type="text"
+        placeholder="Tìm sách..."
+        class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      />
+      <p><%= user.fullname %></p>
+    </nav>
+  </div>
+</header>

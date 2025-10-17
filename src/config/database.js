@@ -17,6 +17,13 @@ const sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_
         }
     }
 });
+// const sequelize = new Sequelize("quanlythuvien", "root","", {
+//     host: "localhost",
+//     port: "3306",
+//     dialect: process.env.DIALECT || 'mysql',
+//     logging: false,
+  
+// });
 
 
 module.exports = sequelize;

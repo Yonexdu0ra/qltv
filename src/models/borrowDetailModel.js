@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
 const BorrowDetails = sequelize.define(
-  "BorrowDetails",
+  "BorrowDetail",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -17,36 +17,25 @@ const BorrowDetails = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: {
-          args: [1],
-          msg: "Số lượng phải lớn hơn 0",
-        },
-        notNull: { msg: "Số lượng không được để trống" },
-      },
-      defaultValue: 1,
-    },
+
     // đã trả, đang mượn, làm mất, làm hỏng
     status: {
-      type: DataTypes.ENUM("BORROWED", "RETURNED"),
+      type: DataTypes.ENUM("BORROWED", "RETURNED", "LOST", "DAMAGED"),
       allowNull: false,
-        defaultValue: "BORROWED",
-        validate: {
-            isIn: {
-                args: [["BORROWED", "RETURNED"]],
-                msg: "Trạng thái không hợp lệ",
-            },
+      defaultValue: "BORROWED",
+      validate: {
+        isIn: {
+          args: [["BORROWED", "RETURNED", "LOST", "DAMAGED"]],
+          msg: "Trạng thái không hợp lệ",
         },
+      },
     },
     returned_date: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        validate: {
-            isDate: { msg: "Ngày trả không hợp lệ" },
-        },
+      type: DataTypes.DATE,
+      allowNull: true,
+      validate: {
+        isDate: { msg: "Ngày trả không hợp lệ" },
+      },
     },
     note: {
       type: DataTypes.TEXT,
@@ -54,7 +43,7 @@ const BorrowDetails = sequelize.define(
     }
   },
   {
-    tableName: "borrowDetails",
+    tableName: "borrowDetail",
     timestamps: true,
   }
 );
