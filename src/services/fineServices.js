@@ -17,6 +17,9 @@ class FineServices {
         const options = { attributes: ["id", "amount", 'status', 'borrow_detail_id'] };
         return fineRepository.findFilesPagination(where, limit, offset, order, options);
     }
+    static async getFineByIdWithBookAndBorrower(id) {
+        return fineRepository.findFineByIdWithBookAndBorrower(id);
+    }
     static async getFinesPaginationWithBorrowAndBorrower(query) {
         const where = {};
         if (query) {

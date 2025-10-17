@@ -7,7 +7,7 @@ const authenticationMiddleware = require("./middleware/authenticationMiddleware"
 const { STATUS_BORROW, BORROW_STATUS_CONSTANTS } = require("./utils/constants")
 const { sequelize, Account, User, Genre, Author } = require("./models");
 // const sequelize = require("./config/database");
-const { importCategories, importAuthors, importAccountsAndUsers } = require("./seeders");
+// const { importCategories, importAuthors, importAccountsAndUsers } = require("./seeders");
 const PORT = process.env.PORT || 3002;
 
 

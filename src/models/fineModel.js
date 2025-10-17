@@ -19,17 +19,10 @@ const Fine = sequelize.define("Fines", {
             min: { args: [0], msg: "Số tiền phạt phải lớn hơn hoặc bằng 0" }
         }
     },
-    status: {
-        type: DataTypes.ENUM("UNPAID", "PAID", "LOST", "DAMAGED"),
+    is_paid: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        validate: {
-            isIn: {
-                args: [["UNPAID", "PAID", "LOST", "DAMAGED"]],
-                msg: "Trạng thái không hợp lệ"
-            },
-            notNull: { msg: "Trạng thái không được để trống" }
-        },
-        defaultValue: "UNPAID",
+        defaultValue: false,
     },
     borrow_detail_id: {
         type: DataTypes.INTEGER,

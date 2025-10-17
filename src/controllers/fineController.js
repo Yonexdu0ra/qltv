@@ -1,5 +1,5 @@
 const fileServices = require('../services/fineServices');
-
+const encodeBase64 = require('../utils/base64');
 class FineController {
     static async renderViewFines(req, res, next) {
         try {
@@ -11,12 +11,12 @@ class FineController {
 
             const totalPages = Math.ceil(count / limit);
             const page = parseInt(req.query.page) || 1;
-            return res.json({ title: "Quản lý phạt", fines, totals: totalPages, page, query: req.query });
-            // return res.render('fines/index', { title: "Quản lý phạt", fines, totals: totalPages, page, query: req.query });
+            // return res.json({ title: "Quản lý phạt", fines, totals: totalPages, page, query: req.query });
+            return res.render('fines/index', { title: "Quản lý phạt", fines, totals: totalPages, page, query: req.query });
             
         } catch (error) {
             console.log(error.message);
-            return res.json({ title: "Quản lý phạt", fines: [], totals: 0, page: 1, query: req.query, error: error.message });
+            // return res.json({ title: "Quản lý phạt", fines: [], totals: 0, page: 1, query: req.query, error: error.message });
             
             return res.render('fines/index', { title: "Quản lý phạt", fines: [], totals: 0, page: 1, query: req.query, error: error.message });
             
@@ -32,7 +32,16 @@ class FineController {
         }
     }
 
-    static async renderViewFineDetail(req, res, next) {}
+    static async renderViewFineDetail(req, res, next) {
+        const { id } = req.params;
+        try {
+            const fine = await fileServices.getFineByIdWithBookAndBorrower(id);
+            if(!fine) throw new Error('Phí không tồn tại');
+            return res.render('fines/detail', { title: "Chi tiết phí", fine });
+        } catch (error) {
+            return res.redirect('/fines?error=' + encodeBase64(error.message));
+        }
+    }
 
     static async renderViewCreateFine(req, res, next) {
         try {
