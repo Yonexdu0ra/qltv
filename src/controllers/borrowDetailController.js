@@ -25,9 +25,11 @@ class BorrowDetailController {
         message: "Lấy danh sách chi tiết phiếu mượn thành công",
       });
     } catch (error) {
+        console.log(error);
+        
       return res.status(200).json({
         success: true,
-        data: borrowDetais,
+        data: [],
         page: 0,
         totals: 0,
         message: error.message,

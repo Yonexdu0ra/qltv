@@ -49,6 +49,8 @@ class BorrowDetailRepository {
     { where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] },
     options = {}
   ) {
+    console.log(options);
+    
     return BorrowDetail.findAndCountAll({
       where,
       offset,

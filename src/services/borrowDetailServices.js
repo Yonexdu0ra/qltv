@@ -38,22 +38,26 @@ class BorrowDetailServices {
 
       const [sortBy, sortOrder] = options.sort
         ? options.sort.split("-")
-        : ["title", "ASC"];
+        : ["createdAt", "ASC"];
 
       const order = [
         [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
       ];
       const borrowDetails =
-        await borrowDetailRepository.findBorrowDetailsPaginatedWithBook({
-            bookWhere: where,
+        await borrowDetailRepository.findBorrowDetailsPaginatedWithBook(
+          {
             where: {},
             offset,
             limit,
-            order
-        });
+            order,
+          },
+          {
+            bookWhere: where,
+          }
+        );
       return borrowDetails;
     } catch (error) {
-      throw new Error("Error searching borrow details");
+      throw error
     }
   }
 }
