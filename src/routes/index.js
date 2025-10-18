@@ -13,6 +13,7 @@ function routes(app) {
     app.use('/users', require('./userRoutes'));
     app.use('/', require('./homeRoutes'));
     app.use('/fines', require('./fineRoutes'));
+    app.use('/borrow-details', require('./borrowDetailRoutes'));
 }
 
 module.exports = routes;
