@@ -1,7 +1,7 @@
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 const bookRepository = require("../repositories/bookRepository");
 const { sequelize } = require("../models");
-
+const genareteSlug = require("../utils/genareteSlug");
 class BookService {
   static async getAllBooks(query = {}, options = {}) {
     return bookRepository.findBooks(query, options);
@@ -69,11 +69,12 @@ class BookService {
   static async createBook(data) {
     const transaction = await sequelize.transaction();
     try {
+      const slug = genareteSlug(data.title) + "-" + Math.floor(Math.random() * 10000);
       if (!data.authors || data.authors.length === 0)
         throw new Error("Vui lòng chọn tác giả cho sách");
       if (!data.genres || data.genres.length === 0)
         throw new Error("Vui lòng chọn thể loại cho sách");
-      const book = await bookRepository.createBook(data, {
+      const book = await bookRepository.createBook({...data, slug}, {
         fields: [
           "title",
           "isbn",
@@ -82,6 +83,7 @@ class BookService {
           "quantity_available",
           "description",
           "image_cover",
+          "slug"
         ],
         transaction,
       });

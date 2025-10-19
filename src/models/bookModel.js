@@ -68,7 +68,11 @@ const Book = sequelize.define("Books", {
             isUrl: { msg: "Ảnh bìa phải là một URL hợp lệ" }
         }
     },
-
+    slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+    },
     // genre_id: {
     //     type: DataTypes.INTEGER,
     //     allowNull: false,

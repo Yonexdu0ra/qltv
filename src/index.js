@@ -5,9 +5,10 @@ const routes = require("./routes");
 const cookieParser = require("cookie-parser");
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
 const { STATUS_BORROW, BORROW_STATUS_CONSTANTS } = require("./utils/constants")
-const { sequelize, Account, User, Genre, Author } = require("./models");
+const { sequelize, Account, User, Genre, Author, Book } = require("./models");
+// const { importBooks, importAccountsAndUsers } = require("./seeders");
 // const sequelize = require("./config/database");
-// const { importCategories, importAuthors, importAccountsAndUsers } = require("./seeders");
+const { importCategories, importAuthors, importAccountsAndUsers, importBooks } = require("./seeders");
 const PORT = process.env.PORT || 3002;
 
 
@@ -64,6 +65,7 @@ routes(app);
         // importAccountsAndUsers(Account,User, sequelize);
         // importCategories(Genre);
         // importAuthors(Author);
+        // importBooks(Book, Author, Genre);
 
         console.log("Kết nối đến database thành công");
     } catch (error) {
