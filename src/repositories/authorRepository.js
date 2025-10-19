@@ -49,6 +49,50 @@ class AuthorRepository {
             ...options
         });
     }
+    static async findAuthorsPaginationWithBooks({ where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] }, options) {
+        return Author.findAndCountAll({
+            where,
+
+            include: {
+                model: Book,
+                as: "books",
+                where: options.bookWhere || {},
+                attributes: options.bookAttributes,
+                offset,
+                limit,
+                order,
+            },
+            ...options
+        });
+    }
+    static async findAuthorByIdWithBooksPagination(id, { where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] }, options) {
+        const author = await Author.findOne({
+            where: { id },
+        })
+        if (!author) return null;
+        const totalBooks = await author.countBooks({
+            where: options.bookWhere || {},
+        });
+        const books = await author.getBooks({
+            where: options.bookWhere || {},
+            offset,
+            limit,
+            order,
+            // attributes: ['id', 'title'],
+            joinTableAttributes: []
+        })
+
+        // console.log(books);
+
+
+        return {
+            count: totalBooks,
+            rows: {
+                ...author.toJSON(),
+                books,
+            }
+        }
+    }
     static async findAuthorsWithBooks(query, options = {}) {
         return Author.findAll({
             where: query,
