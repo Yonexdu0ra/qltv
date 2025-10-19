@@ -57,7 +57,53 @@ class BorrowDetailServices {
         );
       return borrowDetails;
     } catch (error) {
-      throw error
+      throw error;
+    }
+  }
+  static async getAllBorrowDetailById(ids, options = {}) {
+    return borrowDetailRepository.findBorrowDetails(
+      {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+      options
+    );
+  }
+  static async updateBorrowDetailStatusByIds(ids, data, options = {}) {
+    return borrowDetailRepository.updateBorrowDetail(
+      {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+      data,
+      {
+        fields: ["status"],
+        ...options,
+      }
+    );
+  }
+  static async getBorrowDetailById(id, options = {}) {
+    try {
+      return await borrowDetailRepository.findBorrowDetail({ id }, options);
+    } catch (error) {
+      throw error;
+    }
+  }
+  static async markAsReturnedById(id, options = {}) {
+    try {
+      const [updatedRow] = await borrowDetailRepository.updateBorrowDetail(
+        { id },
+        { status: "RETURNED" },
+        {
+          fields: ["status"],
+          ...options,
+        }
+      );
+      return updatedRow > 0;
+    } catch (error) {
+      throw error;
     }
   }
 }

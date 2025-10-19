@@ -4,10 +4,10 @@ class FineRepository {
   static async findFines(query = {}, options = {}) {
     return Fine.findAll({ where: query, ...options });
   }
-  static async findFine(id, options = {}) {
-    return Fine.findOne({ where: { id }, ...options });
+  static async findFine(query, options = {}) {
+    return Fine.findOne({ where: { ...query }, ...options });
   }
-  static async findFilesPagination(
+  static async findFinesPagination(
     { offset = 0, limit = 10, order = [["createdAt", "DESC"]], where = {} },
     options = {}
   ) {
@@ -20,7 +20,7 @@ class FineRepository {
       ...options,
     });
   }
-  static async findFilesPaginationWithBorrowDetailAndBorrower(
+  static async findFinesPaginationWithBorrowDetailAndBorrower(
     { offset = 0, limit = 10, order = [["createdAt", "DESC"]], where = {} },
     options = {}
   ) {
@@ -83,11 +83,17 @@ class FineRepository {
       ],
     });
   }
-  static async countFiles(query = {}, options = {}) {
+  static async countFines(query = {}, options = {}) {
     return Fine.count({ where: query, ...options });
   }
   static async createFine(data, options = {}) {
     return Fine.create(data, { ...options });
+  }
+  static async createFines(data, options = {}) {
+    return Fine.bulkCreate(data, {
+      ...options,
+      fields: ["amount", "status", "borrow_detail_id"],
+    });
   }
   static async updateFine(query, data, options = {}) {
     return Fine.update(data, { where: { ...query } }, { ...options });

@@ -130,6 +130,18 @@ class BorrowRepository {
             ...options
         });
     }
+    static async findBorrowByIdWithBorrowDetail(id, options = {}) {
+        return Borrow.findByPk(id, {
+          include: [
+            {
+              model: BorrowDetail,
+              as: "borrowDetails",
+              ...options,
+            },
+          ],
+          ...options,
+        });
+    }
     static async updateBorrow(query, data, options = {}) {
         return Borrow.update(data, {
             where: { ...query },

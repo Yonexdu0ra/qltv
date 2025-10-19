@@ -45,6 +45,9 @@ class BorrowDetailRepository {
       ...options,
     });
   }
+  static async updateBorrowDetail(query, data, options = {}) {
+    return BorrowDetail.update(data, { where: { ...query } }, { ...options });
+  }
   static async findBorrowDetailsPaginatedWithBook(
     { where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] },
     options = {}
@@ -66,6 +69,21 @@ class BorrowDetailRepository {
         },
       ],
       distinct: true,
+      ...options,
+    });
+  }
+  static async findBorrowDetail(query, options = {}) {
+    return BorrowDetail.findOne({
+      where: { ...query },
+      ...options,
+    });
+  }
+  static countBorrowDetails(where = {}, options = {}) {
+    return BorrowDetail.count({ where, ...options });
+  }
+  static async findBorrowDetails (where = {}, options = {}) {
+    return BorrowDetail.findAll({
+      where,
       ...options,
     });
   }
