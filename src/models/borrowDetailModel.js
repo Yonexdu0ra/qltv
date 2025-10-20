@@ -18,7 +18,7 @@ const BorrowDetails = sequelize.define(
       allowNull: false,
     },
 
-    // đã trả, đang mượn, làm mất, làm hỏng
+    //  đang mượn, đã trả, làm mất, làm hỏng
     status: {
       type: DataTypes.ENUM("BORROWED", "RETURNED", "LOST", "DAMAGED"),
       allowNull: false,
@@ -35,6 +35,10 @@ const BorrowDetails = sequelize.define(
       allowNull: true,
       validate: {
         isDate: { msg: "Ngày trả không hợp lệ" },
+        isAfter: {
+          args: new Date().toISOString(),
+          msg: "Ngày trả phải sau ngày mượn",
+        },
       },
     },
     note: {
@@ -43,8 +47,10 @@ const BorrowDetails = sequelize.define(
     }
   },
   {
-    tableName: "borrowDetail",
+    tableName: "BorrowDetails",
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 

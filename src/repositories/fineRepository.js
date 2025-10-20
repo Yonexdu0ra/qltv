@@ -1,103 +1,118 @@
 const { Fine, Borrow, BorrowDetail, User, Book } = require("../models");
 
 class FineRepository {
-  static async findFines(query = {}, options = {}) {
-    return Fine.findAll({ where: query, ...options });
+  static findAll(query, options = {}) {
+    return Fine.findAll({
+      where: query,
+      ...options
+    })
   }
-  static async findFine(query, options = {}) {
-    return Fine.findOne({ where: { ...query }, ...options });
-  }
-  static async findFinesPagination(
-    { offset = 0, limit = 10, order = [["createdAt", "DESC"]], where = {} },
-    options = {}
-  ) {
-    return Fine.findAndCountAll({
-      where,
-      offset,
-      limit,
-      order,
-      distinct: true,
-      ...options,
-    });
-  }
-  static async findFinesPaginationWithBorrowDetailAndBorrower(
-    { offset = 0, limit = 10, order = [["createdAt", "DESC"]], where = {} },
-    options = {}
-  ) {
-    return Fine.findAndCountAll({
-      where,
-      offset,
-      limit,
-      order,
-      distinct: true,
-      include: [
-        {
-          model: BorrowDetail,
-          as: "borrowDetail",
-          ...options.borrowDetailOptions,
-          include: [
-            {
-              model: Book,
-              as: "book",
-            },
-            {
-              model: Borrow,
-              as: "borrow",
-              include: [
-                {
-                  model: User,
-                  as: "borrower",
-                },
-              ],
-            },
-          ],
-        },
-      ],
-      ...options,
-    });
-  }
-  static async findFineByIdWithBookAndBorrower(id) {
+  static findOne(query, options = {}) {
     return Fine.findOne({
-      where: { id },
+      where: query,
+      ...options
+    })
+  }
+  static findOneWithBorrowDetailAndBorrowerAndBook(query, options = {}) {
+    return Fine.findOne({
+      where: query,
+      ...options,
       include: [
         {
           model: BorrowDetail,
-          as: "borrowDetail",
+          as: 'borrowDetail',
+          attributes: options.borrowDetailAttributes || [],
+          where: options.borrowDetailWhere || {},
           include: [
             {
-              model: Book,
-              as: "book",
-            },
-            {
               model: Borrow,
-              as: "borrow",
+              as: 'borrow',
+              attributes: options.borrowAttributes || [],
+              where: options.borrowWhere || {},
               include: [
                 {
                   model: User,
-                  as: "borrower",
-                },
-              ],
+                  as: 'borrower',
+                  attributes: options.borrowerAttributes || [],
+                  where: options.borrowerWhere || {}
+                }
+              ]
             },
-          ],
-        },
-      ],
-    });
+            {
+              model: Book,
+              as: 'book',
+              attributes: options.bookAttributes || [],
+              where: options.bookWhere || {}
+            }
+          ]
+        }
+      ]
+    })
   }
-  static async countFines(query = {}, options = {}) {
-    return Fine.count({ where: query, ...options });
+  static findAllAndCount(query, options = {}) {
+    return Fine.findAndCountAll({
+      where: query,
+      ...options
+    })
   }
-  static async createFine(data, options = {}) {
-    return Fine.create(data, { ...options });
-  }
-  static async createFines(data, options = {}) {
-    return Fine.bulkCreate(data, {
+
+
+  static findAllWithBorrowDetailAndBorrowerAndBookPagination(query, options = {}) {
+    return Fine.findAndCountAll({
+      where: query,
       ...options,
-      fields: ["amount", "status", "borrow_detail_id"],
+      include: [
+        {
+          model: BorrowDetail,
+          as: 'borrowDetail',
+          attributes: options.borrowDetailAttributes || [],
+          where: options.borrowDetailWhere || {},
+          include: [
+            {
+              model: Borrow,
+              as: 'borrow',
+              attributes: options.borrowAttributes || [],
+              where: options.borrowWhere || {},
+              include: [
+                {
+                  model: User,
+                  as: 'borrower',
+                  attributes: options.borrowerAttributes || [],
+                  where: options.borrowerWhere || {}
+                }
+              ]
+            },
+            {
+              model: Book,
+              as: 'book',
+              attributes: options.bookAttributes || [],
+              where: options.bookWhere || {}
+            }
+          ]
+        }
+      ]
+    })
+  }
+  static findByPk(id, options = {}) {
+    return Fine.findByPk(id, options);
+  }
+  static count(query, options = {}) {
+    return Fine.count({
+      where: query,
+      ...options
     });
   }
-  static async updateFine(query, data, options = {}) {
-    return Fine.update(data, { where: { ...query } }, { ...options });
+  static create(data, options = {}) {
+    return Fine.create(data, options);
   }
+  static update(data, query, options = {}) {
+    return Fine.update(data, { where: query, ...options });
+  }
+  static delete(query, options = {}) {
+    return Fine.destroy({ where: query, ...options });
+  }
+
+
 }
 
 module.exports = FineRepository;

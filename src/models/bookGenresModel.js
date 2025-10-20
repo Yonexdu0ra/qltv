@@ -23,8 +23,10 @@ const BookGenres = sequelize.define("BookGenres", {
         allowNull: false,
     }
 }, {
-    tableName: "bookGenres",
-    timestamps: true
+    tableName: "BookGenres",
+    timestamps: true,
+    createdAt: "created_at",    
+    updatedAt: "updated_at",
 })
 
 

@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const authorRepository = require("../repositories/authorRepository");
-
+const generateSlug = require("../utils/generateSlug");
 class AuthorServices {
     static async findAuthorsByName(name) {
         try {
@@ -70,8 +70,11 @@ class AuthorServices {
     }
     static async createAuthor(authorData) {
         try {
-            return await authorRepository.createAuthor(authorData, {
-                fields: ["name"]
+            const slug = generateSlug(authorData.name);
+            return await authorRepository.createAuthor({
+                ...authorData, slug
+            }, {
+                fields: ["name", 'slug']
             });
         } catch (error) {
             throw error;

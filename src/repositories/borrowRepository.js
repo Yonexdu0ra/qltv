@@ -1,158 +1,129 @@
-const { Borrow, BorrowDetail, Book, User } = require("../models");
+const { Borrow, Book, User } = require("../models");
 
 
 class BorrowRepository {
 
-    static async createBorrow(data, options = {}) {
-        return Borrow.create(data, {
-            ...options
-        });
-    }
-    static async findBorrows(query = {}, options = {}) {
+    static findAll(query, options = {}) {
         return Borrow.findAll({
-            where: {
-                ...query
-            },
+            where: query,
             ...options
-        });
+        })
     }
-    static async findBorrow(query = {}, options = {}) {
+    static findOne(query, options = {}) {
         return Borrow.findOne({
-            where: {
-                ...query
-            },
+            where: query,
             ...options
-        });
+        })
+    }
+    static findAllAndCount(query, options = {}) {
+        return Borrow.findAndCountAll({
+            where: query,
+            ...options
+        })
     }
 
-    static async findBorrowPagination({ where = {}, limit = 10, offset = 0, order = [['createdAt', 'DESC']] }, options = {}) {
-        return Borrow.findAndCountAll({
-            where: {
-                ...where
-            },
-            limit,
-            offset,
-            order,
-            ...options
-        });
-    }
-    static async findBorrowPaginationWithBooks({ where = {}, limit = 10, offset = 0, order = [['createdAt', 'DESC']] }, options = {}) {
-        return Borrow.findAndCountAll({
-            include: [{
-                model: Book,
-                as: "books",
-                through: options.through ||{ attributes: [ "id"] },
-                // where
-            }],
-            limit,
-            offset,
-            order,
-            distinct: true,
-            ...options
-        });
-    }
-    static async findBorrowPaginationWithBorrowerAndBooks({ where = {}, limit = 10, offset = 0, order = [['createdAt', 'DESC']] }, options = {}) {
-        return Borrow.findAndCountAll({
-            include: [{
-                model: Book,
-                as: "books",
-                through: options.through || { attributes: [ "id"] },
-            },
-            {
-                as: "borrower",
-                model: User,
-                where
-
-            }],
-            limit,
-            offset,
-            order,
-            distinct: true,
-            ...options
-        });
-    }
-
-    static findBorrowWithBooks(query, options = {}) {
+    static findOneWithBorrowerAndApproverAndBook(query, options = {}) {
         return Borrow.findOne({
-            where: {
-                ...query
-            },
+            where: query,
+            ...options,
             include: [
                 {
-                    model: Book,
-                    as: "books",
-                    through: options.through || []
-                }
-            ],
-            ...options
-        });
-    }
-    static findBorrowWithBooksAndBorrower(query, options = {}) {
-        return Borrow.findOne({
-            where: {
-                ...query
-            },
-            include: [
-                {
-                    model: Book,
-                    as: "books",
-                    through: options.through || []
-                }
-                ,
-                {
-                    as: "borrower",
                     model: User,
-                    
+                    as: 'borrower',
+                    attributes: options.borrowerAttributes || [],
+                    where: options.borrowerWhere || {}
+                },
+                {
+                    model: User,
+                    as: 'approver',
+                    attributes: options.approverAttributes || [],
+                    where: options.approverWhere || {}
+                },
+                {
+                    model: Book,
+                    as: 'book',
+                    attributes: options.bookAttributes || [],
+                    where: options.bookWhere || {}
                 }
-            ],
-            ...options
-        });
+            ]
+        })
     }
-    static async findBorrowsWithBooks(query = {}, options = {}) {
-        return Borrow.findAll({
-            where: {
-                ...query
-            },
+    static findOneWithBorrowerAndApprover(query, options = {}) {
+        return Borrow.findOne({
+            where: query,
+            ...options,
+            include: [
+                {
+                    model: User,
+                    as: 'borrower',
+                    attributes: options.borrowerAttributes || [],
+                    where: options.borrowerWhere || {}
+                },
+                {
+                    model: User,
+                    as: 'approver',
+                    attributes: options.approverAttributes || [],
+                    where: options.approverWhere || {}
+                }
+            ]
+        })
+    }
+    static findOneWithBook(query, options = {}) {
+        return Borrow.findOne({
+            where: query,
+            ...options,
             include: [
                 {
                     model: Book,
-                    as: "books",
-                    through: options.through || []
+                    as: 'book',
+                    attributes: options.bookAttributes || [],
+                    where: options.bookWhere || {}
                 }
-            ],
-            distinct: true,
-            ...options
-        });
+            ]
+        })
     }
 
-    static async findBorrowById(id, options = {}) {
-        return Borrow.findByPk(id, {
-            ...options
-        });
+    static findAllWithBorrowerAndApproverAndBookPagination(query, options = {}) {
+        return Borrow.findAndCountAll({
+            where: query,
+            ...options,
+            include: [
+                {
+                    model: User,
+                    as: 'borrower',
+                    attributes: options.borrowerAttributes || [],
+                    where: options.borrowerWhere || {}
+                },
+                {
+                    model: User,
+                    as: 'approver',
+                    attributes: options.approverAttributes || [],
+                    where: options.approverWhere || {}
+                },
+                {
+                    model: Book,
+                    as: 'book',
+                    attributes: options.bookAttributes || [],
+                    where: options.bookWhere || {}
+                }
+            ]
+        })
     }
-    static async findBorrowByIdWithBorrowDetail(id, options = {}) {
-        return Borrow.findByPk(id, {
-          include: [
-            {
-              model: BorrowDetail,
-              as: "borrowDetails",
-              ...options,
-            },
-          ],
-          ...options,
-        });
+    static findByPk(id, options = {}) {
+        return Borrow.findByPk(id, options)
     }
-    static async updateBorrow(query, data, options = {}) {
-        return Borrow.update(data, {
-            where: { ...query },
-            ...options
-        });
+
+    static create(data, options = {}) {
+        return Borrow.create(data, options)
     }
-    static async deleteBorrow(query, options = {}) {
-        return Borrow.destroy({
-            where: { ...query },
-            ...options
-        });
+    static update(data, query, options = {}) {
+        return Borrow.update(data, { where: query, ...options })
+    }
+    static delete(query, options = {}) {
+        return Borrow.destroy({ where: query, ...options })
+    }
+    static count(query, options = {}) {
+        return Borrow.count({ where: query, ...options })
     }
 }
 

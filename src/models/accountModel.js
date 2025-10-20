@@ -3,8 +3,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-
-
 const Account = sequelize.define("Accounts", {
     id: {
         type: DataTypes.INTEGER,
@@ -38,8 +36,10 @@ const Account = sequelize.define("Accounts", {
         allowNull: true,
     }
 }, {
-    tableName: "accounts",
-    timestamps: true
+    tableName: "Accounts",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
 })
 
 

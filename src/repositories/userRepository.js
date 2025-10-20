@@ -1,42 +1,66 @@
 
-const { User } = require("../models");
+const { User, Account } = require("../models");
 
 class UserRepository {
-    static async findUser(query, options = {}) {
-        try {
-            return await User.findOne({ where: query, ...options });
-        }
-        catch (error) {
-            throw error;
-        }
+    static findAll(query, options = {}) {
+        return User.findAll({
+            where: query,
+            ...options
+        })
     }
-    static async findUsers(query, options = {}) {
-        try {
-            return await User.findAll({ where: query, ...options });
-        }
-        catch (error) {
-            throw error;
-        }
+    static findOne(query, options = {}) {
+        return User.findOne({
+            where: query,
+            ...options
+        })
     }
-    static async findUsersPagination({ where, limit, offset, order }, options = {}) {
-        return await User.findAndCountAll({ where, limit, offset, order, ...options });
+    static fineOneWithAccount(query, options = {}) {
+        return User.findOne({
+            where: query,
+            ...options,
+            include: [
+                {
+                    model: Account,
+                    as: 'account',
+                    attributes: options.accountAttributes || [],
+                    where: options.accountWhere || {}
+                }
+            ]
+        })
     }
-    static async updateUser(query, data, options = {}) {
-        try {
-            return await User.update(data, { where: query, ...options });
-        }
-        catch (error) {
-            throw error;
-        }
+    static findAllAndCount(query, options = {}) {
+        return User.findAndCountAll({
+            where: query,
+            ...options
+        })
     }
-    static async createUser(data, options = {}) {
-        try {
-            return await User.create(data, options);
-        }
-        catch (error) {
-            throw error;
-        }
+    static findAllWithAccountPagination(query, options = {}) {
+        return User.findAndCountAll({
+            where: query,
+            ...options,
+            include: [
+                {
+                    model: Account,
+                    as: 'account',
+                    attributes: options.accountAttributes || [],
+                    where: options.accountWhere || {}
+                }
+            ]
+        })
     }
+    static findByPk(id, options = {}) {
+        return User.findByPk(id, options);
+    }
+    static create(data, options = {}) {
+        return User.create(data, options);
+    }
+    static count(query, options = {}) {
+        return User.count({
+            where: query,
+            ...options
+        });
+    }
+
 }
 
 module.exports = UserRepository;

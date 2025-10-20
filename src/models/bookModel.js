@@ -71,23 +71,19 @@ const Book = sequelize.define("Books", {
     slug: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: {
+            msg: "Slug đã tồn tại vui lòng chọn một slug khác"
+        },
+        validate: {
+            notEmpty: { msg: "Slug không được để trống" },
+            len: { args: [1, 200], msg: "Slug phải từ 1 đến 200 ký tự" }
+        }
     },
-    // genre_id: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false,
-    // },
-    // author_id: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false,
-    // },
-    is_deleted: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-    }
 }, {
-    tableName: "books",
-    timestamps: true
+    tableName: "Books",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
 })
 
 

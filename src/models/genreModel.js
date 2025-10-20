@@ -1,9 +1,5 @@
-
-
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-
-
 
 const Genre = sequelize.define("Genres", {
     id: {
@@ -18,10 +14,26 @@ const Genre = sequelize.define("Genres", {
             notEmpty: { msg: "Tên danh mục không được để trống" },
             len: { args: [3, 100], msg: "Tên danh mục phải từ 3 đến 100 ký tự" }
         }
+    },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: {
+            msg: "Slug đã tồn tại, vui lòng chọn slug khác"
+        },
+        validate: {
+            notEmpty: { msg: "Slug không được để trống" }
+        },
     }
 }, {
-    tableName: "genre",
-    timestamps: true
+    tableName: "Genres",
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 })
 
 

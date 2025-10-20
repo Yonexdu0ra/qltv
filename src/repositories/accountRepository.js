@@ -1,78 +1,69 @@
 const { Account, User } = require("../models");
 class AccountRepository {
-    static async findAccounts(query, options = {}) {
-        return await Account.findAll({
-            where: query,
-            ...options
-        });
-    }
-
-    static async findAccount(query, options = {}) {
-        return await Account.findOne({
-            where: query,
-            ...options
-        });
-    }
-
-    static findAccountsWithUser(query, options = {}) {
+    static findAll(query = {}, options = {}) {
         return Account.findAll({
             where: query,
-            include: {
-                model: User,
-                as: "user",
-                ...options?.user
-            },
             ...options
         });
     }
-    static findAccountWithUser(query, options = {}) {
+    static findOne(query = {}, options = {}) {
         return Account.findOne({
             where: query,
-            include: {
-                model: User,
-                as: "user"
-            },
             ...options
         });
     }
-
-    static findAccountsPagination({ where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] }, options = {}) {
+    static findByPk(id, options = {}) {
+        return Account.findByPk(id, options);
+    }
+    static findAllAndCount(query = {}, options = {}) {
         return Account.findAndCountAll({
-            where,
-            offset,
-            limit,
-            order,
+            where: query,
             ...options
         });
     }
-    static findAccountsPaginationWithUser({ where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] }, options = {}) {
+    static findWithPagination(query = {}, options = {}) {
         return Account.findAndCountAll({
-            where,
-            offset,
-            limit,
-            order,
-            include: {
-                model: User,
-                as: "user",
-                ...options?.user
-            },
+            where: query.where || {},
+            limit: query.limit || 10,
+            offset: query.offset || 0,
+            order: query.order || [],
             ...options
         });
     }
-
-    static async createAccount(data, options = {}) {
-        return await Account.create(data, options);
+    static findWithUserPagination(query = {}, options = {}) {
+        return Account.findAndCountAll({
+            where: query.where || {},
+            limit: query.limit || 10,
+            offset: query.offset || 0,
+            order: query.order || [],
+            ...options,
+            include: [{
+                model: User,
+                as: 'user',
+                where: options.userWhere || {},
+                attributes: options.userAttributes || [],
+                through: { attributes: options.throughAttributes || [] }
+            }]
+        });
     }
-    static async updateAccount(query, data, options = {}) {
-
-        return await Account.update({
-            ...data
-        }, { where: query, ...options });
+    static create(data, options = {}) {
+        return Account.create(data, options);
     }
-    static async deleteAccount(query, options = {}) {
-        return await Account.destroy({ where: query, ...options });
+    static update(data, query = {}, options = {}) {
+        return Account.update(data, {
+            where: query,
+            ...options
+        });
     }
-
+    static delete(query = {}, options = {}) {
+        return Account.destroy({
+            where: query,
+            ...options
+        });
+    }
+    static count (options = {}) {
+        return Account.count(options);
+    }
 }
 
 module.exports = AccountRepository;

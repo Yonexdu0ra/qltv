@@ -32,8 +32,10 @@ const Fine = sequelize.define(
     },
   },
   {
-    tableName: "fines",
+    tableName: "Fines",
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 

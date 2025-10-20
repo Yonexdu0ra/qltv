@@ -1,129 +1,97 @@
-const { Book, Author, Genre, BorrowDetail } = require("../models");
+const { Book, Author, Genre } = require("../models");
 
 class BookRepository {
-  static async findBooks(query, options = {}) {
-    return Book.findAll(query, { ...options });
-  }
-  static async findBookById(id, options = {}) {
-    return Book.findByPk(id, { ...options });
-  }
-  static findBookByIdWithAuthorAndGenre(id, options = {}) {
-    return Book.findOne({
-      where: { id },
-      include: [
-        { model: Author, as: "authors" },
-        { model: Genre, as: "genres" },
-      ],
-      ...options,
-    });
-  }
-  static findBookWithBorrowDetail(query, options = {}) {
-    return Book.findOne({
-      where: query,
-      include: {
-        model: BorrowDetail,
-        as: "borrowDetails",
-      },
-      ...options,
-    });
-  }
-  static findBooksWithBorrowDetail(query, options = {}) {
+  static findAll(query = {}, options = {}) {
     return Book.findAll({
       where: query,
-      include: {
-        model: BorrowDetail,
-        as: "borrowDetails",
-      },
-      ...options,
+      ...options
     });
   }
-  static findBooksWithAuthorAndGenre(query, options = {}) {
-    return Book.findAll({
+  static findOne(query = {}, options = {}) {
+    return Book.findOne({
       where: query,
-      include: [
-        { model: Author, as: "authors" },
-        { model: Genre, as: "genres" },
-      ],
-      ...options,
+      ...options
     });
   }
-  static findBooksPagination(
-    { where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] },
-    options = {}
-  ) {
-    return Book.findAndCountAll({
-      where,
-      offset,
-      limit,
-      order,
-      ...options,
-    });
-  }
-  static findBooksWithAuthorsAndGenresPagination(
-    { where, offset = 0, limit = 5, order = [["createdAt", "DESC"]] },
-    options = {}
-  ) {
-    return Book.findAndCountAll({
-      where,
-      offset,
-      limit,
-      order,
+  static findOneWithAuthorAndGenre(query = {}, options = {}) {
+    return Book.findOne({
+      where: query,
       include: [
         {
           model: Author,
-          as: "authors",
-          through: { attributes: [] },
-          attributes: ["id", "name"],
+          as: 'author',
+          where: options.authorWhere || {},
+          attributes: options.authorAttributes || [],
         },
         {
           model: Genre,
-          as: "genres",
-          through: { attributes: [] },
-          attributes: ["id", "name"],
-        },
+          as: 'genre',
+          where: options.genreWhere || {},
+          attributes: options.genreAttributes || [],
+        }
       ],
-      // attributes: { exclude: ['createdAt', 'updatedAt'] },
-      distinct: true,
-      ...options,
+      ...options
     });
   }
-  static async createBook(data, options = {}) {
-    return Book.create(
-      {
-        ...data,
-      },
-      { ...options }
-    );
+  static findByPk(id, options = {}) {
+    return Book.findByPk(id, options);
   }
-  static async updateBook(query, data, options = {}) {
-    const [rowUpdated] = await Book.update(
-      { ...data },
-      { where: query, ...options }
-    );
-    return rowUpdated > 0;
-  }
-  static async deleteBook(query, options = {}) {
-    const row = await Book.destroy({ where: query, ...options });
-    return row > 0;
-  }
-  static async countBooks(query = {}, options = {}) {
-    return Book.count({ where: query, ...options });
-  }
-  static async decrementBookStock(field, quantity = 1, query, options = {}) {
-    Book.decrement(field, {
-      by: quantity,
-      where: { ...query },
-      ...options,
+  static findAllAndCount(query = {}, options = {}) {
+    return Book.findAndCountAll({
+      where: query,
+      ...options
     });
-    return true;
   }
-  static async incrementBookStock(field, quantity = 1, query, options = {}) {
-    Book.increment(field, {
-      by: quantity,
-      where: { ...query },
-      ...options,
+  static findWithPagination(query = {}, options = {}) {
+    return Book.findAndCountAll({
+      where: query.where || {},
+      limit: query.limit || 10,
+      offset: query.offset || 0,
+      order: query.order || [],
+      ...options
     });
-    return true;
+  }
+  static findWithAuthorAndGenrePagination(query = {}, options = {}) {
+    return Book.findAndCountAll({
+      where: query.where || {},
+      limit: query.limit || 10,
+      offset: query.offset || 0,
+      order: query.order || [],
+      include: [
+        {
+          model: Author,
+          as: 'author',
+          where: options.authorWhere || {},
+          attributes: options.authorAttributes || [],
+        },
+        {
+          model: Genre,
+          as: 'genre',
+          where: options.genreWhere || {},
+          attributes: options.genreAttributes || [],
+        }
+      ],
+      ...options
+    });
+  }
+
+  static create(data, options = {}) {
+    return Book.create(data, options);
+  }
+  static update(data, query = {}, options = {}) {
+    return Book.update(data, {
+      where: query,
+      ...options
+    });
+  }
+  static delete(query = {}, options = {}) {
+    return Book.destroy({
+      where: query,
+      ...options
+    });
+  }
+  static countBooks(options = {}) {
+    return Book.count(options);
   }
 }
 

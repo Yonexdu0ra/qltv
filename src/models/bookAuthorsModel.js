@@ -23,8 +23,10 @@ const BookAuthors = sequelize.define("BookAuthors", {
         allowNull: false,
     }
 }, {
-    tableName: "bookAuthors",
-    timestamps: true
+    tableName: "BookAuthors",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
 })
 
 
