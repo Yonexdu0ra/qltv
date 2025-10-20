@@ -168,7 +168,7 @@ class BorrowController {
       const dataBulk = bookFormat.map((book_id) => ({
         borrow_id: data.id,
         book_id,
-        status: BORROW_STATUS_CONSTANTS.BORROWED,
+        status: BORROW_STATUS_CONSTANTS.REQUESTED,
       }));
       await borrowDetailServices.createBorrowDetailsBulk(dataBulk, {
         transaction,
