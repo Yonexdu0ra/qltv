@@ -19,15 +19,15 @@ class BookRepository {
       include: [
         {
           model: Author,
-          as: 'author',
+          as: 'authors',
           where: options.authorWhere || {},
-          attributes: options.authorAttributes || [],
+          attributes: options.authorAttributes,
         },
         {
           model: Genre,
-          as: 'genre',
+          as: 'genres',
           where: options.genreWhere || {},
-          attributes: options.genreAttributes || [],
+          attributes: options.genreAttributes,
         }
       ],
       ...options
@@ -38,35 +38,54 @@ class BookRepository {
   }
   static findAllAndCount(query = {}, options = {}) {
     return Book.findAndCountAll({
-      where: query,
+      where: {
+        ...query
+      },
       ...options
     });
   }
   static findWithPagination(query = {}, options = {}) {
     return Book.findAndCountAll({
-      where: query.where || {},
+      where: { ...query } || {},
       limit: query.limit || 10,
       offset: query.offset || 0,
       order: query.order || [],
       ...options
     });
   }
+  static findWithAuthorPagination(query = {}, options = {}) {
+    return Book.findAndCountAll({
+      where: { ...query } || {},
+      limit: query.limit || 10,
+      offset: query.offset || 0,
+      order: query.order || [],
+      ...options,
+      include: [
+        {
+          model: Author,
+          as: 'authors',
+          where: options.authorWhere || {},
+          attributes: options.authorAttributes || [],
+        }
+      ]
+    });
+  }
   static findWithAuthorAndGenrePagination(query = {}, options = {}) {
     return Book.findAndCountAll({
-      where: query.where || {},
+      where: { ...query } || {},
       limit: query.limit || 10,
       offset: query.offset || 0,
       order: query.order || [],
       include: [
         {
           model: Author,
-          as: 'author',
+          as: 'authors',
           where: options.authorWhere || {},
           attributes: options.authorAttributes || [],
         },
         {
           model: Genre,
-          as: 'genre',
+          as: 'genres',
           where: options.genreWhere || {},
           attributes: options.genreAttributes || [],
         }

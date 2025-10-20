@@ -1,190 +1,148 @@
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css"
-/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
 <script src="/js/debounce.js"></script>
 <script src="/js/useChoice.js"></script>
 
-<div class="max-w-5xl mx-auto p-6">
-  <h1 class="text-xl font-semibold mb-4">Sửa sách</h1>
+<div class="mt-6 max-w-6xl mx-auto p-8 bg-white rounded-2xl shadow">
+  <h1 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center gap-2">
+    ✏️ Sửa thông tin sách
+  </h1>
+
   <%- include('../error') %>
   <%- include('../errorMessageWithQuery') %>
-  <form  enctype="multipart/form-data" method="POST" class="p-4 rounded border border-gray-200 space-y-2">
-    <div class="flex flex-col gap-2">
-      <label for="title" class="block text-sm font-medium text-gray-700"
-        >Tên sách</label
-      >
-      <input
-        type="text"
-        name="title"
-        placeholder="Nhập tên sách"
-        id="title"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        value="<%= book.title %>"
-        required
+
+  <form enctype="multipart/form-data" method="POST" class="space-y-5">
+    <!-- Tên sách -->
+    <div>
+      <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Tên sách</label>
+      <input type="text" name="title" id="title" placeholder="Nhập tên sách" value="<%= book.title %>" required
+        class="w-full border border-gray-300 focus:ring-2 focus:ring-indigo-500 rounded-lg p-2" />
+    </div>
+
+    <!-- Thông tin cơ bản -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div>
+        <label for="isbn" class="block text-sm font-medium text-gray-700 mb-1">ISBN</label>
+        <input type="text" name="isbn" id="isbn" placeholder="Nhập ISBN" value="<%= book.isbn %>" required
+          class="w-full border border-gray-300 focus:ring-2 focus:ring-indigo-500 rounded-lg p-2" />
+      </div>
+      <div>
+        <label for="published_year" class="block text-sm font-medium text-gray-700 mb-1">Năm xuất bản</label>
+        <input type="text" name="published_year" id="published_year" placeholder="Nhập năm xuất bản"
+          value="<%= book.published_year %>" required
+          class="w-full border border-gray-300 focus:ring-2 focus:ring-indigo-500 rounded-lg p-2" />
+      </div>
+      <div>
+        <label for="quantity_total" class="block text-sm font-medium text-gray-700 mb-1">Số lượng tổng</label>
+        <input type="number" name="quantity_total" id="quantity_total" value="<%= book.quantity_total %>" required
+          class="w-full border border-gray-300 focus:ring-2 focus:ring-indigo-500 rounded-lg p-2" />
+      </div>
+      <div>
+        <label for="quantity_available" class="block text-sm font-medium text-gray-700 mb-1">Số lượng còn lại</label>
+        <input type="number" name="quantity_available" id="quantity_available" value="<%= book.quantity_available %>"
+          required class="w-full border border-gray-300 focus:ring-2 focus:ring-indigo-500 rounded-lg p-2" />
+      </div>
+    </div>
+
+    <!-- Tác giả + Thể loại -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label for="authors" class="block text-sm font-medium text-gray-700 mb-1">Tác giả</label>
+        <select name="authors[]" id="authors" multiple required
+          class="w-full border border-gray-300 rounded-lg p-2"></select>
+      </div>
+      <div>
+        <label for="genres" class="block text-sm font-medium text-gray-700 mb-1">Thể loại</label>
+        <select name="genres[]" id="genres" multiple required
+          class="w-full border border-gray-300 rounded-lg p-2"></select>
+      </div>
+    </div>
+
+    <!-- Mô tả + Ảnh bìa song song -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+  <!-- Mô tả -->
+  <div class="md:col-span-2 flex flex-col">
+    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+      Mô tả
+    </label>
+    <textarea
+      name="description"
+      id="description"
+      placeholder="Nhập mô tả sách"
+      class="flex-1 border border-gray-300 focus:ring-2 focus:ring-indigo-500 rounded-lg p-3 resize-none bg-white"
+    ><%= book.description %></textarea>
+  </div>
+
+  <!-- Ảnh bìa -->
+  <div class="flex flex-col h-full">
+    <label for="image_cover" class="block text-sm font-medium text-gray-700 mb-2">
+      Ảnh bìa
+    </label>
+    <div
+      class="flex-1 border border-gray-300 rounded-lg p-3 bg-gray-50 flex flex-col items-center justify-center"
+    >
+      <img
+        src="<%= book.image_cover %>"
+        alt="Ảnh bìa"
+        id="preview_image"
+        class="max-h-64 w-auto object-cover rounded-md shadow mb-3"
       />
-    </div>
-    <div class="flex flex-col gap-2">
-      <label for="isbn" class="block text-sm font-medium text-gray-700"
-        >ISBN</label
-      >
-      <input
-        type="text"
-        name="isbn"
-        placeholder="Nhập ISBN"
-        id="isbn"
-        value="<%= book.isbn %>"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        required
-      />
-    </div>
-    <div class="flex flex-col gap-2">
-      <label
-        for="published_year"
-        class="block text-sm font-medium text-gray-700"
-        >Năm xuất bản</label
-      >
-      <input
-        type="text"
-        name="published_year"
-        placeholder="Nhập năm xuất bản"
-        id="published_year"
-        value="<%= book.published_year %>"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        required
-      />
-    </div>
-    
-    
-    <div class="flex flex-col gap-2">
-      <label for="authors" class="block text-sm font-medium text-gray-700"
-        >Tác giả</label
-      >
-      <select
-        name="authors"
-        id="authors"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        multiple
-        required
-      >
-         
-      </select>
-    </div>
-    <div class="flex flex-col gap-2">
-      <label for="genres" class="block text-sm font-medium text-gray-700"
-        >Thể loại</label
-      >
-      <select
-        name="genres"
-        id="genres"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        multiple
-        required
-      >
-        
-      </select>
-    </div>
-    <div class="flex flex-col gap-2">
-      <label
-        for="quantity_total"
-        class="block text-sm font-medium text-gray-700"
-        >Số lượng</label
-      >
-      <input
-        type="text"
-        name="quantity_total"
-        placeholder="Nhập số lượng"
-        id="quantity_total"
-        value="<%= book.quantity_total %>"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        required
-      />
-    </div>
-    <div class="flex flex-col gap-2">
-      <label
-        for="quantity_available"
-        class="block text-sm font-medium text-gray-700"
-        >Số lượng còn lại</label
-      >
-      <input
-        type="text"
-        name="quantity_available"
-        placeholder="Nhập số lượng còn lại"
-        id="quantity_available"
-        value="<%= book.quantity_available %>"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        required
-      />
-    </div>
-    <div class="flex flex-col gap-2">
-      <label for="description" class="block text-sm font-medium text-gray-700"
-        >Mô tả</label
-      >
-      <textarea
-        name="description"
-        placeholder="Nhập mô tả"
-        id="description"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-      > <%= book.description %> </textarea>
-    </div>
-    <div class="flex flex-col gap-2">
-      <label for="image_cover" class="block text-sm font-medium text-gray-700"
-        >Ảnh bìa</label
-      >
       <input
         type="file"
         name="image_cover"
         id="image_cover"
-        class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        
+        class="w-full text-sm border border-gray-300 rounded-lg p-2 bg-white cursor-pointer hover:border-indigo-500 transition"
       />
-      <div id="show_image_cover">
-        <img src="<%= book.image_cover %>" alt="Ảnh bìa" class="mt-2 max-h-48">
-      </div>
     </div>
+  </div>
+</div>
 
-    <button class="bg-green-600 text-white px-4 py-2 rounded">Lưu</button>
-    <a href="/books" class="text-gray-600 hover:underline ml-3">Quay lại</a>
+
+    <!-- Nút -->
+    <div class="flex items-center gap-3 pt-4">
+      <button
+        class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium transition">
+        💾 Lưu thay đổi
+      </button>
+      <a href="/books" class="text-gray-600 hover:underline">← Quay lại</a>
+    </div>
   </form>
 </div>
 
+<!-- Script hiển thị ảnh -->
 <script>
   const image_cover = document.getElementById("image_cover");
-  const show_image_cover = document.getElementById("show_image_cover");
+  const preview_image = document.getElementById("preview_image");
+
   image_cover.addEventListener("change", function () {
     const file = this.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = function (event) {
-        show_image_cover.innerHTML = `<img src="${event.target.result}" alt="Ảnh bìa" class="mt-2 max-h-48">`;
-      };
+      reader.onload = e => preview_image.src = e.target.result;
       reader.readAsDataURL(file);
-    } else {
-      show_image_cover.innerHTML = "";
     }
   });
 </script>
 
+<!-- Script load tác giả & thể loại -->
 <script>
-  
-  const authorsSelected = <%- JSON.stringify(book.authors.map(a => ({ value: a.id, label: a.name}))) %>
+  const authorsSelected = <%- JSON.stringify(book.authors || []) %>;
   useChoice("#authors", "/authors/search", (data) => {
-    const uniqueAuthors = [...new Map(data.data.map(item => [item['id'], item])).values()];
-    return uniqueAuthors.map((author) => ({
-      value: author.id,
-      label: author.name,
-      selected: authorsSelected.some(a => a.value === author.id)
-
+    const unique = [...new Map([...authorsSelected, ...data.data].map(i => [i.id, i])).values()];
+    return unique.map(a => ({
+      value: a.id,
+      label: a.name,
+      selected: authorsSelected.some(sel => sel.id === a.id)
     }));
   });
-  const genresSelected = <%- JSON.stringify(book.genres.map(g => ({ value: g.id, label: g.name}))) %>
-  useChoice("#genres", "/genre/search", (data) => {
-    const uniqueGenres = [...new Map(data.data.map(item => [item['id'], item])).values()];
-    return uniqueGenres.map((genre) => ({
-      value: genre.id,
-      label: genre.name,
-      selected: genresSelected.some(a => a.value === genre.id)
+
+  const genresSelected = <%- JSON.stringify(book.genres || []) %>;
+  useChoice("#genres", "/genres/search", (data) => {
+    const unique = [...new Map([...genresSelected, ...data.data].map(i => [i.id, i])).values()];
+    return unique.map(g => ({
+      value: g.id,
+      label: g.name,
+      selected: genresSelected.some(sel => sel.id === g.id)
     }));
   });
 </script>

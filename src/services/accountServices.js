@@ -30,11 +30,11 @@ class AccountServices {
                 [Op.like]: `%${query.q || ""}%`
             }
         }
-        const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
-        const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
+        const limit = query.limit ? query.limit > 0 ? parseInt(query.limit) : 10 : 10
+        const page = isNaN(parseInt(query.page)) || parseInt(query.page) < 1 ? 1 : parseInt(query.page)
         const offset = (page - 1) * limit
-        const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["created_at", "ASC"]
-        const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
+        const [sortBy, sortOrder] = query.sort ? query.sort.split("-") : ["created_at", "ASC"]
+        const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]] 
         return accountRepository.findWithUserPagination(where, { userWhere, limit, offset, order, ...options });
     }
     static getAccountById(id, options = {}) {

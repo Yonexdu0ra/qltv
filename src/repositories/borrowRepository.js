@@ -21,8 +21,8 @@ class BorrowRepository {
         {
           model: BorrowDetail,
           as: "borrowDetails",
-          attributes: options.borrowDetailAttributes || [],
-          where: options.borrowDetailWhere || {},
+          attributes: options.borrowDetailAttributes,
+          where: options.borrowDetailWhere,
         },
       ],
     });
@@ -42,26 +42,26 @@ class BorrowRepository {
         {
           model: User,
           as: "borrower",
-          attributes: options.borrowerAttributes || [],
-          where: options.borrowerWhere || {},
+          attributes: options.borrowerAttributes,
+          where: options.borrowerWhere,
         },
         {
           model: User,
           as: "approver",
-          attributes: options.approverAttributes || [],
-          where: options.approverWhere || {},
+          attributes: options.approverAttributes,
+          where: options.approverWhere,
         },
         {
           model: BorrowDetail,
           as: "borrowDetails",
-          attributes: options.borrowDetailAttributes || [],
-          where: options.borrowDetailWhere || {},
+          attributes: options.borrowDetailAttributes,
+          where: options.borrowDetailWhere,
           include: [
             {
               model: Book,
               as: "book",
-              attributes: options.bookAttributes || [],
-              where: options.bookWhere || {},
+              attributes: options.bookAttributes,
+              where: options.bookWhere,
             },
           ],
         },
@@ -76,14 +76,14 @@ class BorrowRepository {
         {
           model: User,
           as: "borrower",
-          attributes: options.borrowerAttributes || [],
-          where: options.borrowerWhere || {},
+          attributes: options.borrowerAttributes,
+          where: options.borrowerWhere,
         },
         {
           model: User,
           as: "approver",
-          attributes: options.approverAttributes || [],
-          where: options.approverWhere || {},
+          attributes: options.approverAttributes,
+          where: options.approverWhere,
         },
       ],
     });
@@ -96,18 +96,18 @@ class BorrowRepository {
         {
           model: BorrowDetail,
           as: "borrowDetails",
-          attributes: options.borrowDetailAttributes || [],
-          where: options.borrowDetailWhere || {},
+          attributes: options.borrowDetailAttributes,
+          where: options.borrowDetailWhere,
           include: [
             {
               model: Book,
               as: "book",
-              attributes: options.bookAttributes || [],
-              where: options.bookWhere || {},
+              attributes: options.bookAttributes,
+              where: options.bookWhere,
             },
           ],
         },
-        
+
       ],
     });
   }
@@ -120,26 +120,26 @@ class BorrowRepository {
         {
           model: User,
           as: "borrower",
-          attributes: options.borrowerAttributes || [],
-          where: options.borrowerWhere || {},
+          attributes: options.borrowerAttributes,
+          where: options.borrowerWhere,
         },
         {
           model: User,
           as: "approver",
-          attributes: options.approverAttributes || [],
-          where: options.approverWhere || {},
+          attributes: options.approverAttributes,
+          where: options.approverWhere,
         },
         {
           model: BorrowDetail,
           as: "borrowDetails",
-          attributes: options.borrowDetailAttributes || [],
-          where: options.borrowDetailWhere || {},
+          attributes: options.borrowDetailAttributes,
+          where: options.borrowDetailWhere,
           include: [
             {
               model: Book,
               as: "book",
-              attributes: options.bookAttributes || [],
-              where: options.bookWhere || {},
+              attributes: options.bookAttributes,
+              where: options.bookWhere,
             },
           ],
         },

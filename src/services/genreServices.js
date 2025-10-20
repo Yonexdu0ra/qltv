@@ -5,8 +5,6 @@ const GenreRepository = require("../repositories/genreRepository");
 
 class GenreServices {
 
-
-    
     static async getAllGenreByNameWithPagination(query, options = {}) {
         const where = {};
         if (query.q) {
@@ -35,6 +33,32 @@ class GenreServices {
     }
     static async getGenreBySlug(slug, options = {}) {
         return GenreRepository.findOne({ slug }, { ...options });
+    }
+    static async getGenreBySlugWithBooks(slug, options = {}) {
+        return GenreRepository.findOneWithBooks({ slug }, { ...options });
+    }
+    static async getGenreBySlugWithBooksPagination(slug, query, options = {}) {
+        const bookWhere = {};
+        if (options.q) {
+            bookWhere.title = {
+                [Op.like]: `%${options.q || ""}%`,
+            };
+        }
+        const limit = options.limit
+            ? options.limit > 0
+                ? parseInt(options.limit)
+                : 10
+            : 10;
+        const page =
+            isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+                ? 1
+                : parseInt(options.page);
+        const offset = (page - 1) * limit;
+        const order = [["created_at", "DESC"]];
+        return GenreRepository.findOneWithBooksPagination(
+            { slug },
+            { limit, offset, ...options, bookWhere, order }
+        );
     }
     static async getAllGenreByIds(genreIds = [], options = {}) {
         return GenreRepository.findAll(
@@ -78,10 +102,10 @@ class GenreServices {
         const limit = query.limit ? query.limit > 0 ? parseInt(query.limit) : 5 : 5
         const page = isNaN(parseInt(query.page)) || parseInt(query.page) < 1 ? 1 : parseInt(query.page)
         const offset = (page - 1) * limit
-        const [sortBy, sortOrder] = query.sort ? query.sort.split("-") : ["name", "ASC"]
+        const [sortBy, sortOrder] = query.sort ? query.sort.split("-") : ["created_at", "ASC"]
         const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
-        
-        return  GenreRepository.findAllAndCount(where, { ...options, limit, offset, order });
+
+        return GenreRepository.findAllAndCount(where, { ...options, limit, offset, order });
     }
     static countGenres() {
         return GenreRepository.count();

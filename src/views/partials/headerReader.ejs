@@ -13,7 +13,7 @@
 
     <!-- Navbar (desktop) -->
     <nav class="hidden md:flex items-center gap-6 font-medium">
-      <a href="#" class="hover:text-indigo-600">Trang chủ</a>
+      <a href="/" class="hover:text-indigo-600">Trang chủ</a>
       <a href="#" class="hover:text-indigo-600">Sách</a>
       <a href="#" class="hover:text-indigo-600">Tác giả</a>
       <a href="#" class="hover:text-indigo-600">Thể loại</a>
@@ -21,32 +21,112 @@
     </nav>
 
     <div class="hidden md:flex items-center gap-3">
-      <input
-        type="text"
-        placeholder="Tìm sách..."
-        class="border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-      />
-      <p><%= user.fullname %></p>
+      <input type="text" placeholder="Tìm sách..."
+        class="border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+      <div class="relative">
+        <!-- Avatar / Tên -->
+        <button id="userMenuButton" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 focus:outline-none">
+          <span class="hidden sm:inline text-gray-600 font-medium">
+            <%= user.fullname %>
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg py-2 z-50">
+          <span class="block sm:hidden text-sky-600 font-medium text-center">
+            <%= user.fullname %>
+          </span>
+          <a href="/profile/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            Đổi mật khẩu
+          </a>
+          <form action="/auth/logout/<%= user.user_id %>" method="POST">
+            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100">
+              Đăng xuất
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </nav>
+  </div>
     </div>
   </div>
 
   <!-- Menu mobile -->
-  <div
-    id="mobileMenu"
-    class="hidden md:hidden bg-white border-t border-gray-200"
-  >
+  <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200">
     <nav class="flex flex-col px-4 py-2 space-y-2 font-medium">
       <a href="#" class="hover:text-indigo-600">Trang chủ</a>
       <a href="#" class="hover:text-indigo-600">Sách</a>
       <a href="#" class="hover:text-indigo-600">Tác giả</a>
       <a href="#" class="hover:text-indigo-600">Thể loại</a>
       <a href="#" class="hover:text-indigo-600">Liên hệ</a>
-      <input
-        type="text"
-        placeholder="Tìm sách..."
-        class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-      />
-      <p><%= user.fullname %></p>
+
+      <input type="text" placeholder="Tìm sách..."
+        class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+
+      <div class="relative">
+        <!-- Avatar / Tên -->
+        <button id="userMenuButton" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 focus:outline-none">
+          <span class="hidden sm:inline text-gray-600 font-medium">
+            <%= user.fullname %>
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg py-2 z-50">
+          <span class="block sm:hidden text-sky-600 font-medium text-center">
+            <%= user.fullname %>
+          </span>
+          <a href="/profile/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            Đổi mật khẩu
+          </a>
+          <form action="/auth/logout/<%= user.user_id %>" method="POST">
+            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100">
+              Đăng xuất
+            </button>
+          </form>
+        </div>
+      </div>
+
     </nav>
   </div>
 </header>
+
+<script>
+
+  // const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  // const menuToggle = document.getElementById("menuToggle");
+
+  // if (menuToggle) {
+  //   menuToggle.click()
+  // }
+
+  // Toggle dropdown user menu
+  const userMenuButton = document.getElementById("userMenuButton");
+  const userDropdown = document.getElementById("userDropdown");
+
+  if (userMenuButton) {
+    userMenuButton.addEventListener("click", () => {
+      userDropdown.classList.toggle("hidden");
+    });
+
+    // Ẩn dropdown khi click ra ngoài
+    document.addEventListener("click", (e) => {
+      if (
+        !userMenuButton.contains(e.target) &&
+        !userDropdown.contains(e.target)
+      ) {
+        userDropdown.classList.add("hidden");
+      }
+    });
+  }
+</script>

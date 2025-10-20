@@ -19,10 +19,6 @@ const Borrow = sequelize.define(
       validate: {
         isDate: { msg: "Ngày mượn không hợp lệ" },
         notNull: { msg: "Ngày mượn không được để trống" },
-        isAfter: {
-          args: new Date().toISOString(),
-          msg: "Ngày mượn phải là ngày hiện tại hoặc sau ngày hiện tại",
-        }
       },
     },
     return_date: {
@@ -30,10 +26,6 @@ const Borrow = sequelize.define(
       allowNull: true,
       validate: {
         isDate: { msg: "Ngày trả không hợp lệ" },
-        isAfter: {
-          args: new Date().toISOString(),
-          msg: "Ngày trả phải sau ngày mượn",
-        },
       },
     },
     pickup_date: {
@@ -48,10 +40,6 @@ const Borrow = sequelize.define(
       allowNull: false,
       validate: {
         isDate: { msg: "Ngày đến hạn không hợp lệ" },
-        isAfter: {
-          args: new Date().toISOString(),
-          msg: "Ngày đến hạn phải sau ngày mượn",
-        },
         notNull: { msg: "Ngày đến hạn không được để trống" },
       },
     },

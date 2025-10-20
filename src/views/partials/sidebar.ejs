@@ -1,81 +1,112 @@
-<!-- Overlay (mobile) -->
-<div
-  id="sidebarOverlay"
-  class="fixed inset-0 bg-black/50 hidden z-40 md:hidden"
-></div>
+<!-- Overlay (Mobile) -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/40 hidden z-40 md:hidden backdrop-blur-sm"></div>
 
 <!-- Sidebar -->
-<aside
-  id="sidebar"
-  class="fixed md:static inset-y-0 left-0 w-full sm:w-64 bg-gray-900 text-gray-100 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-50"
->
-  <div class="p-4 flex items-center justify-between border-b border-gray-800 sm:hidden">
-    <h2 class="text-lg font-semibold ">Quản Lý Thư viện</h2>
-    <button id="closeSidebar" class="md:hidden text-gray-400 hover:text-white">
+<aside id="sidebar"
+  class="fixed md:static inset-y-0 left-0 w-72 bg-gradient-to-b from-gray-800 to-gray-900 text-gray-100 shadow-2xl transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-50 flex flex-col">
+
+  <!-- Header -->
+  <div class="p-4 flex items-center justify-between border-b border-gray-700 md:justify-center">
+    <h2 class="text-xl font-bold tracking-wide text-white"><a href="/">Quản lý thư viện</a></h2>
+    <button id="closeSidebar" class="md:hidden text-gray-300 hover:text-white transition">
       ✕
     </button>
   </div>
 
-  <nav class="p-4 space-y-1">
-    <a
-      href="/"
-      class="block px-3 py-2 rounded-md hover:bg-gray-800 text-gray-200 font-medium <%= currentPath === '/dashboard' ? 'bg-gray-800' : '' %>"
-      >Trang chủ</a
+  <!-- User Menu -->
+  <div class="p-4 border-b border-gray-700 relative">
+    <button
+      id="userMenuButton"
+      class="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-700/60 hover:bg-gray-700 text-gray-200 transition"
     >
-    <a
-      href="/books"
-      class="block px-3 py-2 rounded-md hover:bg-gray-800 text-gray-200 font-medium <%= currentPath === '/books' ? 'bg-gray-800' : '' %>"
-      >Sách</a
+      <span class="truncate font-medium"><%= user.fullname %></span>
+      <i class="fa-solid fa-caret-down ml-2"></i>
+    </button>
+
+    <!-- Dropdown -->
+    <div
+      id="userDropdown"
+      class="hidden absolute top-15 left-4 w-[calc(100%-2rem)] bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[999]"
     >
-    <a
-      href="/authors"
-      class="block px-3 py-2 rounded-md hover:bg-gray-800 text-gray-200 font-medium <%= currentPath === '/authors' ? 'bg-gray-800' : '' %>"
-      >Tác giả</a
-    >
-    <a
-      href="/genre"
-      class="block px-3 py-2 rounded-md hover:bg-gray-800 text-gray-200 font-medium <%= currentPath === '/genre' ? 'bg-gray-800' : '' %>"
-      >Thể loại</a
-    >
-    <a
-      href="/borrow"
-      class="block px-3 py-2 rounded-md hover:bg-gray-800 text-gray-200 font-medium <%= currentPath === '/borrow' ? 'bg-gray-800' : '' %>"
-      >Mượn / Trả</a
-    >
-    <a
-      href="/users"
-      class="block px-3 py-2 rounded-md hover:bg-gray-800 text-gray-200 font-medium <%= currentPath === '/users' ? 'bg-gray-800' : '' %>"
-      >Người dùng</a
-    >
-    <a
-      href="/accounts"
-      class="block px-3 py-2 rounded-md hover:bg-gray-800 text-gray-200 font-medium <%= currentPath === '/accounts' ? 'bg-gray-800' : '' %>"
-      >Tài khoản</a
-    >
-    <a
-      href="/fines"
-      class="block px-3 py-2 rounded-md hover:bg-gray-800 text-gray-200 font-medium <%= currentPath === '/fines' ? 'bg-gray-800' : '' %>"
-      >Phí phạt</a
-    >
+      
+      <a href="/auth/change-password"
+        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">🔑 Đổi mật khẩu</a>
+      <form action="/auth/logout/<%= user.user_id %>" method="POST">
+        <button
+          type="submit"
+          class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 transition">🚪 Đăng xuất</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
+    <% const navItems = [
+      { href: '/dashboard/books', label: 'Sách', icon: 'book-open' },
+      { href: '/dashboard/authors', label: 'Tác giả', icon: 'user-pen' },
+      { href: '/dashboard/genres', label: 'Thể loại', icon: 'layer-group' },
+      { href: '/dashboard/borrows', label: 'Mượn / Trả', icon: 'right-left' },
+      { href: '/dashboard/users', label: 'Người dùng', icon: 'user' },
+      { href: '/dashboard/accounts', label: 'Tài khoản', icon: 'users' },
+      { href: '/dashboard/fines', label: 'Phí phạt', icon: 'money-check-dollar' },
+    ]; %>
+
+    <% navItems.forEach(item => { %>
+      <a href="<%= item.href %>"
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200
+        <%= currentPath === item.href 
+          ? 'bg-gray-700 text-white shadow-inner' 
+          : 'hover:bg-gray-700/60 text-gray-300 hover:text-white' %>">
+        <i class="fa-solid fa-<%= item.icon %> w-5 text-indigo-300"></i>
+        <span class="font-medium"><%= item.label %></span>
+      </a>
+    <% }) %>
   </nav>
+
+  <!-- Footer -->
+  <div class="p-3 text-center text-xs text-gray-400 border-t border-gray-700">
+    © 2025 Library Manager System
+  </div>
 </aside>
 
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+
+<!-- Scripts -->
 <script>
   const sidebar = document.getElementById("sidebar");
   const sidebarOverlay = document.getElementById("sidebarOverlay");
   const menuToggle = document.getElementById("menuToggle");
   const closeSidebar = document.getElementById("closeSidebar");
+  const userMenuButton = document.getElementById("userMenuButton");
+  const userDropdown = document.getElementById("userDropdown");
 
+  // Mở sidebar (mobile)
   menuToggle?.addEventListener("click", () => {
     sidebar.classList.remove("-translate-x-full");
     sidebarOverlay.classList.remove("hidden");
   });
 
-  closeSidebar?.addEventListener("click", hideSidebar);
-  sidebarOverlay?.addEventListener("click", hideSidebar);
-
+  // Ẩn sidebar
   function hideSidebar() {
     sidebar.classList.add("-translate-x-full");
     setTimeout(() => sidebarOverlay.classList.add("hidden"), 300);
+  }
+  closeSidebar?.addEventListener("click", hideSidebar);
+  sidebarOverlay?.addEventListener("click", hideSidebar);
+
+  // Toggle dropdown user
+  if (userMenuButton) {
+    userMenuButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      userDropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!userMenuButton.contains(e.target) && !userDropdown.contains(e.target)) {
+        userDropdown.classList.add("hidden");
+      }
+    });
   }
 </script>

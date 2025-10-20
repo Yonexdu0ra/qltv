@@ -1,107 +1,91 @@
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 11c0-3.314 2.686-6 6-6m-6 6c-3.314 0-6-2.686-6-6m6 6v8m0 0a2 2 0 11-4 0 2 2 0 014 0zm0 0a2 2 0 104 0 2 2 0 00-4 0z" />
+      </svg>
+      Quản lý độc giả
+    </h2>
 
-<div class="flex flex-col gap-4 relative">
-  <h2 class="text-2xl font-bold text-gray-700">Quản lý độc giả</h2>
-  <%- include('../errorMessageWithQuery') %> <%-
-  include('../successMessageWithQuery') %>
-  <!-- <a href="/users/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm độc giả</a> -->
-  <form id="search-form" class="flex flex-col gap-4">
-    <div class="flex flex-col sm:flex-row items-center flex-wrap justify-center gap-2">
+    <a
+      href="/dashboard/users/add"
+      class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-green-600 hover:to-emerald-700 transition duration-200 font-medium"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Thêm độc giả
+    </a>
+  </div>
+
+  <%- include('../errorMessageWithQuery') %>
+  <%- include('../successMessageWithQuery') %>
+
+  <!-- Form tìm kiếm -->
+  <form
+    id="search-form"
+    class="bg-white shadow-sm rounded-2xl p-5 flex flex-col lg:flex-row items-center justify-between gap-4 border border-gray-200"
+  >
+    <div class="relative flex-1 w-full">
       <input
         name="q"
         type="text"
-        placeholder="Tìm kiếm độc giả"
+        placeholder="Tìm kiếm độc giả..."
         value="<%= query.q || '' %>"
-        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
+        class="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
-      <select
-        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
-        name="sort"
-        id="sort"
-      >
-        <option value="">--Sắp xếp độc giả--</option>
-        <option value="fullname-asc" <%= query.sort === 'fullname-asc' ? 'selected' : '' %>>Sắp xếp theo tên A-Z</option>
-        <option value="fullname-desc" <%= query.sort === 'fullname-desc' ? 'selected' : '' %>>Sắp xếp theo tên Z-A</option>
-        <option value="createdAt-desc" <%= query.sort === 'createdAt-desc' ? 'selected' : '' %>>Mới nhất</option>
-        <option value="createdAt-asc" <%= query.sort === 'createdAt-asc' ? 'selected' : '' %>>Cũ nhất</option>
-      </select>
-      <button class="bg-blue-600 w-full sm:w-25 text-white px-4 py-2 rounded">
-        Tìm kiếm
-      </button>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+      </svg>
     </div>
-  </form>
-  <div class="overflow-x-auto relative">
-    <table
-      class="min-w-full bg-white border rounded border-gray-200 relative z-0"
+
+    <select
+      class="border border-gray-300 rounded-xl px-4 py-2.5 w-full lg:w-auto focus:ring-2 focus:ring-blue-500 transition"
+      name="sort"
+      id="sort"
     >
-      <thead class="sticky top-0 bg-gray-50 z-10">
+      <option value="">-- Sắp xếp độc giả --</option>
+      <option value="fullname-asc" <%= query.sort === 'fullname-asc' ? 'selected' : '' %>>Tên A-Z</option>
+      <option value="fullname-desc" <%= query.sort === 'fullname-desc' ? 'selected' : '' %>>Tên Z-A</option>
+      <option value="created_at-desc" <%= query.sort === 'created_at-desc' ? 'selected' : '' %>>Mới nhất</option>
+      <option value="created_at-asc" <%= query.sort === 'created_at-asc' ? 'selected' : '' %>>Cũ nhất</option>
+    </select>
+
+    <button
+      class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 font-medium w-full lg:w-auto"
+    >
+      Tìm kiếm
+    </button>
+  </form>
+
+  <!-- Bảng dữ liệu -->
+  <div class="overflow-x-auto bg-white shadow-md rounded-2xl border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-gray-700">
+      <thead class="bg-gray-50">
         <tr>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            #
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-           họ tên
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-           địa chỉ
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-           email
-          </th>
-          
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-           số điện thoại
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600"
-          >
-            Hành động
-          </th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">#</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Họ tên</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Địa chỉ</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Email</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Số điện thoại</th>
+          <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Hành động</th>
         </tr>
       </thead>
-      <tbody class="relative z-0">
+      <tbody class="divide-y divide-gray-100">
         <% users.forEach((user, index) => { %>
-        <tr class="hover:bg-gray-100 relative">
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= ++index %>
-          </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= user.fullname %>
-          </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= user.address %>
-          </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= user.email %>
-          </td>
-          
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= user.phone %>
-          </td>
-          <td
-            class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700 relative"
-          >
-            <div class="flex flex-col sm:flex-row flex-wrap gap-1">
-              <a
-                href="/users/edit/<%= user.id %>"
-                class="text-center p-2 bg-blue-100 text-blue-600 hover:underline block mb-1 hover:bg-blue-200 rounded px-1"
-                >Sửa</a
-              >
-              
-              <a
-                href="/users/detail/<%= user.id %>"
-                class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
-                >Chi tiết</a
-              >
+        <tr class="hover:bg-blue-50 transition duration-150">
+          <td class="px-6 py-4"><%= ++index %></td>
+          <td class="px-6 py-4 font-medium text-gray-800"><%= user.fullname %></td>
+          <td class="px-6 py-4"><%= user.address %></td>
+          <td class="px-6 py-4 text-gray-700"><%= user.email %></td>
+          <td class="px-6 py-4"><%= user.phone %></td>
+          <td class="px-6 py-4 text-center">
+            <div class="flex flex-wrap justify-center gap-2">
+              <a href="/dashboard/users/detail/<%= user.id %>" class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-200 transition text-sm font-medium">Chi tiết</a>
+              <a href="/dashboard/users/edit/<%= user.id %>" class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition text-sm font-medium">Sửa</a>
             </div>
           </td>
         </tr>
@@ -109,28 +93,14 @@
       </tbody>
     </table>
   </div>
-  <%- include('../partials/pagination', { totals, page, query }) %>
 
-  
+  <!-- Pagination -->
+  <div class="mt-4 flex justify-center">
+    <%- include('../partials/pagination', { totals, page, query }) %>
+  </div>
 </div>
-  <script>
-    function toggleMenu(id) {
-      document.querySelectorAll('[id^="menu-"]').forEach((m) => {
-        if (m.id !== "menu-" + id) m.classList.add("hidden");
-      }); // Hiện / ẩn menu được chọn
-      const menu = document.getElementById("menu-" + id);
-      menu.classList.toggle("hidden");
-    }
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest("td")) {
-        document
-          .querySelectorAll('[id^="menu-"]')
-          .forEach((m) => m.classList.add("hidden"));
-      }
-    });
-  </script>
 
-<script src="js/dispatchSelectForm.js"></script>
+<script src="/js/dispatchSelectForm.js"></script>
 <script>
   dispatchSelectForm('#search-form', '#sort');
 </script>

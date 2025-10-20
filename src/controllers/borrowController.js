@@ -33,6 +33,8 @@ class BorrowController {
         query,
       });
     } catch (error) {
+      console.log(error);
+
       return res.render("borrows/index", {
         title: "Mượn trả",
         error: error.message,
@@ -55,8 +57,9 @@ class BorrowController {
     try {
       const { count, rows: borrows } =
         await borrowServices.getAllBorrowWithBorrowerAndApproverAndBooks(
-          req.query
+          { ...limit, ...query }
         );
+      // console.log(borrows[0].toJSON());
 
       const totalPages = Math.ceil(count / limit);
       return res.render("borrows/index", {
@@ -67,6 +70,8 @@ class BorrowController {
         query,
       });
     } catch (error) {
+      console.log(error);
+
       return res.render("borrows/index", {
         title: "Mượn trả",
         error: error.message,
@@ -85,6 +90,8 @@ class BorrowController {
     try {
       const borrow =
         await borrowServices.getBorrowByIdWithBorrowerAndApproverAndBooks(id);
+        console.log(borrow.toJSON());
+        
       if (!borrow) throw new Error("Phiếu mượn không tồn tại");
       return res.render("borrows/detail", {
         title: "Chi tiết phiếu mượn",
@@ -107,7 +114,7 @@ class BorrowController {
       if (!borrow) throw new Error("Phiếu mượn không tồn tại không thể sửa");
       return res.render("borrows/edit", { title: "Sửa phiếu mượn", borrow });
     } catch (error) {
-      return res.redirect("/borrow?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
 
@@ -168,7 +175,7 @@ class BorrowController {
       });
       await transaction.commit();
       return res.redirect(
-        "/borrow?success=" + encodeBase64("Thêm phiếu mượn thành công")
+        "/dashboard/borrows?success=" + encodeBase64("Thêm phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
@@ -184,6 +191,7 @@ class BorrowController {
   // đánh dấu từ chối không cho mượn
   static async handlerMarkAsRejected(req, res) {
     const { id } = req.params;
+    // const transaction = await sequelize.transaction();
     try {
       await sequelize.transaction(async (t) => {
         if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
@@ -208,30 +216,33 @@ class BorrowController {
         const isUpdated = await borrowServices.markAsRejectedBorrowById(
           borrow.id,
           {
-            transaction: t,
+            transaction: t
           }
         );
         // đánh dấu từ chối trạng thái các sách trong chi tiết phiếu mượn
         const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-        await borrowDetailServices.markAsRejectedBorrowDetailByIds(
+        const isUpdateBorrowDetail = await borrowDetailServices.markAsRejectedBorrowDetailByIds(
           borrowDetailIds,
           {
-            transaction: t,
+            transaction: t
           }
         );
+        if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
         if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       });
       return res.redirect(
-        "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
-      return res.redirect("/borrow?error=" + encodeBase64(error.message));
+    
+      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
   // đánh dấu hủy phiếu mượn
   static async handlerMarkAsCancel(req, res) {
     const { id } = req.params;
+    const transaction = await sequelize.transaction();
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
@@ -247,7 +258,7 @@ class BorrowController {
 
       const isUpdated = await borrowServices.markAsCancelledBorrowById(
         borrow.id,
-        { transaction: t }
+        { transaction }
       );
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       // ấn hủy thì trả lại số lượng sách đã giữ
@@ -255,27 +266,32 @@ class BorrowController {
         "quantity_available",
         1,
         borrow.borrowDetails.map((b) => b.book_id),
-        { transaction: t }
+        { transaction }
       );
       if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
       // đánh dấu hủy trạng thái các sách trong chi tiết phiếu mượn
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      await borrowDetailServices.markAsCancelledBorrowDetailByIds(
+      const isUpdateBorrowDetail = await borrowDetailServices.markAsCancelledBorrowDetailByIds(
         borrowDetailIds,
-        { transaction: t }
-      );
+        { transaction }
+      );  
+      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      await transaction.commit();
+
       return res.redirect(
-        "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
-      return res.redirect("/borrow?error=" + encodeBase64(error.message));
+      await transaction.rollback();
+      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
   // đánh dấu đã duyệt, chờ lấy sách
   static async handlerMarkAsApproved(req, res) {
     const { id } = req.params;
     const approver_id = req.user.user_id;
+    const transaction = await sequelize.transaction();
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
@@ -290,25 +306,32 @@ class BorrowController {
         );
       const isUpdated = await borrowServices.markAsApprovedBorrowById(
         borrow.id,
-        approver_id
+        approver_id, {
+        transaction
+      }
       );
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      await borrowDetailServices.markAsApprovedBorrowDetailByIds(
-        borrowDetailIds,
-        { transaction: t }
+      const isUpdateBorrowDetail = await borrowDetailServices.markAsApprovedBorrowDetailByIds(
+        borrowDetailIds, {
+        transaction
+      }
       );
+      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      await transaction.commit();
       return res.redirect(
-        "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
+      await transaction.rollback();
       console.log(error);
-      return res.redirect("/borrow?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
   // đánh dấu quá hạn
   static async handlerMarkAsExpired(req, res) {
     const { id } = req.params;
+    const transaction = await sequelize.transaction();
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
@@ -321,24 +344,28 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn"
         );
-      const isUpdated = await borrowServices.markAsExpiredBorrowById(borrow.id, { transaction: t });
+      const isUpdated = await borrowServices.markAsExpiredBorrowById(borrow.id, { transaction });
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      await borrowDetailServices.markAsExpiredBorrowDetailByIds(
+      const isUpdateBorrowDetail = await borrowDetailServices.markAsExpiredBorrowDetailByIds(
         borrowDetailIds,
-        { transaction: t }
+        { transaction }
       );
+      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      await transaction.commit();
       return res.redirect(
-        "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
-      return res.redirect("/borrow?error=" + encodeBase64(error.message));
+      await transaction.rollback();
+      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
   // đánh dấu đã trả sách
   static async handlerMarkAsReturned(req, res) {
     const { id } = req.params;
+    const transaction = await sequelize.transaction();
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
@@ -354,28 +381,31 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn hoặc Quá hạn"
         );
-      const isUpdated = await borrowServices.markAsReturnedBorrowById(borrow.id, { transaction: t });
+      const isUpdated = await borrowServices.markAsReturnedBorrowById(borrow.id, { transaction });
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const isUpdatedStock = await bookServices.incrementBookByIds(
         "quantity_available",
         1,
         borrow.borrowDetails.map((b) => b.book_id),
-        { transaction: t }
+        { transaction }
       );
       if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
       await borrowDetailServices.markAsReturnedBorrowDetailByIds(borrowDetailIds, {
-        transaction: t,
+        transaction,
       });
-      return res.redirect('/borrow?success=' + encodeBase64('Cập nhật phiếu mượn thành công'));
+      await transaction.commit();
+      return res.redirect('/dashboard/borrows?success=' + encodeBase64('Cập nhật phiếu mượn thành công'));
     } catch (error) {
       console.log(error);
-      return res.redirect("/borrow?error=" + encodeBase64(error.message));
+      await transaction.rollback();
+      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
   // đánh dấu hủy phiếu mượn
   static async handlerMarkAsCanceled(req, res) {
     const { id } = req.params;
+    const transaction = await sequelize.transaction();
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id);
@@ -388,30 +418,33 @@ class BorrowController {
       const isUpdated = await borrowServices.markAsCancelledBorrowById(borrow.id);
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      await borrowDetailServices.markAsCancelledBorrowDetailByIds(
+      const isUpdateBorrowDetail = await borrowDetailServices.markAsCancelledBorrowDetailByIds(
         borrowDetailIds, {
-          transaction: t,
-        }
+        transaction,
+      }
       );
+      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
       const isUpdatedStock = await bookServices.incrementBookByIds(
         "quantity_available",
         1,
         borrow.borrowDetails.map((b) => b.book_id),
-        { transaction: t }
+        { transaction }
       );
       if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
-
+      await transaction.commit();
       return res.redirect(
-        "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
+      await transaction.rollback();
       console.log(error);
-      return res.redirect("/borrow?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
   // đánh dấu đã lấy sách
   static async handlerMarkAsBorrowed(req, res) {
     const { id } = req.params;
+    const transaction = await sequelize.transaction();
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
@@ -424,18 +457,21 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đã phê duyệt, chờ lấy"
         );
-      const isUpdated = await borrowServices.markAsBorrowedBorrowById(borrow.id);
+      const isUpdated = await borrowServices.markAsBorrowedBorrowById(borrow.id, { transaction });
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      await borrowDetailServices.markAsBorrowedBorrowDetailByIds(borrowDetailIds, {
-        transaction: t,
+      const isUpdateBorrowDetail = await borrowDetailServices.markAsBorrowedBorrowDetailByIds(borrowDetailIds, {
+        transaction,
       });
+      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      await transaction.commit();
       return res.redirect(
-        "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
+      await transaction.rollback();
       console.log(error);
-      return res.redirect("/borrow?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
 }

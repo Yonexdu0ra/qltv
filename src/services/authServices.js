@@ -5,7 +5,10 @@ class AuthServices {
 
     static async handleLogin(username, password) {
         try {
-            const account = await accountRepository.findAccountWithUser({ username });
+            const account = await accountRepository.findOneWithUser({ username }, {
+                attributes: ['id', 'username', 'password', 'role', 'user_id'],
+                attributesUser: ['fullname']
+            });
             if (!account) {
                 throw new Error('Tài khoản không tồn tại');
             }

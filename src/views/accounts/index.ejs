@@ -1,108 +1,97 @@
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-3.314 2.686-6 6-6m-6 6c-3.314 0-6-2.686-6-6m6 6v8m0 0a2 2 0 11-4 0 2 2 0 014 0zm0 0a2 2 0 104 0 2 2 0 00-4 0z" />
+      </svg>
+      Quản lý tài khoản
+    </h2>
 
-<div class="flex flex-col gap-4 relative">
-  <h2 class="text-2xl font-bold text-gray-700">Quản lý tác giả</h2>
-  <%- include('../errorMessageWithQuery') %> <%-
-  include('../successMessageWithQuery') %>
-  <a href="/accounts/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm tài khoản</a>
-  <form id="search-form" class="flex flex-col gap-4">
-    <div class="flex flex-col sm:flex-row items-center flex-wrap justify-center gap-2">
+    <a
+      href="/dashboard/accounts/add"
+      class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-green-600 hover:to-emerald-700 transition duration-200 font-medium"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Thêm tài khoản
+    </a>
+  </div>
+
+  <%- include('../errorMessageWithQuery') %>
+  <%- include('../successMessageWithQuery') %>
+
+  <!-- Form tìm kiếm -->
+  <form
+    id="search-form"
+    class="bg-white shadow-sm rounded-2xl p-5 flex flex-col lg:flex-row items-center justify-between gap-4 border border-gray-200"
+  >
+    <div class="relative flex-1 w-full">
       <input
         name="q"
         type="text"
-        placeholder="Tìm kiếm tài khoản"
+        placeholder="Tìm kiếm tài khoản..."
         value="<%= query.q || '' %>"
-        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
+        class="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
-      <select
-        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
-        name="sort"
-        id="sort"
-      >
-        <option value="">--Sắp xếp tài khoản--</option>
-        <option value="username-asc" <%= query.sort === 'username-asc' ? 'selected' : '' %>>Sắp xếp theo tên A-Z</option>
-        <option value="username-desc" <%= query.sort === 'username-desc' ? 'selected' : '' %>>Sắp xếp theo tên Z-A</option>
-        <option value="createdAt-desc" <%= query.sort === 'createdAt-desc' ? 'selected' : '' %>>Mới nhất</option>
-        <option value="createdAt-asc" <%= query.sort === 'createdAt-asc' ? 'selected' : '' %>>Cũ nhất</option>
-      </select>
-      <button class="bg-blue-600 w-full sm:w-25 text-white px-4 py-2 rounded">
-        Tìm kiếm
-      </button>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+      </svg>
     </div>
-  </form>
-  <div class="overflow-x-auto relative">
-    <table
-      class="min-w-full bg-white border rounded border-gray-200 relative z-0"
+
+    <select
+      class="border border-gray-300 rounded-xl px-4 py-2.5 w-full lg:w-auto focus:ring-2 focus:ring-blue-500 transition"
+      name="sort"
+      id="sort"
     >
-      <thead class="sticky top-0 bg-gray-50 z-10">
+      <option value="">-- Sắp xếp tài khoản --</option>
+      <option value="username-asc" <%= query.sort === 'username-asc' ? 'selected' : '' %>>Tên A-Z</option>
+      <option value="username-desc" <%= query.sort === 'username-desc' ? 'selected' : '' %>>Tên Z-A</option>
+      <option value="created_at-desc" <%= query.sort === 'created_at-desc' ? 'selected' : '' %>>Mới nhất</option>
+      <option value="created_at-asc" <%= query.sort === 'created_at-asc' ? 'selected' : '' %>>Cũ nhất</option>
+    </select>
+
+    <button
+      class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 font-medium w-full lg:w-auto"
+    >
+      Tìm kiếm
+    </button>
+  </form>
+
+  <!-- Bảng dữ liệu -->
+  <div class="overflow-x-auto bg-white shadow-md rounded-2xl border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-gray-700">
+      <thead class="bg-gray-50">
         <tr>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            #
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            tài khoản
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-           quyền
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-           họ tên
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600"
-          >
-            Hành động
-          </th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">#</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Tài khoản</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Quyền</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Họ tên</th>
+          <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Hành động</th>
         </tr>
       </thead>
-      <tbody class="relative z-0">
+      <tbody class="divide-y divide-gray-100">
         <% accounts.forEach((account, index) => { %>
-        <tr class="hover:bg-gray-100 relative">
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= ++index %>
+        <tr class="hover:bg-blue-50 transition duration-150">
+          <td class="px-6 py-4"><%= ++index %></td>
+          <td class="px-6 py-4 font-medium text-gray-800"><%= account.username %></td>
+          <td class="px-6 py-4">
+            <span class="px-3 py-1 rounded-full text-sm font-semibold 
+              <%= account.role === 'admin' ? 'bg-red-100 text-red-700' : 
+                  account.role === 'staff' ? 'bg-blue-100 text-blue-700' : 
+                  'bg-gray-100 text-gray-700' %>">
+              <%= account.role %>
+            </span>
           </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= account.username %>
-          </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= account.role %>
-          </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= account.user.fullname %>
-          </td>
-          <td
-            class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700 relative"
-          >
-            <div class="flex flex-col sm:flex-row flex-wrap gap-1">
-              <a
-                href="/accounts/edit/<%= account.id %>"
-                class="text-center p-2 bg-blue-100 text-blue-600 hover:underline block mb-1 hover:bg-blue-200 rounded px-1"
-                >Sửa</a
-              >
-              <a
-                href="/accounts/delete/<%= account.id %>"
-                class="text-center p-2 bg-red-100 text-red-600 hover:underline block mb-1 hover:bg-red-200 rounded px-1"
-                >Xóa</a
-              >
-              <a
-                href="/accounts/reissue-password/<%= account.id %>"
-                class="text-center p-2 bg-yellow-100 text-yellow-600 hover:underline block mb-1 hover:bg-yellow-200 rounded px-1"
-                >Cấp lại mật khẩu</a
-              >
-             
-              
-              <a
-                href="/accounts/detail/<%= account.id %>"
-                class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
-                >Chi tiết</a
-              >
+          <td class="px-6 py-4 text-gray-700"><%= account.user.fullname %></td>
+          <td class="px-6 py-4 text-center">
+            <div class="flex flex-wrap justify-center gap-2">
+              <a href="/dashboard/accounts/detail/<%= account.id %>" class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-200 transition text-sm font-medium">Chi tiết</a>
+              <a href="/dashboard/accounts/edit/<%= account.id %>" class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition text-sm font-medium">Sửa</a>
+              <a href="/dashboard/accounts/reissue-password/<%= account.id %>" class="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg hover:bg-yellow-200 transition text-sm font-medium">Cấp lại mật khẩu</a>
+              <a href="/dashboard/accounts/delete/<%= account.id %>" class="bg-red-100 text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-200 transition text-sm font-medium">Xóa</a>
             </div>
           </td>
         </tr>
@@ -110,28 +99,14 @@
       </tbody>
     </table>
   </div>
-  <%- include('../partials/pagination', { totals, page, query }) %>
 
-  
+  <!-- Pagination -->
+  <div class="mt-4 flex justify-center">
+    <%- include('../partials/pagination', { totals, page, query }) %>
+  </div>
 </div>
-  <script>
-    function toggleMenu(id) {
-      document.querySelectorAll('[id^="menu-"]').forEach((m) => {
-        if (m.id !== "menu-" + id) m.classList.add("hidden");
-      }); // Hiện / ẩn menu được chọn
-      const menu = document.getElementById("menu-" + id);
-      menu.classList.toggle("hidden");
-    }
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest("td")) {
-        document
-          .querySelectorAll('[id^="menu-"]')
-          .forEach((m) => m.classList.add("hidden"));
-      }
-    });
-  </script>
 
-<script src="js/dispatchSelectForm.js"></script>
+<script src="/js/dispatchSelectForm.js"></script>
 <script>
   dispatchSelectForm('#search-form', '#sort');
 </script>

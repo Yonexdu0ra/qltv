@@ -2,6 +2,7 @@ const { decodeJWT, encodeJWT } = require("../utils/jwt");
 
 const authenticationMiddleware = async (req, res, next) => {
     try {
+
         const access_token = req.cookies.access_token;
         const refresh_token = req.cookies.refresh_token;
         const isPathLogin = req.path.startsWith("/auth/login");
@@ -45,6 +46,11 @@ const authenticationMiddleware = async (req, res, next) => {
         // Gán user vào req
         if (decodedAccessToken && decodedAccessToken !== "TokenExpiredError") {
             req.user = decodedAccessToken;
+            res.locals.user = req.user || {};
+            const role = req?.user?.role
+            const layout = !role ? false : role === "Reader" ? "layouts/readerLayout" : "layout"
+            res.locals.layout = layout
+
         }
 
         next();

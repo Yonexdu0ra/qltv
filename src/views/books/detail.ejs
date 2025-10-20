@@ -1,17 +1,55 @@
-<div class="max-w-5xl mx-auto p-6 bg-white shadow rounded-lg space-y-2">
-  <h1 class="text-xl font-semibold mb-4">Chi tiết sách</h1>
+<div class="max-w-5xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-lg">
+  <h1 class="text-3xl font-bold mb-8 text-gray-800 flex items-center gap-2">
+    📚 Chi tiết sách
+  </h1>
 
-  <p><strong>Tên:</strong> <%= book.title %></p>
-  <p><strong>ISBN:</strong> <%= book.isbn %></p>
-  <p><strong>Năm xuất bản:</strong> <%= book.published_year %></p>
-  <p><strong>Tác giả:</strong> <%= book.authors.map(author => author.name).join(', ') %></p>
-  <p><strong>Thể loại:</strong> <%= book.genres.map(genre => genre.name).join(', ') %></p>
-  <p><strong>Số lượng:</strong> <%= book.quantity_total %></p>
-  <p><strong>Số lượng còn lại:</strong> <%= book.quantity_available %></p>
-  <p><strong>Mô tả:</strong> <%= book.description %></p>
-  <div>
-    <strong>Ảnh bìa:</strong>
-    <img src="<%= book.image_cover %>" alt="Ảnh bìa" class="mt-2 max-h-48">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Ảnh bìa -->
+    <div class="flex justify-center">
+      <img
+        src="<%= book.image_cover %>"
+        alt="Ảnh bìa"
+        class="rounded-xl shadow-md max-h-96 object-cover border border-gray-200"
+      />
+    </div>
+
+    <!-- Thông tin -->
+    <div class="md:col-span-2 space-y-5 text-gray-700">
+      <div>
+        <h2 class="text-2xl font-semibold text-gray-900"><%= book.title %></h2>
+        <p class="text-sm text-gray-500 mt-1">ISBN: <%= book.isbn %></p>
+      </div>
+
+      <!-- <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      </div> -->
+        <p><span class="font-medium text-gray-800">📅 Năm xuất bản:</span> <%= book.published_year %></p>
+        <!-- <p><span class="font-medium text-gray-800">📦 Số lượng tổng:</span> <%= book.quantity_total %></p> -->
+      <p><span class="font-medium text-gray-800">📘 Còn lại:</span> <%= book.quantity_available %> / <%= book.quantity_total %></p>
+
+      <p><span class="font-medium text-gray-800">✍️ Tác giả:</span> <%= book.authors.map(a => a.name).join(', ') %></p>
+      <p><span class="font-medium text-gray-800">🏷️ Thể loại:</span> <%= book.genres.map(g => g.name).join(', ') %></p>
+
+      <div>
+        <p class="font-medium text-gray-800">📝 Mô tả:</p>
+        <p class="bg-gray-50 p-3 rounded-lg border border-gray-200 mt-1 text-gray-600 leading-relaxed">
+          <%= book.description || 'Không có mô tả' %>
+        </p>
+      </div>
+
+      <div class="pt-6 flex items-center gap-4">
+        <a
+          href="/borrow/add/?q=<%= encodeURIComponent(book.title) %>"
+          class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+        >
+          📖 Mượn sách
+        </a>
+        <a
+          href="/books"
+          class="text-gray-600 hover:text-blue-600 hover:underline transition"
+        >
+          ← Quay lại danh sách
+        </a>
+      </div>
+    </div>
   </div>
-  <a href="/borrow/add/?q=<%= encodeURIComponent(book.title) %>">Mượn sách</a>
 </div>

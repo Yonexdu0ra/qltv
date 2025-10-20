@@ -4,7 +4,9 @@ class AuthController {
     static renderViewLogin(req, res) {
         return res.render("auth/login", { title: "Đăng nhập", layout: false });
     }
-
+    static renderViewChangePassword(req, res) {
+        return res.render("auth/changePassword", { title: "Đổi mật khẩu" });
+    }
     static async handleLogin(req, res) {
         try {
             let { username, password } = req.body;

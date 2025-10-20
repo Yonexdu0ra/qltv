@@ -9,8 +9,12 @@ class AccountController {
         const page = isNaN(parseInt(query.page)) || parseInt(query.page) < 1 ? 1 : parseInt(query.page);
         try {
             const limit = query.limit ? query.limit > 0 ? parseInt(query.limit) : 10 : 10
-            const { count, rows: accounts } = await accountServices.getAllAccountWithUserPagination({ limit, ...query });
+            const { count, rows: accounts } = await accountServices.getAllAccountWithUserPagination({ limit, ...query }, {
+                attributes: ['id', 'username', 'role', 'created_at'],
+                userAttributes: ['fullname', 'id']
+            });
             const totalPages = Math.ceil(count / limit);
+            
             return res.render("accounts/index", { title: "Quản lý tài khoản", accounts, totals: totalPages, page, query });
         } catch (error) {
             console.error("Error rendering accounts view:", error.error);

@@ -47,7 +47,7 @@ class BorrowServices {
     );
   }
   static async createBorrow(data, options = {}) {
-    
+
     const borrow = await borrowRepository.create(data, {
       ...options,
     });
@@ -72,7 +72,7 @@ class BorrowServices {
     return borrowRepository.findByPk(id, { ...options });
   }
   static async getBorrowByIdWithBorrowDetails(id, options = {}) {
-    return borrowRepository.findOneWithBorrowDetails({ id}, { ...options });
+    return borrowRepository.findOneWithBorrowDetails({ id }, { ...options });
   }
   static async getBorrowByIdWithBorrowerAndApproverAndBooks(id, options = {}) {
     return borrowRepository.findOneWithBorrowerAndApproverAndBook(
@@ -87,7 +87,7 @@ class BorrowServices {
     );
   }
   static async getAllBorrowWithBorrowerAndApproverAndBooks(query, options = {}) {
-    const where = {  };
+    const where = {};
     const bookWhere = {};
     if (query.q) {
       bookWhere.title = {
@@ -165,7 +165,7 @@ class BorrowServices {
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ],
     ];
-    if(["BORROWED", "APPROVED", "REJECTED", "CANCELLED", "RETURNED"].includes(sortBy) && sortOrder) {
+    if (["BORROWED", "APPROVED", "REJECTED", "CANCELLED", "RETURNED"].includes(sortBy) && sortOrder) {
       where.status = { [Op.eq]: sortBy };
       order[0] = [
         "created_at",

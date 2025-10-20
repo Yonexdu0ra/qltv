@@ -19,8 +19,8 @@ class AccountRepository {
             include: [{
                 model: User,
                 as: 'user',
-                where: options.userWhere || {},
-                attributes: options.userAttributes || [],
+                where: options.userWhere,
+                attributes: options.userAttributes ,
             }]
         });
     }
@@ -55,8 +55,8 @@ class AccountRepository {
             include: [{
                 model: User,
                 as: 'user',
-                where: options.userWhere || {},
-                attributes: options.userAttributes || [],
+                where: options.userWhere ,
+                attributes: options.userAttributes,
             }]
         });
     }

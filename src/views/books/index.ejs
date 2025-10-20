@@ -1,123 +1,114 @@
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <h2 class="text-3xl font-bold text-gray-800 tracking-tight flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 16v-2m8-8h2M4 12H2m16.95 6.95l1.414 1.414M5.636 5.636 4.222 4.222m14.142 0-1.414 1.414M5.636 18.364 4.222 19.778" />
+      </svg>
+      Quản lý sách
+    </h2>
+    <a
+      href="<%=currentPath%>/add"
+      class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-green-600 hover:to-emerald-700 transition duration-200 font-medium"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Thêm sách
+    </a>
+  </div>
 
-<div class="flex flex-col gap-4 relative">
-  <h2 class="text-2xl font-bold text-gray-700">Quản lý tác giả</h2>
-  <%- include('../errorMessageWithQuery') %> <%-
-  include('../successMessageWithQuery') %>
-  <a href="/books/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm thể loại</a>
-  <form id="search-form" class="flex flex-col gap-4">
-    <div class="flex flex-col sm:flex-row items-center flex-wrap justify-center gap-2">
+  <%- include('../errorMessageWithQuery') %>
+  <%- include('../successMessageWithQuery') %>
+
+  <!-- Search + Sort -->
+  <form id="search-form" class="bg-white shadow-sm rounded-2xl p-5 flex flex-col lg:flex-row items-center justify-between gap-4 border border-gray-200">
+    <div class="relative flex-1 w-full">
       <input
         name="q"
         type="text"
-        placeholder="Tìm kiếm sách"
+        placeholder="Tìm kiếm theo tên, ISBN..."
         value="<%= query.q || '' %>"
-        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
+        class="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
-      <select
-        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
-        name="sort"
-        id="sort"
-      >
-        <option value="">--Sắp xếp sách--</option>
-        <option value="title-asc" <%= query.sort === 'title-asc' ? 'selected' : '' %>>Sắp xếp theo tên A-Z</option>
-        <option value="title-desc" <%= query.sort === 'title-desc' ? 'selected' : '' %>>Sắp xếp theo tên Z-A</option>
-        <option value="createdAt-desc" <%= query.sort === 'createdAt-desc' ? 'selected' : '' %>>Mới nhất</option>
-        <option value="createdAt-asc" <%= query.sort === 'createdAt-asc' ? 'selected' : '' %>>Cũ nhất</option>
-      </select>
-      <button class="bg-blue-600 w-full sm:w-25 text-white px-4 py-2 rounded">
-        Tìm kiếm
-      </button>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+      </svg>
     </div>
-  </form>
-  <div class="overflow-x-auto relative">
-    <table
-      class="min-w-full bg-white border rounded border-gray-200 relative z-0"
+
+    <select
+      class="border border-gray-300 rounded-xl px-4 py-2.5 w-full lg:w-auto focus:ring-2 focus:ring-blue-500 transition"
+      name="sort"
+      id="sort"
     >
-      <thead class="sticky top-0 bg-gray-50 z-10">
+      <option value="">-- Sắp xếp --</option>
+      <option value="title-asc" <%= query.sort === 'title-asc' ? 'selected' : '' %>>Tên A-Z</option>
+      <option value="title-desc" <%= query.sort === 'title-desc' ? 'selected' : '' %>>Tên Z-A</option>
+      <option value="created_at-desc" <%= query.sort === 'created_at-desc' ? 'selected' : '' %>>Mới nhất</option>
+      <option value="created_at-asc" <%= query.sort === 'created_at-asc' ? 'selected' : '' %>>Cũ nhất</option>
+    </select>
+
+    <button
+      class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 font-medium w-full lg:w-auto"
+    >
+      Tìm kiếm
+    </button>
+  </form>
+
+  <!-- Bảng -->
+  <div class="overflow-x-auto bg-white shadow-lg rounded-2xl border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-gray-700">
+      <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
         <tr>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            #
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            ảnh
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            tên sách
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            isbn
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            năm xuất bản
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            số lượng
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600"
-          >
-            Hành động
-          </th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">#</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Ảnh</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Tên sách</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">ISBN</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Năm XB</th>
+          <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Số lượng</th>
+          <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Hành động</th>
         </tr>
       </thead>
-      <tbody class="relative z-0">
+      <tbody class="divide-y divide-gray-100">
         <% books.forEach((book, index) => { %>
-        <tr class="hover:bg-gray-100 relative">
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= ++index %>
-          </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-             <img
-              src="<%= book.image_cover %>"
+        <tr class="even:bg-gray-50 hover:bg-blue-50/70 transition duration-200 ease-in-out">
+          <td class="px-6 py-4 text-sm font-medium text-gray-700"><%= ++index %></td>
+          <td class="px-6 py-4">
+            <img
+              src="<%= book.image_cover || 'https://via.placeholder.com/80x100?text=No+Image' %>"
               alt="<%= book.title %>"
-              class="w-12 h-12 object-cover rounded"
+              class="w-16 h-20 object-cover rounded-lg shadow-sm border border-gray-200"
             />
           </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= book.title %>
+          <td class="px-6 py-4 font-semibold text-gray-800"><%= book.title %></td>
+          <td class="px-6 py-4 text-gray-600"><%= book.isbn %></td>
+          <td class="px-6 py-4 text-gray-600"><%= book.published_year %></td>
+          <td class="px-6 py-4 text-center">
+            <span class="font-semibold text-blue-700"><%= book.quantity_available %></span>
+            <span class="text-gray-400">/</span>
+            <span class="text-gray-500"><%= book.quantity_total %></span>
           </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= book.isbn %>
-          </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= book.published_year %>
-          </td>
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= book.quantity_available %> / <%= book.quantity_total %>
-          </td>
-          <td
-            class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700 relative"
-          >
-            <div class="flex flex-col sm:flex-row flex-wrap gap-1">
+          <td class="px-6 py-4">
+            <div class="flex justify-center gap-2 flex-wrap">
               <a
-                href="/books/edit/<%= book.id %>"
-                class="text-center p-2 bg-blue-100 text-blue-600 hover:underline block mb-1 hover:bg-blue-200 rounded px-1"
-                >Sửa</a
+                href="/books/<%= book.slug %>"
+                class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-100 transition font-medium border border-green-200"
               >
+                📖 Chi tiết
+               
+              </a>
               <a
-                href="/books/delete/<%= book.id %>"
-                class="text-center p-2 bg-red-100 text-red-600 hover:underline block mb-1 hover:bg-red-200 rounded px-1"
-                >Xóa</a
+                href="<%=currentPath%>/edit/<%=  book.id %>"
+                class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition font-medium border border-blue-200"
               >
-             
-              
+                ✏️ Sửa
+              </a>
               <a
-                href="/books/detail/<%= book.id %>"
-                class="text-center p-2 bg-green-100 text-green-600 hover:underline block mb-1 hover:bg-green-200 rounded px-1"
-                >Chi tiết</a
+                href="<%=currentPath%>/delete/<%=  book.id %>"
+                class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-100 transition font-medium border border-red-200"
               >
+                🗑️ Xóa
+              </a>
             </div>
           </td>
         </tr>
@@ -125,28 +116,15 @@
       </tbody>
     </table>
   </div>
-  <%- include('../partials/pagination', { totals, page, query }) %>
 
-  
+  <!-- Phân trang -->
+  <div class="mt-6 flex justify-center">
+    <%- include('../partials/pagination', { totals, page, query }) %>
+  </div>
 </div>
-  <script>
-    function toggleMenu(id) {
-      document.querySelectorAll('[id^="menu-"]').forEach((m) => {
-        if (m.id !== "menu-" + id) m.classList.add("hidden");
-      }); // Hiện / ẩn menu được chọn
-      const menu = document.getElementById("menu-" + id);
-      menu.classList.toggle("hidden");
-    }
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest("td")) {
-        document
-          .querySelectorAll('[id^="menu-"]')
-          .forEach((m) => m.classList.add("hidden"));
-      }
-    });
-  </script>
 
-<script src="js/dispatchSelectForm.js"></script>
+<script src="/js/dispatchSelectForm.js"></script>
 <script>
   dispatchSelectForm('#search-form', '#sort');
 </script>
+

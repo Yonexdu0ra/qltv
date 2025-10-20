@@ -1,33 +1,16 @@
-<header
-  class="bg-white shadow-sm z-50 flex items-center justify-between px-4 py-3 md:px-6"
->
+<header class="bg-white shadow-sm z-50 flex items-center justify-between px-4 py-3 md:px-6">
   <div class="flex items-center gap-2">
     <!-- Nút mở sidebar trên mobile -->
-    <button
-      id="menuToggle"
-      class="p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none md:hidden"
-    >
+    <button id="menuToggle" class="p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none md:hidden">
       <!-- icon 3 gạch -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M4 6h16M4 12h16M4 18h16"
-        />
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
-    <h1 class="text-xl font-semibold text-gray-700">Quản lý thư viện</h1>
+    <!-- <h1 class="text-xl font-semibold text-gray-700"><a href="/">Quản lý thư viện</a></h1> -->
   </div>
 
-  <div class="relative">
-    <!-- Avatar / Tên -->
+  <!-- <div class="relative">
     <button
       id="userMenuButton"
       class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 focus:outline-none"
@@ -51,7 +34,6 @@
       </svg>
     </button>
 
-    <!-- Dropdown menu -->
     <div
       id="userDropdown"
       class="hidden absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg py-2 z-50"
@@ -74,11 +56,11 @@
         </button>
       </form>
     </div>
-  </div>
+  </div> -->
 </header>
 
 <script>
-  
+
   // const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
   // const menuToggle = document.getElementById("menuToggle");

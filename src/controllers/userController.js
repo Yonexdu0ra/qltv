@@ -23,20 +23,29 @@ class UserController {
             if (!user) throw new Error("Người dùng không tồn tại");
             return res.render("users/edit", { title: "Cập nhật người dùng", user });
         } catch (error) {
-            return res.redirect("/users?error=" + encodeBase64(error.message));
+            return res.redirect("/dashboard/users?error=" + encodeBase64(error.message));
         }
     }
-
+    static async renderViewDetailUser(req, res) {
+        const { id } = req.params;
+        try {
+            const user = await userServices.getUserById(id);
+            if (!user) throw new Error("Người dùng không tồn tại");
+            return res.render("users/detail", { title: "Chi tiết người dùng", user });
+        } catch (error) {
+            return res.redirect("/not-found?error=" + encodeBase64(error.message));
+        }
+    }
     static async handleUpdateUser(req, res) { 
         const { id } = req.params
         try {
             const user = await userServices.getUserById(id);
             if (!user) throw new Error("Người dùng không tồn tại");
-            const isUpdated = await userServices.updateUser(user.id, req.body);
+            const isUpdated = await userServices.updateUserById(user.id, req.body);
             if (!isUpdated) throw new Error("Cập nhật người dùng không thành công");
-            return res.redirect("/users?success=" + encodeBase64("Cập nhật người dùng thành công"));
+            return res.redirect("/dashboard/users/?success=" + encodeBase64("Cập nhật người dùng thành công"));
         } catch (error) {
-            return res.redirect("/users?error=" + encodeBase64(error.message));
+            return res.redirect("/dashboard/users?error=" + encodeBase64(error.message));
         }
     }
 

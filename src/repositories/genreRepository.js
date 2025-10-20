@@ -27,9 +27,28 @@ class GenreRepository {
             ]
         })
     }
+    static findOneWithBooksPagination(query, options = {}) {
+        return Genre.findOne({
+            where: { ...query },
+            ...options,
+            include: [
+                {
+                    model: Book,
+                    as: "books",
+                    where: options.bookWhere || {},
+                    attributes: options.bookAttributes || [],
+                    through: { attributes: options.throughAttributes || [] },
+                    separate: true,
+                    limit: options.bookLimit || 10,
+                    offset: options.bookOffset || 0,
+                    order: options.bookOrder || [],
+                },
+            ],
+        });
+    }
     static findAllAndCount(query = {}, options = {}) {
         return Genre.findAndCountAll({
-            where: query,
+            where: {...query},
             ...options
         })
     }

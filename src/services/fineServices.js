@@ -3,19 +3,18 @@ const fineRepository = require("../repositories/fineRepository");
 class FineServices {
   static async getAllFines(query, options) {
     const where = {};
-    
-    const limit = options.limit
-      ? options.limit > 0
-        ? parseInt(options.limit)
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
         : 10
       : 10;
     const page =
-      isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
         ? 1
-        : parseInt(options.page);
+        : parseInt(query.page);
     const offset = (page - 1) * limit;
-    const [sortBy, sortOrder] = options.sort
-      ? options.sort.split("-")
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
       [sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
@@ -38,18 +37,18 @@ class FineServices {
         [Op.like]: `%${query.q}%`,
       };
     }
-    const limit = options.limit
-      ? options.limit > 0
-        ? parseInt(options.limit)
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
         : 10
       : 10;
     const page =
-      isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
         ? 1
-        : parseInt(options.page);
+        : parseInt(query.page);
     const offset = (page - 1) * limit;
-    const [sortBy, sortOrder] = options.sort
-      ? options.sort.split("-")
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
       [sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
@@ -78,7 +77,7 @@ class FineServices {
       { is_paid: true },
       { id },
       {
-       
+
         ...options,
       }
     );

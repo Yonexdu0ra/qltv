@@ -13,6 +13,10 @@ class HomeController {
 
         }
     }
+    static async renderViewNotFound(req, res) {
+        const { error } = req.query;
+        return res.render("notfound", { title: "Không tìm thấy trang", error });
+    }
 }
 
 

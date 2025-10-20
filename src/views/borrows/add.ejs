@@ -5,48 +5,88 @@
 <script src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
 <script src="/js/debounce.js"></script>
 <script src="/js/useChoice.js"></script>
-<div class="max-w-lg mx-auto p-6">
-  <h1 class="text-xl font-semibold mb-4">Thêm phiếu mượn</h1>
+
+<div class="max-w-lg mx-auto mt-10 bg-white p-8 rounded-2xl shadow-md">
+  <h1 class="text-3xl font-bold mb-6 text-gray-700 flex items-center gap-2">
+    📚 Thêm phiếu mượn
+  </h1>
+
   <%- include('../error') %>
-  <form method="POST" class="space-y-3">
+
+  <form method="POST" class="space-y-5">
+    <!-- Chọn sách -->
     <div class="flex flex-col gap-2">
-      <label for="books">Chọn sách:</label>
-      <select name="books" id="books" multiple></select>
+      <label for="books" class="text-sm font-medium text-gray-700">
+        Danh sách sách mượn
+      </label>
+      <select
+        name="books"
+        id="books"
+        multiple
+        required
+        class="border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+      ></select>
+      <p class="text-xs text-gray-500 italic">
+        (Bạn có thể chọn nhiều sách cùng lúc)
+      </p>
     </div>
+
+    <!-- Ngày mượn -->
     <div class="flex flex-col gap-2">
-      <label for="borrow_date">Chọn ngày mượn:</label>
+      <label for="borrow_date" class="text-sm font-medium text-gray-700">
+        Ngày mượn
+      </label>
       <input
         type="date"
         name="borrow_date"
         id="borrow_date"
         required
-        class="border rounded px-3 py-2"
+        class="border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
     </div>
+
+    <!-- Ngày trả -->
     <div class="flex flex-col gap-2">
-      <label for="due_date">Chọn ngày trả:</label>
+      <label for="due_date" class="text-sm font-medium text-gray-700">
+        Ngày trả dự kiến
+      </label>
       <input
         type="date"
         name="due_date"
         id="due_date"
         required
-        class="border rounded px-3 py-2"
+        class="border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
     </div>
-    <button class="bg-green-600 text-white px-4 py-2 rounded">Lưu</button>
-    <a href="/borrow" class="text-gray-600 hover:underline ml-3">Quay lại</a>
+
+    <!-- Nút hành động -->
+    <div class="flex flex-wrap items-center gap-3 pt-4">
+      <button
+        type="submit"
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium shadow transition"
+      >
+        💾 Lưu phiếu mượn
+      </button>
+      <a
+        href="/borrow"
+        class="text-gray-600 hover:text-blue-600 hover:underline transition"
+      >
+        ← Quay lại danh sách
+      </a>
+    </div>
   </form>
 </div>
 
 <script>
+  // Gợi ý sách động
   useChoice("#books", "/books/search", (data) => {
     return data.data.map((book) => ({
       value: book.id,
       label: book.title,
     }));
   });
-</script>
-<script>
+
+  // Tự động tìm sách nếu có query ?q= trên URL
   const url = new URL(window.location.href);
   const q = url.searchParams.get("q");
   const inputSearchBook = document.querySelector(

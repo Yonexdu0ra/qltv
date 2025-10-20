@@ -33,13 +33,14 @@ class BookService {
     return bookRepository.findOne({ slug }, { ...options });
   }
   static async getBookBySlugWithAuthorsAndGenres(slug, options = {}) {
+  
     return bookRepository.findOneWithAuthorAndGenre({ slug }, { ...options });
   }
   static async getBookById(id, options = {}) {
     return bookRepository.findByPk(id, { ...options });
   }
   static async getBookByIdWithAuthorsAndGenres(id, options = {}) {
-    return bookRepository.findOneWithAuthorAndGenre(id, { ...options });
+    return bookRepository.findOneWithAuthorAndGenre({ id }, { ...options });
   }
   static async getBooksWithPagination(query = {}, options = {}) {
     const where = {};
@@ -54,17 +55,51 @@ class BookService {
         : 10
       : 10;
     const page =
-      isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
         ? 1
-        : parseInt(options.page);
+        : parseInt(query.page);
     const offset = (page - 1) * limit;
-    const [sortBy, sortOrder] = options.sort
-      ? options.sort.split("-")
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
       [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
     ];
+    
+    
     return bookRepository.findWithPagination(where, {
+      limit,
+      offset,
+      order,
+      ...options,
+    });
+  }
+  static async getBooksWithAuthorPagination(query = {}, options = {}) {
+    const where = {};
+    if (query.q) {
+      where.title = {
+        [Op.like]: `%${query.q || ""}%`,
+      };
+    }
+    const limit = options.limit
+      ? options.limit > 0
+        ? parseInt(options.limit)
+        : 10
+      : 10;
+    const page =
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
+        ? 1
+        : parseInt(query.page);
+    const offset = (page - 1) * limit;
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
+      : ["created_at", "ASC"];
+    const order = [
+      [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
+    ];
+    
+    
+    return bookRepository.findWithAuthorPagination(where, {
       limit,
       offset,
       order,
@@ -89,18 +124,18 @@ class BookService {
         [Op.like]: `%${query.q || ""}%`,
       };
     }
-    const limit = options.limit
-      ? options.limit > 0
-        ? parseInt(options.limit)
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
         : 10
       : 10;
     const page =
-      isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
         ? 1
-        : parseInt(options.page);
+        : parseInt(query.page);
     const offset = (page - 1) * limit;
-    const [sortBy, sortOrder] = options.sort
-      ? options.sort.split("-")
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
       [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
@@ -124,7 +159,7 @@ class BookService {
     return bookRepository.delete({ id }, options);
   }
   static async decrementBookByIds(field, by = 1, ids = [], options = {}) {
-     bookRepository.decrement(
+    bookRepository.decrement(
       field,
       by,
       { id: { [Op.in]: ids } },
@@ -133,10 +168,10 @@ class BookService {
     return true;
   }
   static async decrementBookById(field, by = 1, id, options = {}) {
-    return bookRepository.decrement(field, by, {id}, options);
+    return bookRepository.decrement(field, by, { id }, options);
   }
   static async incrementBookById(field, by = 1, id, options = {}) {
-    return bookRepository.increment(field, by, {id}, options);
+    return bookRepository.increment(field, by, { id }, options);
   }
   static async incrementBookByIds(field, by = 1, ids = [], options = {}) {
     return bookRepository.increment(field, by, { id: { [Op.in]: ids } }, options);

@@ -15,10 +15,11 @@ class AuthorRepository {
   }
   static findOneWithBooks(query = {}, options = {}) {
     return Author.findOne({
-      where: query,
+      where: { ...query },
       ...options,
       include: [
         {
+          required: options.bookRequired || false,
           model: Book,
           as: "books",
           where: options.bookWhere || {},
@@ -36,10 +37,10 @@ class AuthorRepository {
         {
           model: Book,
           as: "books",
+          required: options.bookRequired || false,
           where: options.bookWhere || {},
           attributes: options.bookAttributes || [],
           through: { attributes: options.throughAttributes || [] },
-          separate: true,
           limit: options.bookLimit || 10,
           offset: options.bookOffset || 0,
           order: options.bookOrder || [],
@@ -73,7 +74,7 @@ class AuthorRepository {
   }
   static findWithPagination(query = {}, options = {}) {
     return Author.findAndCountAll({
-      where: query.where || {},
+      where: { ...query } || {},
       limit: options.limit || 10,
       offset: options.offset || 0,
       order: options.order || [],
@@ -82,7 +83,7 @@ class AuthorRepository {
   }
   static findWithBookPagination(query = {}, options = {}) {
     return Author.findAndCountAll({
-      where: query.where || {},
+      where: { ...query } || {},
       limit: query.limit || 10,
       offset: query.offset || 0,
       order: query.order || [],

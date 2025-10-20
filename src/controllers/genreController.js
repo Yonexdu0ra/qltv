@@ -12,8 +12,7 @@ class GenreController {
      
       const { count: totals, rows: genres } =
         await GenreServices.getAllGenresWithPagination({ ...req.query, limit });
-        
-        
+      
       const totalPages = Math.ceil(totals / limit);
       const page = parseInt(req.query.page) || 1;
       return res.render("genres/index", {
@@ -66,9 +65,9 @@ class GenreController {
     }
   }
   static async renderViewDetailGenre(req, res) {
+    const { slug } = req.params;
     try {
-      const { id } = req.params;
-      const genre = await GenreServices.getGenreById(id);
+      const genre = await GenreServices.getGenreBySlug(slug);
       if (!genre) throw new Error("Thể loại không tồn tại");
       return res.render("genres/detail", { title: "Chi tiết thể loại", genre });
     } catch (error) {

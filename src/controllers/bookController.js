@@ -47,6 +47,8 @@ class BookController {
   }
   static async renderViewEditBook(req, res) {
     const { id } = req.params;
+    console.log(id);
+    
     try {
       if (!id) throw new Error("Sách không tồn tại không thể sửa");
       const book = await bookServices.getBookByIdWithAuthorsAndGenres(id, {
@@ -55,16 +57,23 @@ class BookController {
         attributes: [
           "id",
           "title",
+          "isbn",
           "description",
           "image_cover",
           "published_year",
-          "quantity",
+          "quantity_total",
+          "quantity_available",
+          "slug"
         ],
       });
+   
+      
       if (!book) throw new Error("Sách không tồn tại không thể sửa");
       return res.render("books/edit", { book, title: "Sửa sách" });
     } catch (error) {
-      return res.redirect("/books?error=" + encodeBase64(error.message));
+      console.log(error);
+      
+      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async renderViewDeleteBook(req, res) {
@@ -82,6 +91,7 @@ class BookController {
     const { slug } = req.params;
     try {
       const book = await bookServices.getBookBySlugWithAuthorsAndGenres(slug);
+
       return res.render("books/detail", { book, title: "Chi tiết sách" });
     } catch (error) {
       return res.redirect("/not-found?error=" + encodeBase64(error.message));

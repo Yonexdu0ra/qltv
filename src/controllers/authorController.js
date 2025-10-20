@@ -1,15 +1,17 @@
 const authorService = require("../services/authorServices");
 const generateSlug = require("../utils/generateSlug");
 const encodeBase64 = require("../utils/base64");
+const { bookServices } = require("../services");
 
 class AuthorController {
   static async renderViewAuthor(req, res) {
     const { query } = req;
+    
     const page = parseInt(req.query.page) || 1;
     try {
       const limit = parseInt(req.query.limit) || 10;
       const { rows: authors, count: totals } =
-        await authorService.getAuthorByIdWithBooks({ ...query, limit });
+        await authorService.getAuthorsWithPagination({ ...query, limit });
       const totalPages = Math.ceil(totals / limit);
       return res.render("authors/index", {
         authors,
@@ -49,6 +51,7 @@ class AuthorController {
       if (!author) throw new Error("Tác giả không tồn tại không thể cập nhật");
       return res.render("authors/edit", { title: "Cập nhật tác giả", author });
     } catch (error) {
+      console.log(error);
       return res.redirect("/not-found?error=" + encodeBase64(error.message));
     }
   }
@@ -68,13 +71,18 @@ class AuthorController {
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     try {
-      const { count, rows: author } =
-        await authorService.getAuthorBySlugWithBooksPagination(slug, query);
+      const author =
+        await authorService.getAuthorBySlug(slug);
       if (!author) throw new Error("Tác giả không tồn tại");
+      const { rows: books, count } = await bookServices.getBooksWithAuthorPagination({ ...limit, query, page }, { authorWhere: { id: author.id }, authorAttributes: [] })
       const totalPages = Math.ceil(count / limit);
+      const data = {
+        ...author.toJSON(),
+        books,
+      }
       return res.render("authors/detail", {
         title: "Chi tiết tác giả",
-        author,
+        author: data,
         totals: totalPages,
         page,
         query,
@@ -107,7 +115,7 @@ class AuthorController {
         }
       );
       return res.redirect(
-        "/authors?success=" + encodeBase64("Thêm tác giả thành công")
+        "/dashboard/authors?success=" + encodeBase64("Thêm tác giả thành công")
       );
     } catch (error) {
       return res.render("authors/add", {
@@ -138,7 +146,7 @@ class AuthorController {
       );
       if (!isUpdateAuthor) throw new Error("Cập nhật tác giả thất bại");
       return res.redirect(
-        "/author?success=" + encodeBase64("Cập nhật tác giả thành công")
+        "/dashboard/authors?success=" + encodeBase64("Cập nhật tác giả thành công")
       );
     } catch (error) {
       return res.render("authors/edit", {
@@ -151,9 +159,14 @@ class AuthorController {
   static async handleDeleteAuthor(req, res) {
     const { id } = req.params;
     try {
-      const author = await authorService.getAuthorByIdWithBooks(id);
+    
+      const author = await authorService.getAuthorByIdWithBooks(id, {
+        attributes: ["id", "name"],
+        bookAttributes: ["id"],
+      });
+
       if (!author) throw new Error("Tác giả không tồn tại không thể xóa");
-      if (author.books || author.books.length > 0)
+      if (author.books && author.books.length > 0)
         throw new Error(
           "Tác giả đang có liên kết với một hoặc nhiều sách hiện không thể xóa tác giả"
         );
@@ -161,17 +174,17 @@ class AuthorController {
       const isDeleteAuthor = await authorService.deleteAuthorById(author.id);
       if (!isDeleteAuthor) throw new Error("Xóa tác giả thất bại");
       return res.redirect(
-        "/author?success=" + encodeBase64("Xóa tác giả thành công")
+        "/dashboard/authors?success=" + encodeBase64("Xóa tác giả thành công")
       );
     } catch (error) {
-      return res.render("authors/index", {
-        title: "Quản lý tác giả",
-        error: error.message,
-      });
+      console.log(error);
+      
+      return res.redirect(`/dashboard/authors/delete/${id}?error=` + encodeBase64(error.message));
     }
   }
   static async handleSearchAuthors(req, res) {
     try {
+
       const { q, limit, page } = req.query;
       const { rows: authors, count: total } =
         await authorService.getAuthorsByName(q || "", {
@@ -180,6 +193,8 @@ class AuthorController {
         });
       return res.json({ success: true, data: authors, total });
     } catch (error) {
+      console.log(error);
+
       return res.json({
         success: false,
         message: error.message,
