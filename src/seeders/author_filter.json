@@ -1,0 +1,206 @@
+[
+  {
+    "name": "Nguyễn Nhật Ánh",
+    "description": "Nhà văn Việt Nam nổi tiếng với các tác phẩm viết cho tuổi học trò, nhẹ nhàng và đầy cảm xúc."
+  },
+  {
+    "name": "Nam Cao",
+    "description": "Nhà văn hiện thực xuất sắc, nổi tiếng với những tác phẩm về thân phận con người và xã hội Việt Nam trước cách mạng."
+  },
+  {
+    "name": "Ngô Tất Tố",
+    "description": "Tác giả của 'Tắt đèn', phản ánh sâu sắc hiện thực nông thôn Việt Nam đầu thế kỷ 20."
+  },
+  {
+    "name": "Vũ Trọng Phụng",
+    "description": "Nhà văn trào phúng bậc thầy, nổi tiếng với tác phẩm 'Số đỏ'."
+  },
+  {
+    "name": "Tô Hoài",
+    "description": "Nhà văn với ngòi bút giản dị, gần gũi, đặc biệt qua tác phẩm 'Dế Mèn phiêu lưu ký'."
+  },
+  {
+    "name": "Nguyễn Du",
+    "description": "Đại thi hào dân tộc, tác giả của kiệt tác 'Truyện Kiều'."
+  },
+  {
+    "name": "Xuân Quỳnh",
+    "description": "Nữ thi sĩ Việt Nam nổi tiếng với những bài thơ tình chân thành, dịu dàng."
+  },
+  {
+    "name": "Hồ Chí Minh",
+    "description": "Nhà cách mạng, chính trị gia, và tác giả nhiều tác phẩm có giá trị lịch sử, chính trị, và đạo đức."
+  },
+  {
+    "name": "Nguyễn Minh Châu",
+    "description": "Nhà văn hiện đại với các tác phẩm mang chiều sâu triết lý và nhân văn."
+  },
+  {
+    "name": "Nguyễn Huy Thiệp",
+    "description": "Nhà văn đương đại nổi tiếng với phong cách hiện thực, sắc sảo và đầy ẩn dụ."
+  },
+  {
+    "name": "J.K. Rowling",
+    "description": "Tác giả người Anh, nổi tiếng toàn cầu với bộ truyện 'Harry Potter'."
+  },
+  {
+    "name": "George Orwell",
+    "description": "Tác giả người Anh, được biết đến với các tác phẩm phê phán xã hội như '1984' và 'Animal Farm'."
+  },
+  {
+    "name": "J.R.R. Tolkien",
+    "description": "Tác giả người Anh, cha đẻ của thế giới giả tưởng 'The Lord of the Rings'."
+  },
+  {
+    "name": "Stephen King",
+    "description": "Bậc thầy thể loại kinh dị với hàng loạt tiểu thuyết nổi tiếng như 'IT' và 'The Shining'."
+  },
+  {
+    "name": "Agatha Christie",
+    "description": "Nữ hoàng truyện trinh thám, tác giả của hơn 70 tiểu thuyết về thám tử Poirot và Miss Marple."
+  },
+  {
+    "name": "Arthur Conan Doyle",
+    "description": "Cha đẻ của thám tử lừng danh Sherlock Holmes."
+  },
+  {
+    "name": "Ernest Hemingway",
+    "description": "Nhà văn Mỹ đoạt Nobel, nổi tiếng với phong cách viết ngắn gọn và sâu sắc."
+  },
+  {
+    "name": "F. Scott Fitzgerald",
+    "description": "Tác giả của 'The Great Gatsby', phản ánh xã hội Mỹ thập niên 1920."
+  },
+  {
+    "name": "Mark Twain",
+    "description": "Nhà văn Mỹ với tác phẩm kinh điển 'Tom Sawyer' và 'Huckleberry Finn'."
+  },
+  {
+    "name": "Charles Dickens",
+    "description": "Tác giả người Anh với nhiều tác phẩm kinh điển như 'Oliver Twist' và 'A Tale of Two Cities'."
+  },
+  {
+    "name": "Jane Austen",
+    "description": "Tác giả nữ người Anh, nổi tiếng với các tiểu thuyết lãng mạn – xã hội như 'Kiêu hãnh và định kiến'."
+  },
+  {
+    "name": "Leo Tolstoy",
+    "description": "Nhà văn Nga vĩ đại, tác giả của 'Chiến tranh và hòa bình' và 'Anna Karenina'."
+  },
+  {
+    "name": "Fyodor Dostoevsky",
+    "description": "Tác giả Nga nổi tiếng với các tiểu thuyết triết lý và tâm lý như 'Tội ác và hình phạt'."
+  },
+  {
+    "name": "Anton Chekhov",
+    "description": "Nhà văn, nhà viết kịch Nga – bậc thầy của truyện ngắn hiện đại."
+  },
+  {
+    "name": "Victor Hugo",
+    "description": "Nhà văn Pháp lừng danh với tác phẩm 'Những người khốn khổ'."
+  },
+  {
+    "name": "Alexandre Dumas",
+    "description": "Tác giả Pháp của 'Ba chàng lính ngự lâm' và 'Bá tước Monte Cristo'."
+  },
+  {
+    "name": "Albert Camus",
+    "description": "Triết gia và nhà văn Pháp – người khai sinh chủ nghĩa phi lý trong văn học."
+  },
+  {
+    "name": "Franz Kafka",
+    "description": "Nhà văn Séc với phong cách siêu thực và triết lý về sự phi lý của tồn tại."
+  },
+  {
+    "name": "Paulo Coelho",
+    "description": "Tác giả người Brazil của 'Nhà giả kim' – biểu tượng của hành trình tìm kiếm bản thân."
+  },
+  {
+    "name": "Haruki Murakami",
+    "description": "Nhà văn Nhật Bản nổi tiếng với phong cách siêu thực và lãng mạn hiện đại."
+  },
+  {
+    "name": "Yasunari Kawabata",
+    "description": "Tác giả Nhật Bản đoạt giải Nobel Văn học năm 1968."
+  },
+  {
+    "name": "Khaled Hosseini",
+    "description": "Tác giả Afghanistan với những tiểu thuyết đầy cảm động như 'Người đua diều'."
+  },
+  {
+    "name": "Dan Brown",
+    "description": "Tác giả Mỹ của những tiểu thuyết trinh thám – tôn giáo nổi tiếng như 'Mật mã Da Vinci'."
+  },
+  {
+    "name": "John Grisham",
+    "description": "Tác giả Mỹ chuyên viết tiểu thuyết pháp lý – tội phạm."
+  },
+  {
+    "name": "George R.R. Martin",
+    "description": "Tác giả của bộ truyện 'A Song of Ice and Fire', nền tảng cho 'Game of Thrones'."
+  },
+  {
+    "name": "Isaac Asimov",
+    "description": "Nhà văn, nhà khoa học với loạt truyện khoa học viễn tưởng 'Foundation' nổi tiếng."
+  },
+  {
+    "name": "Carl Sagan",
+    "description": "Nhà thiên văn học và tác giả nổi tiếng với sách khoa học phổ thông 'Cosmos'."
+  },
+  {
+    "name": "Yuval Noah Harari",
+    "description": "Nhà sử học và tác giả của 'Sapiens' và 'Homo Deus'."
+  },
+  {
+    "name": "Stephen Hawking",
+    "description": "Nhà vật lý lý thuyết nổi tiếng với 'Lược sử thời gian'."
+  },
+  {
+    "name": "Albert Einstein",
+    "description": "Nhà khoa học thiên tài, tác giả của nhiều công trình về vật lý lý thuyết và triết học khoa học."
+  },
+  {
+    "name": "Sigmund Freud",
+    "description": "Cha đẻ của phân tâm học, với nhiều công trình về tâm lý học con người."
+  },
+  {
+    "name": "Carl Jung",
+    "description": "Nhà tâm lý học Thụy Sĩ, người phát triển lý thuyết về vô thức tập thể."
+  },
+  {
+    "name": "Plato",
+    "description": "Triết gia Hy Lạp cổ đại – người đặt nền móng cho triết học phương Tây."
+  },
+  {
+    "name": "Aristotle",
+    "description": "Triết gia và nhà khoa học Hy Lạp, học trò của Plato, thầy của Alexander Đại đế."
+  },
+  {
+    "name": "Confucius (Khổng Tử)",
+    "description": "Nhà hiền triết Trung Hoa, người sáng lập Nho giáo và triết lý đạo đức Á Đông."
+  },
+  {
+    "name": "Lão Tử",
+    "description": "Triết gia Trung Hoa, người sáng lập Đạo giáo với tư tưởng 'vô vi'."
+  },
+  {
+    "name": "Tào Tuyết Cần",
+    "description": "Tác giả Trung Hoa của kiệt tác 'Hồng Lâu Mộng'."
+  },
+  {
+    "name": "Kim Dung",
+    "description": "Tác giả võ hiệp nổi tiếng Trung Quốc với hàng loạt tiểu thuyết kinh điển."
+  },
+  {
+    "name": "Mạc Ngôn",
+    "description": "Nhà văn Trung Quốc đoạt giải Nobel Văn học 2012."
+  },
+  {
+    "name": "Gabriel García Márquez",
+    "description": "Nhà văn Colombia đoạt Nobel, tác giả của 'Trăm năm cô đơn'."
+  },
+  {
+    "name": "Hemingway",
+    "description": "Tác giả Mỹ với phong cách tối giản, giàu sức nặng cảm xúc."
+  }
+]

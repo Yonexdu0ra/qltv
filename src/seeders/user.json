@@ -1,0 +1,32 @@
+[
+  {
+    "fullname": "Phạm Ngọc Quý",
+    "email": "phamngocquy@example.com",
+    "phone": "0123456789",
+    "address": "Thái Nguyên"
+  },
+  {
+    "fullname": "Nguyễn Mạnh Cường",
+    "email": "nguyenmanhcuong@example.com",
+    "phone": "0123456789",
+    "address": "Thái Nguyên"
+  },
+  {
+    "fullname": "Đào Tiến Dũng",
+    "email": "daotiendung@example.com",
+    "phone": "0123456789",
+    "address": "Thái Nguyên"
+  },
+  {
+    "fullname": "Lê Đức Tâm",
+    "email": "leductam@example.com",
+    "phone": "0123456789",
+    "address": "Thái Nguyên"
+  },
+  {
+    "fullname": "Nguyễn Đức Nhuận",
+    "email": "nguyenducnhuan@example.com",
+    "phone": "0123456789",
+    "address": "Thái Nguyên"
+  }
+]

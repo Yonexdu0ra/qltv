@@ -1,0 +1,27 @@
+[
+  {
+    "username": "admin",
+    "password": "123456",
+    "role": "Admin"
+  },
+  {
+    "username": "nmcuong",
+    "password": "123456",
+    "role": "Librarian"
+  },
+  {
+    "username": "dungos",
+    "password": "123456",
+    "role": "Reader"
+  },
+  {
+    "username": "ldtam",
+    "password": "123456",
+    "role": "Reader"
+  },
+  {
+    "username": "ndnhuan",
+    "password": "123456",
+    "role": "Librarian"
+  }
+]
