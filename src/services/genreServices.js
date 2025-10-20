@@ -6,13 +6,10 @@ const GenreRepository = require("../repositories/genreRepository");
 class GenreServices {
 
 
-    static async getAllGenresWithPagination(query, options = {}) {
-        const genres = await GenreRepository.findGenres(query, options);
-        return genres;
-    }
+    
     static async getAllGenreByNameWithPagination(query, options = {}) {
-        const where = {};   
-        if(query.q) {
+        const where = {};
+        if (query.q) {
             where.name = {
                 [Op.like]: `%${query.q}%`
             }
@@ -73,7 +70,7 @@ class GenreServices {
     }
     static async getAllGenresWithPagination(query, options = {}) {
         const where = {}
-        if (query) {
+        if (query.q) {
             where.name = {
                 [Op.like]: `%${query.q}%`
             }
@@ -83,7 +80,8 @@ class GenreServices {
         const offset = (page - 1) * limit
         const [sortBy, sortOrder] = query.sort ? query.sort.split("-") : ["name", "ASC"]
         const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
-        return await GenreRepository.findAllAndCount(where, { ...options, limit, offset, order });
+        
+        return  GenreRepository.findAllAndCount(where, { ...options, limit, offset, order });
     }
     static countGenres() {
         return GenreRepository.count();

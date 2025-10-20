@@ -27,7 +27,7 @@ class GenreRepository {
             ]
         })
     }
-    static findAllAndCount(query, options = {}) {
+    static findAllAndCount(query = {}, options = {}) {
         return Genre.findAndCountAll({
             where: query,
             ...options

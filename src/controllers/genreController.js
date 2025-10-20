@@ -3,14 +3,17 @@ const encodeBase64 = require("../utils/base64");
 const generateSlug = require("../utils/generateSlug");
 class GenreController {
   static async renderViewGenre(req, res) {
+    const limit = req.query.limit
+      ? req.query.limit > 0
+        ? parseInt(req.query.limit)
+        : 5
+      : 5;
     try {
-      const limit = req.query.limit
-        ? req.query.limit > 0
-          ? parseInt(req.query.limit)
-          : 5
-        : 5;
+     
       const { count: totals, rows: genres } =
         await GenreServices.getAllGenresWithPagination({ ...req.query, limit });
+        
+        
       const totalPages = Math.ceil(totals / limit);
       const page = parseInt(req.query.page) || 1;
       return res.render("genres/index", {
@@ -21,6 +24,8 @@ class GenreController {
         query: req.query,
       });
     } catch (error) {
+      console.log(error);
+      
       return res.render("genres/index", {
         title: "Quản lý thể loại",
         genres: [],

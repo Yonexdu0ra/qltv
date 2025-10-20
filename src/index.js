@@ -28,7 +28,7 @@ app.set("layout extractScripts", true);
 
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use(authenticationMiddleware);
+// app.use(authenticationMiddleware);
 app.use((req, res, next) => {
     res.locals.user = req.user || {};
     res.locals.currentPath = req.path;
