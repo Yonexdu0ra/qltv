@@ -48,7 +48,7 @@ class BookController {
   static async renderViewEditBook(req, res) {
     const { id } = req.params;
     console.log(id);
-    
+
     try {
       if (!id) throw new Error("Sách không tồn tại không thể sửa");
       const book = await bookServices.getBookByIdWithAuthorsAndGenres(id, {
@@ -66,13 +66,13 @@ class BookController {
           "slug"
         ],
       });
-   
-      
+
+
       if (!book) throw new Error("Sách không tồn tại không thể sửa");
       return res.render("books/edit", { book, title: "Sửa sách" });
     } catch (error) {
       console.log(error);
-      
+
       return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
@@ -84,14 +84,14 @@ class BookController {
       if (!book) throw new Error("Sách không tồn tại không thể sửa");
       return res.render("books/delete", { book, title: "Xóa sách" });
     } catch (error) {
-      return res.redirect("/books?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async renderViewDetailBook(req, res) {
     const { slug } = req.params;
     try {
       const book = await bookServices.getBookBySlugWithAuthorsAndGenres(slug);
-      if(!book) throw new Error("Sách không tồn tại");
+      if (!book) throw new Error("Sách không tồn tại");
       return res.render("books/detail", { book, title: "Chi tiết sách" });
     } catch (error) {
       return res.redirect("/not-found?error=" + encodeBase64(error.message));
@@ -159,6 +159,10 @@ class BookController {
     const image_cover = req.file?.path || null;
     const body = req.body || {};
     const transaction = await sequelize.transaction();
+    console.log(image_cover);
+    console.log(body);
+
+
     try {
       const authors = body.authors || [];
       const genres = body.genres || [];
@@ -185,8 +189,8 @@ class BookController {
         throw new Error("Sách không tồn tại không thể cập nhật");
       }
       const isUpdated = await bookServices.updateBookById(
+        { ...body, image_cover: image_cover ? image_cover : book.image_cover },
         book.id,
-        { ...body, image_cover },
         {
           fields: [
             "title",
@@ -206,11 +210,11 @@ class BookController {
 
       await transaction.commit();
       return res.redirect(
-        "/books?success=" + encodeBase64("Cập nhật sách thành công")
+        "/dashboard/books?success=" + encodeBase64("Cập nhật sách thành công")
       );
     } catch (error) {
       await transaction.rollback();
-      console.log(error);
+      console.log(error.message);
 
       return res.redirect(
         "/books/edit/" + req.params.id + "?error=" + encodeBase64(error.message)
@@ -228,7 +232,7 @@ class BookController {
         "/books?success=" + encodeBase64("Xóa sách thành công")
       );
     } catch (error) {
-      return res.redirect("/books?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async handleSearchBooks(req, res) {
