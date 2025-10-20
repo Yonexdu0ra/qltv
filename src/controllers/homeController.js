@@ -5,10 +5,9 @@ class HomeController {
         try {
             const { rows: books } = await bookServices.getBooksWithPagination();
             
-            return res.render("index", { title: "Trang chủ", books });
+            return res.render("index", { title: "Trang chủ", books, layout: 'layouts/readerLayout' });
         } catch (error) {
             console.log(error.message);
-            
             return res.render("index", { title: "Trang chủ", books: [] });
 
         }
