@@ -1,102 +1,58 @@
 const bcrypt = require("bcrypt");
-const accountRepository = require("../repositories/accountRepository");
+const { accountRepository } = require("../repositories");
 const { Op } = require("sequelize");
-
 class AccountServices {
-
-    static async findAccountsPagination(options) {
-        try {
-            try {
-                const where = {}
-                if (options.q) {
-                    where.username = {
-                        [Op.like]: `%${options.q}%`
-                    }
-                }
-                const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
-                const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
-                const offset = (page - 1) * limit
-
-
-                const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["username", "ASC"]
-
-                const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
-                return await accountRepository.findAccountsPagination({ where, limit, offset, order }, { attributes: ['id', 'username', 'role', 'createdAt'] });
-            } catch (error) {
-                throw error;
+    static getAllAccounts(query = {}, options = {}) {
+        return accountRepository.findAll(query, options);
+    }
+    static getAllAccountWithPagination(query = {}, options = {}) {
+        const where = {}
+        if (query.q) {
+            where.username = {
+                [Op.like]: `%${query.q || ""}%`
             }
-        } catch (error) {
-
         }
+        const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
+        const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
+        const offset = (page - 1) * limit
+        const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["created_at", "ASC"]
+        const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
+        return accountRepository.findWithPagination(query, { limit, offset, order, ...options });
     }
-    static async findAccountsPaginationWithUser(options) {
-        try {
-            try {
-                const where = {}
-                if (options.q) {
-                    where.username = {
-                        [Op.like]: `%${options.q}%`
-                    }
-                }
-                const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
-                const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
-                const offset = (page - 1) * limit
-
-
-                const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["username", "ASC"]
-
-                const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
-                return await accountRepository.findAccountsPaginationWithUser({ where, limit, offset, order }, {
-                    attributes: ['id', 'username', 'role', 'createdAt'], user: {
-                        attributes: ['id', 'fullname']
-                    }
-                });
-            } catch (error) {
-                console.log(error.message);
-                
-                throw error;
+    static getAllAccountWithUserPagination(query = {}, options = {}) {
+        const where = {}
+        const userWhere = {}
+        if (query.q) {
+            where.username = {
+                [Op.like]: `%${query.q || ""}%`
             }
-        } catch (error) {
-
+            userWhere.fullName = {
+                [Op.like]: `%${query.q || ""}%`
+            }
         }
+        const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
+        const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
+        const offset = (page - 1) * limit
+        const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["created_at", "ASC"]
+        const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
+        return accountRepository.findWithUserPagination(where, { userWhere, limit, offset, order, ...options });
     }
-    static async findAccountById(id) {
-        try {
-            return await accountRepository.findAccount({ id });
-        } catch (error) {
-            throw error;
-        }
+    static getAccountById(id, options = {}) {
+        return accountRepository.findByPk(id, options);
     }
-    static async findAccountByIdWithUser(id) {
-        try {
-            return await accountRepository.findAccountWithUser({ id });
-        } catch (error) {
-            throw error;
-        }
+    static getAccountByIdWithUser(id, options = {}) {
+        return accountRepository.findOneWithUser({ id }, options);
     }
-    static async createAccount(data, options = {}) {
-
-        try {
-            const passwordHash = await bcrypt.hash(data.password, 10);
-            const account = await accountRepository.createAccount({
-                username: data.username,
-                password: passwordHash,
-                role: data.role,
-                user_id: data.user_id
-            }, {
-                fields: ['username', 'password', 'role', 'user_id'],
-                ...options
-            });
-
-            return account;
-        } catch (error) {
-            throw error;
-        }
+    static createAccount(data, options) {
+        return accountRepository.create(data, options);
     }
-    static async reissuePassword(id, newPassword) {
+    static updateAccountById(data, id, options = {}) {
+        return accountRepository.update(data, { id }, options);
+    }
+    static async reissuePasswordAccountById(id, newPassword) {
         try {
             const passwordHash = await bcrypt.hash(newPassword, 10);
-            const [isUpdated] = await accountRepository.updateAccount({ id }, { password: passwordHash });
+            const [isUpdated] = await accountRepository.update({ password: passwordHash }, { id });
             return isUpdated > 0
         } catch (error) {
             throw error;

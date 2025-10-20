@@ -14,6 +14,19 @@ class AuthorRepository {
             ...options
         });
     }
+    static findOneWithBooks(query = {}, options = {}) {
+        return Author.findOne({
+            where: query,
+            ...options,
+            include: [{
+                model: Book,
+                as: 'books',
+                where: options.bookWhere || {},
+                attributes: options.bookAttributes || [],
+                through: { attributes: options.throughAttributes || [] }
+            }]
+        });
+    }
     static findByPk(id, options = {}) {
         return Author.findByPk(id, options);
     }
@@ -39,9 +52,9 @@ class AuthorRepository {
     static findWithPagination(query = {}, options = {}) {
         return Author.findAndCountAll({
             where: query.where || {},
-            limit: query.limit || 10,
-            offset: query.offset || 0,
-            order: query.order || [],
+            limit: options.limit || 10,
+            offset: options.offset || 0,
+            order: options.order || [],
             ...options
         });
     }
