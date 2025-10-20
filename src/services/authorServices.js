@@ -24,6 +24,12 @@ class AuthorServices {
     );
     return authors;
   }
+  static async getAllAuthorByIds(authorIds = [], options = {}) {
+    return authorRepository.findAll(
+      { id: { [Op.in]: authorIds } },
+      { ...options }
+    );
+  }
   static async getAuthorBySlugWithBooksPagination(slug, options = {}) {
     const bookWhere = {};
     if (options.q) {

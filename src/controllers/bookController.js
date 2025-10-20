@@ -1,98 +1,243 @@
-const BookService = require("../services/bookServices");
+const { sequelize } = require("../models");
+const { authorServices, genreServices, bookServices } = require("../services");
 const encodeBase64 = require("../utils/base64");
 
 class BookController {
-    static async renderViewBooks(req, res) {
-        try {
-            const limit = req.query.limit ? req.query.limit > 0 ? parseInt(req.query.limit) : 5 : 5
-            const { rows: books, count: totals } = await BookService.getBooksPagination({ ...req.query, limit });
-            const totalPages = Math.ceil(totals / limit);
-            const page = parseInt(req.query.page) || 1;
-            return res.render("books/index", { books, totals: totalPages, page, query: req.query, title: "Quản lý sách" });
-        } catch (error) {
-            return res.render("books/index", { books: [], totals: 0, page: 1, error: error.message, query: req.query, title: "Quản lý sách" });
-        }
+  static async renderViewBooks(req, res) {
+    const { query } = req;
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
+        : 5
+      : 5;
+    const page =
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
+        ? 1
+        : parseInt(query.page);
+    try {
+      const { rows: books, count: totals } =
+        await bookServices.getBooksWithPagination({ ...query, limit });
+      const totalPages = Math.ceil(totals / limit);
+      return res.render("books/index", {
+        books,
+        totals: totalPages,
+        page,
+        query,
+        title: "Quản lý sách",
+      });
+    } catch (error) {
+      console.log("error render view books " + error.message);
+      return res.render("books/index", {
+        books: [],
+        totals: 0,
+        page,
+        error: error.message,
+        query,
+        title: "Quản lý sách",
+      });
     }
-    static async renderViewCreateBook(req, res) {
-        try {
+  }
+  static async renderViewCreateBook(req, res) {
+    try {
+      return res.render("books/add", { title: "Thêm sách" });
+    } catch (error) {
+      console.log("error render view create book " + error.message);
+      return res.redirect("/not-found?error=" + encodeBase64(error.message));
+    }
+  }
+  static async renderViewEditBook(req, res) {
+    const { id } = req.params;
+    try {
+      if (!id) throw new Error("Sách không tồn tại không thể sửa");
+      const book = await bookServices.getBookByIdWithAuthorsAndGenres(id, {
+        authorAttributes: ["id", "name"],
+        genreAttributes: ["id", "name"],
+        attributes: [
+          "id",
+          "title",
+          "description",
+          "image_cover",
+          "published_year",
+          "quantity",
+        ],
+      });
+      if (!book) throw new Error("Sách không tồn tại không thể sửa");
+      return res.render("books/edit", { book, title: "Sửa sách" });
+    } catch (error) {
+      return res.redirect("/books?error=" + encodeBase64(error.message));
+    }
+  }
+  static async renderViewDeleteBook(req, res) {
+    const { id } = req.params;
+    try {
+      if (!id) throw new Error("Sách không tồn tại không thể xóa");
+      const book = await bookServices.getBookById(id);
+      if (!book) throw new Error("Sách không tồn tại không thể sửa");
+      return res.render("books/delete", { book, title: "Xóa sách" });
+    } catch (error) {
+      return res.redirect("/books?error=" + encodeBase64(error.message));
+    }
+  }
+  static async renderViewDetailBook(req, res) {
+    const { slug } = req.params;
+    try {
+      const book = await bookServices.getBookBySlugWithAuthorsAndGenres(slug);
+      return res.render("books/detail", { book, title: "Chi tiết sách" });
+    } catch (error) {
+      return res.redirect("/not-found?error=" + encodeBase64(error.message));
+    }
+  }
 
-            return res.render("books/add", { title: "Thêm sách" });
-        } catch (error) {
-            return res.redirect('not-found?error=' + encodeBase64(error.message))
+  static async handleCreateBook(req, res) {
+    const image_cover = req.file?.path || null;
+    const body = req.body || {};
+    const transaction = await sequelize.transaction();
+    try {
+      const authors = body.authors || [];
+      const genres = body.genres || [];
+      if (authors.length === 0) {
+        throw new Error("Vui lòng chọn ít nhất một tác giả cho sách");
+      }
+      if (genres.length === 0) {
+        throw new Error("Vui lòng chọn ít nhất một thể loại cho sách");
+      }
+      const authorsData = await authorServices.getAllAuthorByIds(authors, {
+        attributes: ["id"],
+      });
+      const genresData = await genreServices.getAllGenreByIds(genres, {
+        attributes: ["id"],
+      });
+      if (authorsData.length !== authors.length) {
+        throw new Error("Một số tác giả không tồn tại trong hệ thống");
+      }
+      if (genresData.length !== genres.length) {
+        throw new Error("Một số thể loại không tồn tại trong hệ thống");
+      }
+      const book = await bookServices.createBook(
+        { ...body, image_cover },
+        {
+          fields: [
+            "title",
+            "description",
+            "image_cover",
+            "published_year",
+            "quantity",
+          ],
+          transaction,
         }
-    }
-    static async renderViewEditBook(req, res) {
-        const { id } = req.params;
-        try {
-            if (!id) throw new Error("Sách không tồn tại không thể sửa");
-            const book = await BookService.getBookByIdWithAuthorAndGenre(id);
-            if (!book) throw new Error("Sách không tồn tại không thể sửa");
-            return res.render("books/edit", { book, title: "Sửa sách" });
-        } catch (error) {
-            return res.redirect('/books?error=' + encodeBase64(error.message))
-        }
-    }
-    static async renderViewDeleteBook(req, res) {
-        const { id } = req.params;
-        try {
-            if (!id) throw new Error("Sách không tồn tại không thể xóa");
-            const book = await BookService.getBookById(id);
-            if (!book) throw new Error("Sách không tồn tại không thể sửa");
-            return res.render("books/delete", { book, title: "Xóa sách" });
-        } catch (error) {
-            return res.redirect('/books?error=' + encodeBase64(error.message))
-        }
-    }
-    static async renderViewDetailBook(req, res) {
-        try {
-            const book = await BookService.getBookByIdWithAuthorAndGenre(req.params.id);
-            return res.render("books/detail", { book, title: "Chi tiết sách" });
-        } catch (error) {
-            return res.redirect('not-found?error=' + encodeBase64(error.message))
-        }
-    }
+      );
+      await book.addAuthors(authorsData, { transaction });
+      await book.addGenres(genresData, { transaction });
 
-    static async handleCreateBook(req, res) {
-        const image = req.file?.path || null;
-        const body = req.body || {};
-        try {
+      await transaction.commit();
+      return res.redirect(
+        "/books?success=" + encodeBase64("Thêm sách thành công")
+      );
+    } catch (error) {
+      await transaction.rollback();
+      console.log(error);
 
-            const data = await BookService.createBook({ ...body, image_cover: image });
-            return res.redirect("/books?success=" + encodeBase64("Thêm sách thành công"));
-        } catch (error) {
-            console.log(error);
+      return res.render("books/add", {
+        title: "Thêm sách",
+        error: error.message,
+        book: req.body,
+      });
+    }
+  }
+  static async handleEditBook(req, res) {
+    const { id } = req.params;
+    const image_cover = req.file?.path || null;
+    const body = req.body || {};
+    const transaction = await sequelize.transaction();
+    try {
+      const authors = body.authors || [];
+      const genres = body.genres || [];
+      if (authors.length === 0) {
+        throw new Error("Vui lòng chọn ít nhất một tác giả cho sách");
+      }
+      if (genres.length === 0) {
+        throw new Error("Vui lòng chọn ít nhất một thể loại cho sách");
+      }
+      const authorsData = await authorServices.getAllAuthorByIds(authors, {
+        attributes: ["id"],
+      });
+      const genresData = await genreServices.getAllGenreByIds(genres, {
+        attributes: ["id"],
+      });
+      if (authorsData.length !== authors.length) {
+        throw new Error("Một số tác giả không tồn tại trong hệ thống");
+      }
+      if (genresData.length !== genres.length) {
+        throw new Error("Một số thể loại không tồn tại trong hệ thống");
+      }
+      const book = await bookServices.getBookById(id, { attributes: ["id"] });
+      if (!book) {
+        throw new Error("Sách không tồn tại không thể cập nhật");
+      }
+      const isUpdated = await bookServices.updateBookById(
+        book.id,
+        { ...body, image_cover },
+        {
+          fields: [
+            "title",
+            "description",
+            "image_cover",
+            "published_year",
+            "quantity",
+          ],
+          transaction,
+        }
+      );
+      if (!isUpdated) {
+        throw new Error("Cập nhật sách thất bại");
+      }
+      await book.setAuthors(authorsData, { transaction });
+      await book.setGenres(genresData, { transaction });
 
-            return res.render("books/add", { title: "Thêm sách", error: error.message, book: req.body });
-        }
+      await transaction.commit();
+      return res.redirect(
+        "/books?success=" + encodeBase64("Cập nhật sách thành công")
+      );
+    } catch (error) {
+      await transaction.rollback();
+      console.log(error);
+
+      return res.redirect(
+        "/books/edit/" + req.params.id + "?error=" + encodeBase64(error.message)
+      );
     }
-    static async handleEditBook(req, res) {
-        const image = req.file?.path || null;
-        const body = req.body || {};
-        const id = req.params.id
-        try {
-            const data = await BookService.updateBook(id, { ...body, image_cover: image });
-            return res.redirect("/books?success=" + encodeBase64("Cập nhật sách thành công"));
-        } catch (error) {
-            return res.redirect("/books/edit/" + id + "?error=" + encodeBase64(error.message));
-        }
+  }
+  static async handleDeleteBook(req, res) {
+    const { id } = req.params;
+    try {
+      const book = await bookServices.getBookById(id);
+      if (!book) throw new Error("Sách không tồn tại không thể xóa");
+      const isDeleted = await bookServices.deleteBookById(book.id);
+      if (!isDeleted) throw new Error("Xóa sách thất bại");
+      return res.redirect(
+        "/books?success=" + encodeBase64("Xóa sách thành công")
+      );
+    } catch (error) {
+      return res.redirect("/books?error=" + encodeBase64(error.message));
     }
-    static async handleDeleteBook(req, res) {
-        try {
-            const data = await BookService.deleteBook(req.params.id);
-            return res.redirect("/books?success=" + encodeBase64("Xóa sách thành công"));
-        } catch (error) {
-            return res.redirect("/books?error=" + encodeBase64(error.message));
-        }
+  }
+  static async handleSearchBooks(req, res) {
+    const { query } = req;
+    try {
+      const { rows: books, count: total } =
+        await bookServices.getBooksWithPagination(query, {
+          attributes: ["id", "title"],
+        });
+      return res.json({ success: true, data: books, total });
+    } catch (error) {
+      return res.json({
+        success: false,
+        message: error.message,
+        data: [],
+        total: 0,
+      });
     }
-    static async handleSearchBooks(req, res) {
-        try {
-            const { q } = req.query;
-            const { rows: books, count: total } = await BookService.searchBooks(q || "");
-            return res.json({ success: true, data: books, total });
-        } catch (error) {
-            return res.json({ success: false, message: error.message, data: [], total: 0 });
-        }
-    }
+  }
 }
 
 module.exports = BookController;

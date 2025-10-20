@@ -20,7 +20,12 @@ class GenreServices {
         });
 
     }
-
+    static async getAllGenreByIds(genreIds = [], options = {}) {
+        return GenreRepository.findAll(
+            { id: { [Op.in]: genreIds } },
+            { ...options }
+        );
+    }
     static async updateGenreById(id, data) {
         const [updatedRowsCount] = await GenreRepository.update(data, id, {
             fields: ["name", 'slug', 'description'],
