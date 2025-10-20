@@ -1,118 +1,193 @@
-
 const authorService = require("../services/authorServices");
-
+const generateSlug = require("../utils/generateSlug");
 const encodeBase64 = require("../utils/base64");
 
 class AuthorController {
+  static async renderViewAuthor(req, res) {
+    const { query } = req;
+    const page = parseInt(req.query.page) || 1;
+    try {
+      const limit = parseInt(req.query.limit) || 10;
+      const { rows: authors, count: totals } =
+        await authorService.getAuthorByIdWithBooks({ ...query, limit });
+      const totalPages = Math.ceil(totals / limit);
+      return res.render("authors/index", {
+        authors,
+        totals: totalPages,
+        title: "Quản lý tác giả",
+        page,
+        query,
+      });
+    } catch (error) {
+      console.log("error render view author " + error.message);
+      return res.render("authors/index", {
+        authors: [],
+        totals: 0,
+        page,
+        title: "Quản lý tác giả",
+        error: error.message,
+        query,
+      });
+    }
+  }
+  static renderViewCreateAuthor(req, res) {
+    try {
+      return res.render("authors/add", { title: "Thêm tác giả", author: {} });
+    } catch (error) {
+      console.log("error render view create author " + error.message);
+      return res.render("authors/add", {
+        title: "Thêm tác giả",
+        error: error.message,
+        author: {},
+      });
+    }
+  }
+  static async renderViewUpdateAuthor(req, res) {
+    const { id } = req.params;
+    try {
+      const author = await authorService.getAuthorById(id);
+      if (!author) throw new Error("Tác giả không tồn tại không thể cập nhật");
+      return res.render("authors/edit", { title: "Cập nhật tác giả", author });
+    } catch (error) {
+      return res.redirect("/not-found?error=" + encodeBase64(error.message));
+    }
+  }
+  static async renderViewDeleteAuthor(req, res) {
+    const { id } = req.params;
+    try {
+      const author = await authorService.getAuthorById(id);
+      if (!author) throw new Error("Tác giả không tồn tại không thể xóa");
+      return res.render("authors/delete", { title: "Xóa tác giả", author });
+    } catch (error) {
+      return res.redirect("/not-found?error=" + encodeBase64(error.message));
+    }
+  }
+  static async renderViewDetailAuthor(req, res) {
+    const { slug } = req.params;
+    const { query } = req;
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    try {
+      const { count, rows: author } =
+        await authorService.getAuthorBySlugWithBooksPagination(slug, query);
+      if (!author) throw new Error("Tác giả không tồn tại");
+      const totalPages = Math.ceil(count / limit);
+      return res.render("authors/detail", {
+        title: "Chi tiết tác giả",
+        author,
+        totals: totalPages,
+        page,
+        query,
+      });
+    } catch (error) {
+      console.log("error render view detail author " + error.message);
+      return res.redirect("/not-found?error=" + encodeBase64(error.message));
+    }
+  }
 
-    static async renderViewAuthor(req, res) {
-        try {
-            const { rows: authors, count: totals } = await authorService.getAuthorsPagination(req.query);
-            const totalPages = Math.ceil(totals / (req.query.limit || 10));
-            const page = parseInt(req.query.page) || 1;
-            return res.render("authors/index", { authors, totals: totalPages, title: "Quản lý tác giả", page, query: req.query });
-        } catch (error) {
-            return res.render("authors/index", { authors: [], totals: 0, page: 1, title: "Quản lý tác giả", error: error.message, query: req.query });
+  static async handleCreateAuthor(req, res) {
+    try {
+      let { name, bio } = req.body;
+      name = name.trim();
+      bio = bio ? bio.trim() : "";
+      let slug = generateSlug(name);
+      // kiểm tra xem đã có slug chưa, nếu có thì thêm timestamp vào để tránh trùng lặp
+      const existingSlug = await authorService.getAuthorBySlug(slug);
+      if (existingSlug) {
+        slug = `${slug}-${Date.now()}`;
+      }
+      const newAuthor = await authorService.createAuthor(
+        {
+          name,
+          slug,
+          bio,
+        },
+        {
+          fields: ["name", "slug", "bio"],
         }
+      );
+      return res.redirect(
+        "/authors?success=" + encodeBase64("Thêm tác giả thành công")
+      );
+    } catch (error) {
+      return res.render("authors/add", {
+        title: "Thêm tác giả",
+        error: error.message,
+        author: req.body,
+      });
     }
-    static renderViewCreateAuthor(req, res) {
-        try {
-            return res.render("authors/add", { title: "Thêm tác giả", author: {} });
-        } catch (error) {
-            return res.render("authors/add", { title: "Thêm tác giả", error: error.message, author: {} });
-        }
+  }
+  static async handleUpdateAuthor(req, res) {
+    const { id } = req.params;
+    try {
+      let { name, bio } = req.body;
+      name = name.trim();
+      bio = bio ? bio.trim() : "";
+      let slug = generateSlug(name);
+      // kiểm tra xem đã có slug chưa, nếu có thì thêm timestamp vào để tránh trùng lặp
+      const author = await authorService.getAuthorById(id, {
+        attributes: ["id", "slug"],
+      });
+      if (slug === author.slug) {
+        slug = author.slug;
+      }
+      const isUpdateAuthor = await authorService.updateAuthorById(
+        { name, bio, slug },
+        author.id,
+        { fields: ["slug", "name", "bio"] }
+      );
+      if (!isUpdateAuthor) throw new Error("Cập nhật tác giả thất bại");
+      return res.redirect(
+        "/author?success=" + encodeBase64("Cập nhật tác giả thành công")
+      );
+    } catch (error) {
+      return res.render("authors/edit", {
+        title: "Cập nhật tác giả",
+        error: error.message,
+        author: { id, ...req.body },
+      });
     }
-    static async renderViewUpdateAuthor(req, res) {
-        try {
-            const authorId = req.params.id;
-            const author = await authorService.getAuthorById(authorId);
-            if (!author) throw new Error("Tác giả không tồn tại");
-            return res.render("authors/edit", { title: "Cập nhật tác giả", author });
-        } catch (error) {
-            return res.redirect("/not-found?error=" + encodeBase64(error.message));
-        }
-    }
-    static async renderViewDeleteAuthor(req, res) {
-        try {
-            const authorId = req.params.id;
-            const author = await authorService.getAuthorById(authorId);
-            if (!author) throw new Error("Tác giả không tồn tại");
-            return res.render("authors/delete", { title: "Xóa tác giả", author });
-        } catch (error) {
-            return res.redirect("/not-found?error=" + encodeBase64(error.message));
-        }
-    }
-    static async renderViewDetailAuthor(req, res) {
-        const { id } = req.params;
-        try {
+  }
+  static async handleDeleteAuthor(req, res) {
+    const { id } = req.params;
+    try {
+      const author = await authorService.getAuthorByIdWithBooks(id);
+      if (!author) throw new Error("Tác giả không tồn tại không thể xóa");
+      if (author.books || author.books.length > 0)
+        throw new Error(
+          "Tác giả đang có liên kết với một hoặc nhiều sách hiện không thể xóa tác giả"
+        );
 
-            const { count, rows: author } = await authorService.getAuthorsPaginationByIdWithBooks(id, req.query);
-            if (!author) throw new Error("Tác giả không tồn tại");
-            const totalPages = Math.ceil(count / (req.query.limit || 10));
-
-            return res.render("authors/detail", { title: "Chi tiết tác giả", author, totals: totalPages, page: parseInt(req.query.page) || 1, query: req.query });
-        } catch (error) {
-            console.log(error);
-            
-            return res.redirect("/not-found?error=" + encodeBase64(error.message));
-        }
+      const isDeleteAuthor = await authorService.deleteAuthorById(author.id);
+      if (!isDeleteAuthor) throw new Error("Xóa tác giả thất bại");
+      return res.redirect(
+        "/author?success=" + encodeBase64("Xóa tác giả thành công")
+      );
+    } catch (error) {
+      return res.render("authors/index", {
+        title: "Quản lý tác giả",
+        error: error.message,
+      });
     }
-
-    static async handleCreateAuthor(req, res) {
-        try {
-            const { name } = req.body;
-            if (!name || name.trim() === "") throw new Error("Tên tác giả không được để trống");
-            const newAuthor = await authorService.createAuthor({ name: name.trim() });
-            return res.redirect("/authors?success=" + encodeBase64("Thêm tác giả thành công"));
-        } catch (error) {
-            return res.render("authors/add", { title: "Thêm tác giả", error: error.message, author: req.body });
-        }
+  }
+  static async handleSearchAuthors(req, res) {
+    try {
+      const { q, limit, page } = req.query;
+      const { rows: authors, count: total } =
+        await authorService.getAuthorsByName(q || "", {
+          limit: parseInt(limit) || 10,
+          offset: ((parseInt(page) || 1) - 1) * (parseInt(limit) || 10),
+        });
+      return res.json({ success: true, data: authors, total });
+    } catch (error) {
+      return res.json({
+        success: false,
+        message: error.message,
+        data: [],
+        total: 0,
+      });
     }
-    static async handleUpdateAuthor(req, res) {
-        const authorId = req.params.id;
-        try {
-            const { name } = req.body;
-            if (!name || name.trim() === "") {
-                return res.status(400).json({ message: "Tên tác giả không được để trống" });
-            }
-            const updatedAuthor = await authorService.updateAuthor(authorId, { name: name.trim() });
-            if (!updatedAuthor) throw new Error("Cập nhật tác giả thất bại");
-            return res.redirect("/author?success=" + encodeBase64("Cập nhật tác giả thành công"));
-        } catch (error) {
-            return res.render("authors/edit", { title: "Cập nhật tác giả", error: error.message, author: { id: authorId, ...req.body } });
-        }
-    }
-    static async handleDeleteAuthor(req, res) {
-        try {
-            const authorId = req.params.id;
-            const deleted = await authorService.deleteAuthor(authorId);
-            if (!deleted) throw new Error("Xóa tác giả thất bại");
-            return res.redirect("/author?success=" + encodeBase64("Xóa tác giả thành công"));
-        } catch (error) {
-            return res.render("authors/index", { title: "Quản lý tác giả", error: error.message });
-        }
-    }
-    static async handleSearchAuthor(req, res) {
-        try {
-            const { q } = req.query;
-            const { rows: authors, count: total } = await authorService.searchAuthors(q || "");
-            return res.json({ success: true, data: authors, total });
-        } catch (error) {
-            return res.json({ success: false, message: error.message, data: [], total: 0 });
-        }
-    }
-
-    static async renderViewAuthorByAuthorIdForReader(req, res) {
-        const { id } = req.params;
-        try {
-            const limit = parseInt(req.query.limit) || 10;
-            const { rows: authors, count: total } = await authorService.getAuthorsPaginationByIdWithBooks(id, req.query);
-            const totalPages = Math.ceil(total / limit);
-        } catch (error) {
-            return
-        }
-    }
+  }
 }
-
 
 module.exports = AuthorController;
