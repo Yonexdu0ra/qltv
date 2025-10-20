@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const { bookRepository } = require("../repositories");
 const { sequelize } = require("../models");
-const genareteSlug = require("../utils/genareteSlug");
+const genareteSlug = require("../utils/generateSlug");
 class BookService {
   static async getBooksByTitle(title, options = {}) {
     const where = {

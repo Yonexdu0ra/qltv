@@ -7,7 +7,7 @@ const router = Router();
 router.get("/", authController.renderViewAuthor);  
 
 router.get("/:slug", authController.renderViewDetailAuthor);
-router.get("/search", authController.handleSearchAuthor);
+router.get("/search", authController.handleSearchAuthors);
 
 
 

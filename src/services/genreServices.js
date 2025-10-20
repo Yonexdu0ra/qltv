@@ -31,7 +31,7 @@ class GenreServices {
         return await GenreRepository.findOneWithBooks({ id }, options);
     }
     static async createGenre(data, options = {}) {
-        return await GenreRepository.createGenre(data, {,
+        return await GenreRepository.createGenre(data, {
             ...options
         });
 

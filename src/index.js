@@ -63,12 +63,15 @@ routes(app);
         // //🔻 Tạo lại toàn bộ bảng mới
         // await sequelize.sync({ force: true });
         // importAccountsAndUsers(Account,User, sequelize);
-        // importCategories(Genre);
         // importAuthors(Author);
+        // importCategories(Genre);
+        // await new Promise(resolve => setTimeout(resolve, 2000)); // chờ 2s để đảm bảo tác giả được tạo trước khi tạo sách
         // importBooks(Book, Author, Genre);
 
         console.log("Kết nối đến database thành công");
     } catch (error) {
+        console.log(error);
+        
         console.error("Không thể kết nối đến database:", error.message);
     }
 })();
