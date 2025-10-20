@@ -1,5 +1,8 @@
-const borrowServices = require("../services/borrowServices");
-const bookServices = require("../services/bookServices");
+const {
+  borrowServices,
+  bookServices,
+  borrowDetailServices,
+} = require("../services/");
 const { BORROW_STATUS_CONSTANTS } = require("../utils/constants");
 const encodeBase64 = require("../utils/base64");
 const { sequelize } = require("../models");
@@ -7,69 +10,70 @@ const { sequelize } = require("../models");
 class BorrowController {
   static async renderViewBorrowsReader(req, res) {
     const borrower_id = req.user.user_id;
+    const { query } = req;
+    const limit = req.query.limit
+      ? req.query.limit > 0
+        ? parseInt(borrower_id, req.query.limit)
+        : 10
+      : 10;
+    const page = parseInt(req.query.page) || 1;
     try {
-      const limit = req.query.limit
-        ? req.query.limit > 0
-          ? parseInt(borrower_id, req.query.limit)
-          : 10
-        : 10;
       const { count, rows: borrows } =
-        await borrowServices.findBorrowPaginationWithBorrowerId(
+        await borrowServices.getAllBorrowByBorrowerIdWithBorrowerAndApproverAndBooks(
           borrower_id,
           req.query
         );
 
       const totalPages = Math.ceil(count / limit);
-      const page = parseInt(req.query.page) || 1;
       return res.render("borrows/index", {
         title: "Mượn trả",
         borrows,
         totals: totalPages,
         page,
-        query: req.query,
+        query,
       });
     } catch (error) {
       return res.render("borrows/index", {
         title: "Mượn trả",
         error: error.message,
-        page: 1,
+        page,
         totals: 0,
         borrows: [],
-        query: req.query,
+        query,
       });
     }
   }
   static async renderViewBorrows(req, res) {
     const borrower_id = req.user.user_id;
-
+    const { query } = req;
+    const limit = req.query.limit
+      ? req.query.limit > 0
+        ? parseInt(borrower_id, req.query.limit)
+        : 10
+      : 10;
+    const page = parseInt(req.query.page) || 1;
     try {
-      const limit = req.query.limit
-        ? req.query.limit > 0
-          ? parseInt(req.query.limit)
-          : 10
-        : 10;
       const { count, rows: borrows } =
-        await borrowServices.findBorrowPaginationWithBorrowerAndBooks(
+        await borrowServices.getAllBorrowWithBorrowerAndApproverAndBooks(
           req.query
         );
 
       const totalPages = Math.ceil(count / limit);
-      const page = parseInt(req.query.page) || 1;
       return res.render("borrows/index", {
-        title: "Quản lý mượn trả",
+        title: "Mượn trả",
         borrows,
         totals: totalPages,
         page,
-        query: req.query,
+        query,
       });
     } catch (error) {
       return res.render("borrows/index", {
-        title: "Quản lý mượn trả",
+        title: "Mượn trả",
         error: error.message,
-        page: 1,
+        page,
         totals: 0,
         borrows: [],
-        query: req.query,
+        query,
       });
     }
   }
@@ -79,7 +83,8 @@ class BorrowController {
   static async renderViewBorrowDetail(req, res) {
     const { id } = req.params;
     try {
-      const borrow = await borrowServices.getBorrowByIdWithBooksAndBorrower(id);
+      const borrow =
+        await borrowServices.getBorrowByIdWithBorrowerAndApproverAndBooks(id);
       if (!borrow) throw new Error("Phiếu mượn không tồn tại");
       return res.render("borrows/detail", {
         title: "Chi tiết phiếu mượn",
@@ -97,7 +102,8 @@ class BorrowController {
     const { id } = req.params;
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể sửa");
-      const borrow = await borrowServices.getBorrowByIdWithBooks(id);
+      const borrow =
+        await borrowServices.getBorrowByIdWithBorrowerAndApproverAndBooks(id);
       if (!borrow) throw new Error("Phiếu mượn không tồn tại không thể sửa");
       return res.render("borrows/edit", { title: "Sửa phiếu mượn", borrow });
     } catch (error) {
@@ -111,35 +117,55 @@ class BorrowController {
     try {
       const books = [...req.body.books];
       if (books.length === 0) throw new Error("Vui lòng chọn sách để mượn");
-
       const bookIdsInt = books.map((id) => parseInt(id));
-      const listBooks = await bookServices.getAllBooks(
-        {
-          where: {
-            id: bookIdsInt,
-          },
-        },
-        { attributes: ["id"] }
+      // kiểm tra sách có tồn tại không
+      const listBooks = await bookServices.getAllBookByIds(bookIdsInt, {
+        attributes: ["id", "title", "quantity_available"],
+      });
+      // danh sách sách không có sẵn
+      const listBooksUnavailable = listBooks.filter(
+        (b) => b.quantity_available <= 0
       );
+      if (listBooksUnavailable.length > 0) {
+        const titles = listBooksUnavailable.map((b) => b.title).join(", ");
+        throw new Error(`Các sách sau không có sẵn để mượn: ${titles}`);
+      }
 
+      // so sánh số lượng sách được tìm thấy và số lượng sách yêu cầu mượn
       if (listBooks.length !== bookIdsInt.length)
         throw new Error(
           "Một số sách không tồn tại trong hệ thống, vui lòng kiểm tra lại"
         );
       const bookFormat = listBooks.map((b) => b.id);
-      const isUpdatedStock = await bookServices.decreaseBookStockByIds(
+      // giảm số lượng sách có sẵn của các cuốn sách được mượn
+      const isUpdatedStock = await bookServices.decrementBookByIds(
+        "quantity_available",
+        1,
         bookFormat,
-        1
+        { transaction }
       );
       if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
+      // tạo phiếu mượn
       const data = await borrowServices.createBorrow(
         {
           ...req.body,
           borrower_id,
           books: bookFormat,
         },
-        { transaction }
+        {
+          transaction,
+          attributes: ["id"],
+          fields: ["borrower_id", "status", "borrow_date", "due_date"],
+        }
       );
+      const dataBulk = bookFormat.map((book_id) => ({
+        borrow_id: data.id,
+        book_id,
+        status: BORROW_STATUS_CONSTANTS.BORROWED,
+      }));
+      await borrowDetailServices.createBorrowDetailsBulk(dataBulk, {
+        transaction,
+      });
       await transaction.commit();
       return res.redirect(
         "/borrow?success=" + encodeBase64("Thêm phiếu mượn thành công")
@@ -154,25 +180,6 @@ class BorrowController {
       });
     }
   }
-  static async handleEditBorrow(req, res) {
-    const { id } = req.params;
-    try {
-      if (!id) throw new Error("Phiếu mượn không tồn tại không thể sửa");
-      const borrow = await borrowServices.getBorrowById(id);
-      if (!borrow) throw new Error("Phiếu mượn không tồn tại không thể sửa");
-      await borrowServices.updateBorrow(borrow.id, req.body);
-      return res.redirect(
-        "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
-      );
-    } catch (error) {
-      console.log(error);
-      return res.render("borrows/edit", {
-        title: "Sửa phiếu mượn",
-        error: error.message,
-        borrow: { id, ...req.body },
-      });
-    }
-  }
 
   // đánh dấu từ chối không cho mượn
   static async handlerMarkAsRejected(req, res) {
@@ -180,22 +187,38 @@ class BorrowController {
     try {
       await sequelize.transaction(async (t) => {
         if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-        const borrow = await borrowServices.getBorrowByIdWithBorrowDetail(id);
+        const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
+          attributes: ["id", "status"],
+          borrowDetailAttributes: ["id", "book_id", "borrow_id"],
+        });
         if (!borrow)
           throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-        if (borrow.status !== "REQUESTED")
+        if (borrow.status !== BORROW_STATUS_CONSTANTS.REQUESTED)
           throw new Error(
             "chỉ có thể cập nhật phiếu mượn ở trạng thái đang yêu cầu mượn"
           );
-        const isUpdatedStock = await bookServices.increaseBookStockByIds(
-          borrow.borrowDetails.map((b) => b.book_id),
+        // ấn reject thì trả lại số lượng sách đã giữ
+        const isUpdatedStock = await bookServices.incrementBookByIds(
+          "quantity_available",
           1,
+          borrow.borrowDetails.map((b) => b.book_id),
           { transaction: t }
         );
         if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
-        const isUpdated = await borrowServices.markAsRejected(borrow.id, {
-          transaction: t,
-        });
+        const isUpdated = await borrowServices.markAsRejectedBorrowById(
+          borrow.id,
+          {
+            transaction: t,
+          }
+        );
+        // đánh dấu từ chối trạng thái các sách trong chi tiết phiếu mượn
+        const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
+        await borrowDetailServices.markAsRejectedBorrowDetailByIds(
+          borrowDetailIds,
+          {
+            transaction: t,
+          }
+        );
         if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       });
       return res.redirect(
@@ -211,15 +234,36 @@ class BorrowController {
     const { id } = req.params;
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      const borrow = await borrowServices.getBorrowById(id);
+      const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
+        attributes: ["id", "status"],
+        borrowDetailAttributes: ["id", "book_id", "borrow_id"],
+      });
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      if (borrow.status !== "REQUESTED")
+      if (borrow.status !== BORROW_STATUS_CONSTANTS.REQUESTED)
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái đang yêu cầu mượn"
         );
-      const isUpdated = await borrowServices.markAsCancel(borrow.id);
+
+      const isUpdated = await borrowServices.markAsCancelledBorrowById(
+        borrow.id,
+        { transaction: t }
+      );
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
+      // ấn hủy thì trả lại số lượng sách đã giữ
+      const isUpdatedStock = await bookServices.incrementBookByIds(
+        "quantity_available",
+        1,
+        borrow.borrowDetails.map((b) => b.book_id),
+        { transaction: t }
+      );
+      if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
+      // đánh dấu hủy trạng thái các sách trong chi tiết phiếu mượn
+      const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
+      await borrowDetailServices.markAsCancelledBorrowDetailByIds(
+        borrowDetailIds,
+        { transaction: t }
+      );
       return res.redirect(
         "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
@@ -234,18 +278,26 @@ class BorrowController {
     const approver_id = req.user.user_id;
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      const borrow = await borrowServices.getBorrowById(id);
+      const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
+        attributes: ["id", "status"],
+        borrowDetailAttributes: ["id", "book_id", "borrow_id"],
+      });
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       if (borrow.status !== BORROW_STATUS_CONSTANTS.REQUESTED)
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đã duyệt, chờ lấy"
         );
-      const isUpdated = await borrowServices.markAsApproved(
+      const isUpdated = await borrowServices.markAsApprovedBorrowById(
         borrow.id,
         approver_id
       );
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
+      const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
+      await borrowDetailServices.markAsApprovedBorrowDetailByIds(
+        borrowDetailIds,
+        { transaction: t }
+      );
       return res.redirect(
         "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
@@ -259,15 +311,23 @@ class BorrowController {
     const { id } = req.params;
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      const borrow = await borrowServices.getBorrowById(id);
+      const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
+        attributes: ["id", "status"],
+        borrowDetailAttributes: ["id", "book_id", "borrow_id"],
+      });
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       if (borrow.status !== BORROW_STATUS_CONSTANTS.BORROWED)
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn"
         );
-      const isUpdated = await borrowServices.markAsExpired(borrow.id);
+      const isUpdated = await borrowServices.markAsExpiredBorrowById(borrow.id, { transaction: t });
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
+      const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
+      await borrowDetailServices.markAsExpiredBorrowDetailByIds(
+        borrowDetailIds,
+        { transaction: t }
+      );
       return res.redirect(
         "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
@@ -281,7 +341,10 @@ class BorrowController {
     const { id } = req.params;
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      const borrow = await borrowServices.getBorrowByIdWithBorrowDetail(id);
+      const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
+        attributes: ["id", "status"],
+        borrowDetailAttributes: ["id", "book_id", "borrow_id"],
+      });
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       if (
@@ -291,11 +354,20 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn hoặc Quá hạn"
         );
-      const isUpdated = await borrowServices.markAsReturned(borrow.id);
+      const isUpdated = await borrowServices.markAsReturnedBorrowById(borrow.id, { transaction: t });
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
-      return res.redirect(
-        "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+      const isUpdatedStock = await bookServices.incrementBookByIds(
+        "quantity_available",
+        1,
+        borrow.borrowDetails.map((b) => b.book_id),
+        { transaction: t }
       );
+      if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
+      const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
+      await borrowDetailServices.markAsReturnedBorrowDetailByIds(borrowDetailIds, {
+        transaction: t,
+      });
+      return res.redirect('/borrow?success=' + encodeBase64('Cập nhật phiếu mượn thành công'));
     } catch (error) {
       console.log(error);
       return res.redirect("/borrow?error=" + encodeBase64(error.message));
@@ -306,15 +378,29 @@ class BorrowController {
     const { id } = req.params;
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      const borrow = await borrowServices.getBorrowById(id);
+      const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id);
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       if (borrow.status !== BORROW_STATUS_CONSTANTS.BORROWED)
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn"
         );
-      const isUpdated = await borrowServices.markAsCanceled(borrow.id);
+      const isUpdated = await borrowServices.markAsCancelledBorrowById(borrow.id);
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
+      const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
+      await borrowDetailServices.markAsCancelledBorrowDetailByIds(
+        borrowDetailIds, {
+          transaction: t,
+        }
+      );
+      const isUpdatedStock = await bookServices.incrementBookByIds(
+        "quantity_available",
+        1,
+        borrow.borrowDetails.map((b) => b.book_id),
+        { transaction: t }
+      );
+      if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
+
       return res.redirect(
         "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
@@ -328,15 +414,22 @@ class BorrowController {
     const { id } = req.params;
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      const borrow = await borrowServices.getBorrowById(id);
+      const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
+        attributes: ["id", "status"],
+        borrowDetailAttributes: ["id", "book_id", "borrow_id"],
+      });
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       if (borrow.status !== BORROW_STATUS_CONSTANTS.APPROVED)
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đã phê duyệt, chờ lấy"
         );
-      const isUpdated = await borrowServices.markAsBorrowed(borrow.id);
+      const isUpdated = await borrowServices.markAsBorrowedBorrowById(borrow.id);
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
+      const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
+      await borrowDetailServices.markAsBorrowedBorrowDetailByIds(borrowDetailIds, {
+        transaction: t,
+      });
       return res.redirect(
         "/borrow?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );

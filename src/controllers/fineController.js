@@ -4,37 +4,33 @@ const encodeBase64 = require("../utils/base64");
 const { sequelize } = require("../models");
 class FineController {
   static async renderViewFines(req, res, next) {
+    const { query } = req;
+    const limit = req.query.limit
+      ? req.query.limit > 0
+        ? parseInt(req.query.limit)
+        : 10
+      : 10;
+    const page = parseInt(req.query.page) || 1;
     try {
-      // findFilesPaginationWithBorrowDetailAndBorrower
       const { rows: fines, count } =
-        await fineServices.getFinesPaginationWithBorrowAndBorrower();
-      const limit = req.query.limit
-        ? req.query.limit > 0
-          ? parseInt(req.query.limit)
-          : 10
-        : 10;
-      // console.log(fines.map((b) => b.toJSON())[0]);
-
+        await fineServices.getAllFinesWithBorrowDetailAndBorrowerAndBookPagination({ limit, query });
       const totalPages = Math.ceil(count / limit);
-      const page = parseInt(req.query.page) || 1;
-      // return res.json({ title: "Quản lý phạt", fines, totals: totalPages, page, query: req.query });
+      
       return res.render("fines/index", {
         title: "Quản lý phạt",
         fines,
         totals: totalPages,
         page,
-        query: req.query,
+        query,
       });
     } catch (error) {
       console.log(error.message);
-      // return res.json({ title: "Quản lý phạt", fines: [], totals: 0, page: 1, query: req.query, error: error.message });
-
       return res.render("fines/index", {
         title: "Quản lý phạt",
         fines: [],
         totals: 0,
-        page: 1,
-        query: req.query,
+        page,
+        query,
         error: error.message,
       });
     }
@@ -52,7 +48,7 @@ class FineController {
   static async renderViewFineDetail(req, res, next) {
     const { id } = req.params;
     try {
-      const fine = await fineServices.getFineByIdWithBookAndBorrower(id);
+      const fine = await fineServices.getFineByIdWithBorrowDetailAndBorrowerAndBook(id);
       if (!fine) throw new Error("Phí không tồn tại");
       return res.render("fines/detail", { title: "Chi tiết phí", fine });
     } catch (error) {
@@ -85,7 +81,7 @@ class FineController {
       const amount = parseFloat(req.body.amount);
       const status = req.body.status;
       const totalBorrowDetailsHasInDB =
-        await borrowDetailServices.getAllBorrowDetailById(borrowDetailIdsInt);
+        await borrowDetailServices.getAllBorrowDetailsByIds(borrowDetailIdsInt, { attributes: ["id", 'borrow_id', 'status', 'book_id'] });
 
       if (totalBorrowDetailsHasInDB.length !== borrowDetailIds.length) {
         throw new Error("Một số chi tiết mượn không tồn tại trong hệ thống");
@@ -97,14 +93,18 @@ class FineController {
         amount,
         note,
       }));
-      const updatedStatusBorrowDetails =
-        await borrowDetailServices.updateBorrowDetailStatusByIds(
+      const isUpdateBorrowDetail =
+        await borrowDetailServices.updateBorrowDetailByIds(
           borrowDetailIdsInt,
           { status },
-          { transaction }
+          { transaction, fields: ["status"] }
         );
+        if(!isUpdateBorrowDetail) {
+          throw new Error("Cập nhật trạng thái chi tiết mượn thất bại");
+        }
       const fines = await fineServices.createFines(listFine, { transaction });
-      console.log(fines);
+      
+
 
       await transaction.commit();
       return res.redirect(
@@ -121,17 +121,17 @@ class FineController {
     const { id } = req.params;
     try {
       const fine = await fineServices.getFineById(id);
-      console.log(fine);
-      
-      if (!fine) return res.redirect("/fines?error=" + encodeBase64("Phí không tồn tại"));
-      const isUpdated = await fineServices.markAsPaidFineById(id, { status: "paid" });
-      console.log(isUpdated);
-      
+      if (!fine)
+        return res.redirect(
+          "/fines?error=" + encodeBase64("Phí không tồn tại")
+        );
+      const isUpdated = await fineServices.markAsPaidFineById(id, { fields: ['is_paid'] });
       if (!isUpdated) throw new Error("Cập nhật trạng thái phí thất bại");
-      return res.redirect("/fines?success=" + encodeBase64("Đánh dấu phí đã thanh toán thành công"));
-      
-    }
-    catch (error) {
+      return res.redirect(
+        "/fines?success=" +
+          encodeBase64("Đánh dấu phí đã thanh toán thành công")
+      );
+    } catch (error) {
       return res.redirect("/fines?error=" + encodeBase64(error.message));
     }
   }

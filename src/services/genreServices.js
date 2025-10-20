@@ -10,15 +10,34 @@ class GenreServices {
         const genres = await GenreRepository.findGenres(query, options);
         return genres;
     }
+    static async getAllGenreByNameWithPagination(query, options = {}) {
+        const where = {};   
+        if(query.q) {
+            where.name = {
+                [Op.like]: `%${query.q}%`
+            }
+        }
+        const limit = query.limit ? query.limit > 0 ? parseInt(query.limit) : 10 : 10;
+        const page = isNaN(parseInt(query.page)) || parseInt(query.page) < 1 ? 1 : parseInt(query.page);
+        const offset = (page - 1) * limit;
+        const order = [["created_at", "ASC"]];
+
+        return await GenreRepository.findAllAndCount(where, { ...options, limit, offset, order });
+    }
     static async getGenreById(id, options = {}) {
         return await GenreRepository.findByPk(id, options);
     }
+    static async getGenreByIdWithBooks(id, options = {}) {
+        return await GenreRepository.findOneWithBooks({ id }, options);
+    }
     static async createGenre(data, options = {}) {
-        return await GenreRepository.createGenre(data, {
-            fields: ["name", 'slug', 'description'],
+        return await GenreRepository.createGenre(data, {,
             ...options
         });
 
+    }
+    static async getGenreBySlug(slug, options = {}) {
+        return GenreRepository.findOne({ slug }, { ...options });
     }
     static async getAllGenreByIds(genreIds = [], options = {}) {
         return GenreRepository.findAll(
@@ -35,7 +54,7 @@ class GenreServices {
         return updatedRowsCount > 0;
     }
 
-    static async deleteGenre(id, options = {}) {
+    static async deleteGenreById(id, options = {}) {
         const deletedRowsCount = await GenreRepository.delete({ id });
         return deletedRowsCount > 0;
     }

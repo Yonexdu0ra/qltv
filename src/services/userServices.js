@@ -4,10 +4,10 @@ const { userRepository } = require("../repositories");
 
 class UserServices {
 
-    static async findUserById(id, options = {}) {
+    static async getUserById(id, options = {}) {
         return userRepository.findByPk(id, options);
     }
-    static async findUsersWithPagination(options) {
+    static async getUsersWithPagination(options) {
         const where = {}
         if (options.q) {
             where.fullname = {
@@ -22,7 +22,7 @@ class UserServices {
         return userRepository.findAllAndCount(where, { limit, offset, order, ...options });
 
     }
-    static async findUsersWithAccountPagination(options) {
+    static async getUsersWithAccountPagination(options) {
         const where = {}
         const accountWhere = {}
         if (options.q) {

@@ -1,101 +1,173 @@
 const GenreServices = require("../services/genreServices");
 const encodeBase64 = require("../utils/base64");
+const generateSlug = require("../utils/generateSlug");
 class GenreController {
+  static async renderViewGenre(req, res) {
+    try {
+      const limit = req.query.limit
+        ? req.query.limit > 0
+          ? parseInt(req.query.limit)
+          : 5
+        : 5;
+      const { count: totals, rows: genres } =
+        await GenreServices.getAllGenresWithPagination({ ...req.query, limit });
+      const totalPages = Math.ceil(totals / limit);
+      const page = parseInt(req.query.page) || 1;
+      return res.render("genres/index", {
+        title: "Quản lý thể loại",
+        genres,
+        totals: totalPages,
+        page,
+        query: req.query,
+      });
+    } catch (error) {
+      return res.render("genres/index", {
+        title: "Quản lý thể loại",
+        genres: [],
+        totals: 0,
+        totalPages: 0,
+        page: 1,
+        error: error.message,
+        query: req.query,
+      });
+    }
+  }
 
+  static async renderViewCreateGenre(req, res) {
+    try {
+      return res.render("genres/add", { title: "Thêm thể loại", genre: {} });
+    } catch (error) {
+      return res.redirect("/genre?error=" + encodeBase64(error.message));
+    }
+  }
+  static async renderViewUpdateGenre(req, res) {
+    try {
+      const { id } = req.params;
+      const genre = await GenreServices.getGenreById(id);
+      if (!genre) throw new Error("Thể loại không tồn tại");
+      return res.render("genres/edit", { title: "Sửa thể loại", genre });
+    } catch (error) {
+      return res.redirect("/not-found?error=" + encodeBase64(error.message));
+    }
+  }
+  static async renderViewDeleteGenre(req, res) {
+    try {
+      const { id } = req.params;
+      const genre = await GenreServices.getGenreById(id);
+      if (!genre) throw new Error("Thể loại không tồn tại");
+      return res.render("genres/delete", { title: "Xoá thể loại", genre });
+    } catch (error) {
+      return res.redirect("/not-found?error=" + encodeBase64(error.message));
+    }
+  }
+  static async renderViewDetailGenre(req, res) {
+    try {
+      const { id } = req.params;
+      const genre = await GenreServices.getGenreById(id);
+      if (!genre) throw new Error("Thể loại không tồn tại");
+      return res.render("genres/detail", { title: "Chi tiết thể loại", genre });
+    } catch (error) {
+      return res.redirect("/not-found?error=" + encodeBase64(error.message));
+    }
+  }
+  static async handleCreateGenre(req, res) {
+    const { id } = req.params;
+    try {
+      const { name, description } = req.body;
+      if (!name) throw new Error("Vui lòng nhập tên thể loại");
+      let slug = generateSlug(name);
+      const slugExists = await GenreServices.getGenreBySlug(slug, {
+        attributes: ["id", "slug"],
+      });
+      if (slugExists) {
+        slug += "-" + Date.now();
+      }
+      const genre = await GenreServices.createGenre(
+        { name, slug, description },
+        { fields: ["name", "slug", "description"] }
+      );
+      if (!genre) throw new Error("Tạo thể loại thất bại");
+      return res.redirect(
+        "/genre?success=" + encodeBase64("Thêm thể loại thành công")
+      );
+    } catch (error) {
+      return res.render("genres/add", {
+        title: "Thêm thể loại",
+        error: error.message,
+        genre: req.body,
+      });
+    }
+  }
 
-    static async renderViewGenre(req, res) {
-        try {
-            const limit = req.query.limit ? req.query.limit > 0 ? parseInt(req.query.limit) : 5 : 5
-            const { count: totals, rows: genres } = await GenreServices.getGenresPagination({...req.query, limit });
-            const totalPages = Math.ceil(totals / limit);
-            const page = parseInt(req.query.page) || 1;
-            return res.render("genres/index", { title: "Quản lý thể loại", genres, totals: totalPages, page, query: req.query });
-        } catch (error) {
-            return res.render("genres/index", { title: "Quản lý thể loại", genres: [], totals: 0, totalPages: 0, page: 1, error: error.message, query: req.query});
-        }
+  static async handleUpdateGenre(req, res) {
+    const { id } = req.params;
+    const { name, description } = req.body;
+    try {
+      let slug = generateSlug(name);
+      const genre = await GenreServices.getGenreById(id, {
+        attributes: ["id", "slug"],
+      });
+      if (slug !== genre.slug) {
+        slug = generateSlug(name) + "-" + Date.now();
+      }
+      if (!name) throw new Error("Vui lòng nhập tên thể loại");
+      const isUpdated = await GenreServices.updateGenreById(id, {
+        name,
+        description,
+        slug,
+      });
+      if (!isUpdated) throw new Error("Cập nhật thể loại thất bại");
+      return res.redirect(
+        "/genre?success=" + encodeBase64("Cập nhật thể loại thành công")
+      );
+    } catch (error) {
+      return res.render("genres/edit", {
+        title: "Sửa thể loại",
+        error: error.message,
+        genre: { id, ...req.body },
+      });
     }
-
-    static async renderViewCreateGenre(req, res) {
-        try {
-            return res.render("genres/add", { title: "Thêm thể loại", genre: {} });
-        } catch (error) {
-            return res.redirect('/genre?error=' + encodeBase64(error.message));
-        }
+  }
+  static async handleDeleteGenre(req, res) {
+    const { id } = req.params;
+    try {
+      const genre = await GenreServices.getGenreByIdWithBooks(id, {
+        attributes: ["id", "name"],
+        bookAttributes: ["id"],
+      });
+      if (genre.books && genre.books.length > 0) {
+        throw new Error("Thể loại đang có sách, không thể xoá");
+      }
+      const isDeleted = await GenreServices.deleteGenreById(id);
+      if (!isDeleted) throw new Error("Xoá thể loại thất bại");
+      return res.redirect(
+        "/genre?success=" + encodeBase64("Xoá thể loại thành công")
+      );
+    } catch (error) {
+      return res.redirect("/genre?error=" + encodeBase64(error.message));
     }
-    static async renderViewUpdateGenre(req, res) {
-        try {
-            const { id } = req.params;
-            const genre = await GenreServices.getGenreById(id);
-            if (!genre) throw new Error("Thể loại không tồn tại");
-            return res.render("genres/edit", { title: "Sửa thể loại", genre });
-        } catch (error) {
-            return res.redirect('/not-found?error=' + encodeBase64(error.message));
-        }
+  }
+  static async handleSearchGenre(req, res) {
+    const { query } = req;
+    try {
+      const limit = 10;
+      const offset = 0;
+      const { rows: genres, count: total } =
+        await GenreServices.getAllGenresWithPagination({
+          ...query,
+          limit,
+          offset,
+        });
+      return res.json({ success: true, data: genres, total });
+    } catch (error) {
+      return res.json({
+        success: false,
+        message: error.message,
+        data: [],
+        total: 0,
+      });
     }
-    static async renderViewDeleteGenre(req, res) {
-        try {
-            const { id } = req.params;
-            const genre = await GenreServices.getGenreById(id);
-            if (!genre) throw new Error("Thể loại không tồn tại");
-            return res.render("genres/delete", { title: "Xoá thể loại", genre });
-        } catch (error) {
-            return res.redirect('/not-found?error=' + encodeBase64(error.message));
-        }
-    }
-    static async renderViewDetailGenre(req, res) {
-        try {
-            const { id } = req.params;
-            const genre = await GenreServices.getGenreById(id);
-            if (!genre) throw new Error("Thể loại không tồn tại");
-            return res.render("genres/detail", { title: "Chi tiết thể loại", genre });
-        } catch (error) {
-            return res.redirect('/not-found?error=' + encodeBase64(error.message));
-        }
-    }
-    static async handleCreateGenre(req, res) {
-        try {
-            const { name } = req.body;
-            if (!name) throw new Error("Vui lòng nhập tên thể loại");
-            const genre = await GenreServices.createGenre({ name });
-            return res.redirect("/genre?success=" + encodeBase64("Thêm thể loại thành công"));
-        } catch (error) {
-            return res.render("genres/add", { title: "Thêm thể loại", error: error.message, genre: req.body, })
-        }
-    }
-
-    static async handleUpdateGenre(req, res) {
-        const { id } = req.params;
-        const { name } = req.body;
-        try {
-            if (!name) throw new Error("Vui lòng nhập tên thể loại");
-            const isUpdated = await GenreServices.updateGenre(id, { name });
-            if (!isUpdated) throw new Error("Cập nhật thể loại thất bại");
-            return res.redirect("/genre?success=" + encodeBase64("Cập nhật thể loại thành công"));
-        } catch (error) {
-            return res.render("genres/edit", { title: "Sửa thể loại", error: error.message, genre: { id, ...req.body } })
-        }
-
-    }
-    static async handleDeleteGenre(req, res) {
-        const { id } = req.params;
-        try {
-            const isDeleted = await GenreServices.deleteGenre(id);
-            if (!isDeleted) throw new Error("Xoá thể loại thất bại");
-            return res.redirect("/genre?success=" + encodeBase64("Xoá thể loại thành công"));
-        } catch (error) {
-            return res.redirect('/genre?error=' + encodeBase64(error.message));
-        }
-    }
-    static async handleSearchGenre(req, res) {
-        try {
-            const { q } = req.query;
-            const { rows: genres, count: total } = await GenreServices.searchGenres(q || "");
-            return res.json({ success: true, data: genres, total });
-        } catch (error) {
-            return res.json({ success: false, message: error.message, data: [], total: 0 });
-        }
-    }
-
+  }
 }
 
 module.exports = GenreController;

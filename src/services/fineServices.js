@@ -78,7 +78,7 @@ class FineServices {
       { is_paid: true },
       { id },
       {
-        fields: ["is_paid"],
+       
         ...options,
       }
     );
