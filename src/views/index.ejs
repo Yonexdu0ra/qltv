@@ -154,7 +154,7 @@
               <%= book.genres?.map(g => g.name).join(', ') || 'Thể loại khác' %>
             </span>
             <a
-              href="/books/detail/<%= book.id %>"
+              href="/books/<%= book.slug %>"
               class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition"
             >
               Xem chi tiết

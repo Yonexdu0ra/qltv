@@ -3,7 +3,7 @@ const bookServices = require("../services/bookServices");
 class HomeController {
     static async renderViewHome(req, res) {
         try {
-            const { rows: books } = await bookServices.getBooksPagination();
+            const { rows: books } = await bookServices.getBooksWithPagination();
             
             return res.render("index", { title: "Trang chủ", books });
         } catch (error) {

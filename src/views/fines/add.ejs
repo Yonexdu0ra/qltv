@@ -87,7 +87,7 @@
   useChoice("#status", null, () => {
     return data;
   });
-  useChoice("#borrow_detail_ids", "/borrow-details/search", (data) => {
+  useChoice("#borrow_detail_ids", "/dashboard/borrow-details/search", (data) => {
     return data.data.map((borrowDetail) => ({
       value: borrowDetail.id,
       label: borrowDetail.book.title + " - Phiếu mượn: " + borrowDetail.borrow_id,

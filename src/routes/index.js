@@ -14,6 +14,7 @@ const bookRoutesPrivate = require('./private/bookRoutes');
 
 const accountRoutesPrivate = require('./private/accountRoutes');
 const borrowRoutesPrivate = require('./private/borrowRoutes');
+const borrowDetailRoutesPublic = require('./public/borrowDetailRoutes');
 const borrowDetailRoutesPrivate = require('./private/borrowDetailRoutes');
 const fineRoutesPrivate = require('./private/fineRoutes');
 const homeRoutes = require('./public/homeRoutes');
@@ -38,6 +39,8 @@ function routes(app) {
     app.use('/dashboard/accounts/', authenticationMiddleware,requiredRoleAdmin,  accountRoutesPrivate);
 
     // phải đăng nhập nhưng có 1 số chức năng không cần quyền admin
+
+    app.use('/dashboard/borrow-details/', authenticationMiddleware, borrowDetailRoutesPublic);
     app.use('/dashboard/borrows/', authenticationMiddleware, borrowRoutesPrivate);
     app.use('/dashboard/borrow-details/', authenticationMiddleware, borrowDetailRoutesPrivate);
     app.use('/dashboard/fines/', authenticationMiddleware, fineRoutesPrivate);

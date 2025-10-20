@@ -3,6 +3,6 @@ const BorrowDetailController = require('../../controllers/borrowDetailController
 const { requiredRoleLibrarianAndAdmin } = require("../../middleware/authorizationMiddleware");
 
 const router = Router();
-router.get('/mark-as-returned/:id', requiredRoleLibrarianAndAdmin, BorrowDetailController.markAsReturned);
+router.get('/search', BorrowDetailController.handleSearchBorrowDetailBooks);
 
 module.exports = router;
