@@ -1,273 +1,107 @@
 const { Op } = require("sequelize");
 const { sequelize } = require("../models");
-const borrowRepository = require("../repositories/borrowRepository");
+const { borrowRepository } = require("../repositories");
 const { BORROW_STATUS_CONSTANTS } = require("../utils/constants");
 
 class BorrowServices {
-  static async createBorrow(data, options = {}) {
-    try {
-      const books = [...data.books];
 
-      if (!books.length === 0) {
-        throw new Error("Vui lòng chọn sách muốn mượn");
-      }
-      const borrow = await borrowRepository.createBorrow(data, {
-        fields: ["borrower_id", "borrow_date", "due_date"],
+  static markAsReturnedBorrowById(id, options = {}) {
+    return borrowRepository.update(
+      { status: BORROW_STATUS_CONSTANTS.RETURNED, return_date: new Date() },
+      { id },
+      { ...options }
+    );
+  }
+  static async markAsBorrowedBorrowById(id, options = {}) {
+    return borrowRepository.update(
+      { status: BORROW_STATUS_CONSTANTS.BORROWED, pickup_date: new Date() },
+      { id },
+      { ...options }
+    );
+  }
+  static async markAsApprovedBorrowById(id, options = {}) {
+    return borrowRepository.update(
+      { status: BORROW_STATUS_CONSTANTS.APPROVED },
+      { id },
+      { ...options }
+    );
+  }
+  static async markAsRejectedBorrowById(id, options = {}) {
+    return borrowRepository.update(
+      { status: BORROW_STATUS_CONSTANTS.REJECTED },
+      { id },
+      { ...options }
+    );
+  }
+  static async markAsCancelledBorrowById(id, options = {}) {
+    return borrowRepository.update(
+      { status: BORROW_STATUS_CONSTANTS.CANCELLED },
+      { id },
+      { ...options }
+    );
+  }
+  static async createBorrow(data, options = {}) {
+    const { books } = data;
+
+    if (!books.length === 0) {
+      throw new Error("Vui lòng chọn sách muốn mượn");
+    }
+    const borrow = await borrowRepository.create(data, {
+      fields: ["borrower_id", "borrow_date", "due_date"],
+      ...options,
+    });
+
+    for (const book_id of books) {
+      const borrowDetail = await borrow.addBook(parseInt(book_id), {
+        through: {
+          status: "BORROWED",
+        },
         ...options,
       });
-
-      for (const book_id of books) {
-        const borrowDetail = await borrow.addBook(parseInt(book_id), {
-          through: {
-            quantity: 1,
-            status: "BORROWED",
-          },
-          ...options,
-        });
-      }
-
-      return borrow;
-    } catch (error) {
-      console.log(error.message);
-
-      throw error;
     }
+    return borrow;
   }
-
-  static async findBorrowsWithBooks(query = {}, options = {}) {
-    return borrowRepository.findBorrowsWithBooks(query, options);
+  static async updateBorrowById(data, id, options = {}) {
+    return borrowRepository.update(data, { id }, options);
   }
-  static async findBorrowWithBooks(query, options = {}) {
-    return borrowRepository.findBorrowWithBooks(query, options);
+  static async deleteBorrowById(id, options = {}) {
+    return borrowRepository.delete({ id }, options);
   }
-  static async getBorrowById(id) {
-    return borrowRepository.findBorrowById(id);
+  static async getBorrowById(id, options = {}) {
+    return borrowRepository.findByPk(id, { ...options });
   }
-  static async getBorrowByIdWithBorrowDetail(id) {
-    return borrowRepository.findBorrowByIdWithBorrowDetail(id);
+  static async getBorrowByIdWithBorrowerAndApproverAndBooks(id, options = {}) {
+    return borrowRepository.findOneWithBorrowerAndApproverAndBook({ id }, { ...options })
   }
-  static async getBorrowByIdWithBooks(id) {
-    return borrowRepository.findBorrowWithBooks({ id });
-  }
-  static async getBorrowByIdWithBooksAndBorrower(id) {
-    return borrowRepository.findBorrowWithBooksAndBorrower({ id });
-  }
-
-  static async updateBorrow(query, data, options = {}) {
-    return borrowRepository.updateBorrow(query, data, options);
-  }
-  static async findBorrowPagination(options) {
-    try {
-      const where = {};
-      if (options.q) {
-        where.title = {
-          [Op.like]: `%${options.q}%`,
-        };
-      }
-      const limit = options.limit
-        ? options.limit > 0
-          ? parseInt(options.limit)
-          : 10
-        : 10;
-      const page =
-        isNaN(parseInt(options.page)) || parseInt(options.page) < 1
-          ? 1
-          : parseInt(options.page);
-      const offset = (page - 1) * limit;
-
-      const [sortBy, sortOrder] = options.sort
-        ? options.sort.split("-")
-        : ["createdAt", "ASC"];
-
-      const order = [
-        [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
-      ];
-      return await borrowRepository.findBorrowPagination({
-        where,
-        limit,
-        offset,
-        order,
-      });
-    } catch (error) {
-      throw error;
+  static async getBorrowsWithBorrowerAndApproverAndBookPagination(query = {}, options = {}) {
+    const where = {};
+    const bookWhere = {};
+    if (query.q) {
+      bookWhere.title = {
+        [Op.like]: `%${query.q}%`,
+      };
     }
-  }
-  static async findBorrowPaginationWithBooks(options) {
-    try {
-      const where = {};
-      if (options.q) {
-        where.title = {
-          [Op.like]: `%${options.q}%`,
-        };
-      }
-      const limit = options.limit
-        ? options.limit > 0
-          ? parseInt(options.limit)
-          : 10
-        : 10;
-      const page =
-        isNaN(parseInt(options.page)) || parseInt(options.page) < 1
-          ? 1
-          : parseInt(options.page);
-      const offset = (page - 1) * limit;
-
-      const [sortBy, sortOrder] = options.sort
-        ? options.sort.split("-")
-        : ["createdAt", "ASC"];
-
-      const order = [
-        [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
-      ];
-      return await borrowRepository.findBorrowPaginationWithBooks({
-        where,
-        limit,
-        offset,
-        order,
-      });
-    } catch (error) {
-      throw error;
+    const limit = options.limit
+      ? options.limit > 0
+        ? parseInt(options.limit)
+        : 10
+      : 10;
+    const page =
+      isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+        ? 1
+        : parseInt(options.page);
+    const offset = (page - 1) * limit;
+    const [sortBy, sortOrder] = options.sort
+      ? options.sort.split("-")
+      : ["created_at", "ASC"];
+    const order = [
+      [sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
+    ];
+    if (["BORROWED", "APPROVED", "REJECTED", "CANCELLED", "RETURNED"].includes(sortBy) && sortOrder) {
+      where.status = { [Op.eq]: sortBy };
+      order[0] = ["created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"];
     }
-  }
-  static async findBorrowPaginationWithBorrowerAndBooks(options) {
-    try {
-      const where = {};
-      if (options.q) {
-        where.fullname = {
-          [Op.like]: `%${options.q}%`,
-        };
-      }
-      const limit = options.limit
-        ? options.limit > 0
-          ? parseInt(options.limit)
-          : 10
-        : 10;
-      const page =
-        isNaN(parseInt(options.page)) || parseInt(options.page) < 1
-          ? 1
-          : parseInt(options.page);
-      const offset = (page - 1) * limit;
-
-      const [sortBy, sortOrder] = options.sort
-        ? options.sort.split("-")
-        : ["createdAt", "ASC"];
-
-      const order = [
-        [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
-      ];
-      return await borrowRepository.findBorrowPaginationWithBorrowerAndBooks({
-        where,
-        limit,
-        offset,
-        order,
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
-  static async findBorrowPaginationWithBorrowerId(borrower_id, options) {
-    try {
-      const where = { borrower_id };
-      if (options.q) {
-        where.title = {
-          [Op.like]: `%${options.q}%`,
-        };
-      }
-      const limit = options.limit
-        ? options.limit > 0
-          ? parseInt(options.limit)
-          : 10
-        : 10;
-      const page =
-        isNaN(parseInt(options.page)) || parseInt(options.page) < 1
-          ? 1
-          : parseInt(options.page);
-      const offset = (page - 1) * limit;
-
-      const [sortBy, sortOrder] = options.sort
-        ? options.sort.split("-")
-        : ["createdAt", "ASC"];
-
-      const order = [
-        [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
-      ];
-      return await borrowRepository.findBorrowPagination({
-        where,
-        limit,
-        offset,
-        order,
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  static async markAsApproved(id, approver_id) {
-    try {
-      const [rowUpdated] = await borrowRepository.updateBorrow(
-        { id },
-        { status: BORROW_STATUS_CONSTANTS.APPROVED, approver_id }
-      );
-      return rowUpdated > 0;
-    } catch (error) {
-      throw error;
-    }
-  }
-  static async markAsRejected(id, options = {}) {
-    try {
-      const [rowUpdated] = await borrowRepository.updateBorrow(
-        { id },
-        { status: BORROW_STATUS_CONSTANTS.REJECTED }, {
-          ...options
-        }
-      );
-      return rowUpdated > 0;
-    } catch (error) {
-      throw error;
-    }
-  }
-  static async markAsExpired(id) {
-    try {
-      const [rowUpdated] = await borrowRepository.updateBorrow(
-        { id },
-        { status: BORROW_STATUS_CONSTANTS.EXPIRED }
-      );
-      return rowUpdated > 0;
-    } catch (error) {
-      throw error;
-    }
-  }
-  static async markAsReturned(id) {
-    try {
-      const [rowUpdated] = await borrowRepository.updateBorrow(
-        { id },
-        { status: BORROW_STATUS_CONSTANTS.RETURNED, return_date: new Date() }
-      );
-      return rowUpdated > 0;
-    } catch (error) {
-      throw error;
-    }
-  }
-  static async markAsCanceled(id) {
-    try {
-      const [rowUpdated] = await borrowRepository.updateBorrow(
-        { id },
-        { status: BORROW_STATUS_CONSTANTS.CANCELED }
-      );
-      return rowUpdated > 0;
-    } catch (error) {
-      throw error;
-    }
-  }
-  static async markAsBorrowed(id) {
-    try {
-      const [rowUpdated] = await borrowRepository.updateBorrow(
-        { id },
-        { status: BORROW_STATUS_CONSTANTS.BORROWED, pickup_date: new Date() }
-      );
-      return rowUpdated > 0;
-    } catch (error) {
-      throw error;
-    }
+    return borrowRepository.findAllWithBorrowerAndApproverAndBookPagination(where, { bookWhere, limit, offset, order, ...options });
   }
 }
 
