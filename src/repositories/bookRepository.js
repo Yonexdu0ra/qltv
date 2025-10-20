@@ -70,6 +70,23 @@ class BookRepository {
       ]
     });
   }
+  static findWithGenrePagination(query = {}, options = {}) {
+    return Book.findAndCountAll({
+      where: { ...query } || {},
+      limit: query.limit || 10,
+      offset: query.offset || 0,
+      order: query.order || [],
+      ...options,
+      include: [
+        {
+          model: Genre,
+          as: 'genres',
+          where: options.genreWhere || {},
+          attributes: options.genreAttributes || [],
+        }
+      ]
+    });
+  }
   static findWithAuthorAndGenrePagination(query = {}, options = {}) {
     return Book.findAndCountAll({
       where: { ...query } || {},

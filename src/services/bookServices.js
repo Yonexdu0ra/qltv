@@ -106,6 +106,38 @@ class BookService {
       ...options,
     });
   }
+  static async getBooksWithGenresPagination(query = {}, options = {}) {
+    const where = {};
+    if (query.q) {
+      where.title = {
+        [Op.like]: `%${query.q || ""}%`,
+      };
+    }
+    const limit = options.limit
+      ? options.limit > 0
+        ? parseInt(options.limit)
+        : 10
+      : 10;
+    const page =
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
+        ? 1
+        : parseInt(query.page);
+    const offset = (page - 1) * limit;
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
+      : ["created_at", "ASC"];
+    const order = [
+      [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
+    ];
+    
+    
+    return bookRepository.findWithGenrePagination(where, {
+      limit,
+      offset,
+      order,
+      ...options,
+    });
+  }
   static async getBooksWithAuthorsAndGenresPagination(
     query = {},
     options = {}

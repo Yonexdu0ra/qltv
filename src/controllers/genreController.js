@@ -1,4 +1,4 @@
-const GenreServices = require("../services/genreServices");
+const { genreServices, bookServices } = require("../services/");
 const encodeBase64 = require("../utils/base64");
 const generateSlug = require("../utils/generateSlug");
 class GenreController {
@@ -9,10 +9,10 @@ class GenreController {
         : 5
       : 5;
     try {
-     
+
       const { count: totals, rows: genres } =
-        await GenreServices.getAllGenresWithPagination({ ...req.query, limit });
-      
+        await genreServices.getAllGenresWithPagination({ ...req.query, limit });
+
       const totalPages = Math.ceil(totals / limit);
       const page = parseInt(req.query.page) || 1;
       return res.render("genres/index", {
@@ -24,7 +24,7 @@ class GenreController {
       });
     } catch (error) {
       console.log(error);
-      
+
       return res.render("genres/index", {
         title: "Quản lý thể loại",
         genres: [],
@@ -47,7 +47,7 @@ class GenreController {
   static async renderViewUpdateGenre(req, res) {
     try {
       const { id } = req.params;
-      const genre = await GenreServices.getGenreById(id);
+      const genre = await genreServices.getGenreById(id);
       if (!genre) throw new Error("Thể loại không tồn tại");
       return res.render("genres/edit", { title: "Sửa thể loại", genre });
     } catch (error) {
@@ -57,7 +57,7 @@ class GenreController {
   static async renderViewDeleteGenre(req, res) {
     try {
       const { id } = req.params;
-      const genre = await GenreServices.getGenreById(id);
+      const genre = await genreServices.getGenreById(id);
       if (!genre) throw new Error("Thể loại không tồn tại");
       return res.render("genres/delete", { title: "Xoá thể loại", genre });
     } catch (error) {
@@ -66,11 +66,28 @@ class GenreController {
   }
   static async renderViewDetailGenre(req, res) {
     const { slug } = req.params;
+    const { query } = req;
     try {
-      const genre = await GenreServices.getGenreBySlug(slug);
+      const genre = await genreServices.getGenreBySlug(slug);
       if (!genre) throw new Error("Thể loại không tồn tại");
-      return res.render("genres/detail", { title: "Chi tiết thể loại", genre });
+      const limit = query.limit ? (query.limit > 0 ? parseInt(query.limit) : 10) : 10;
+      const page = query.page ? parseInt(query.page) : 1;
+      const { rows: books, count } = await bookServices.getBooksWithGenresPagination({ ...limit, query, page }, { genreWhere: { id: genre.id }, genreAttributes: [] })
+      const totalPages = Math.ceil(count / limit);
+      const data = {
+        ...genre.toJSON(),
+        books,
+      }
+      return res.render("genres/detail", {
+        title: "Chi tiết thể loại",
+        genre: data,
+        totals: totalPages,
+        page,
+        query,
+      });
     } catch (error) {
+      console.log(error);
+      
       return res.redirect("/not-found?error=" + encodeBase64(error.message));
     }
   }
@@ -80,13 +97,13 @@ class GenreController {
       const { name, description } = req.body;
       if (!name) throw new Error("Vui lòng nhập tên thể loại");
       let slug = generateSlug(name);
-      const slugExists = await GenreServices.getGenreBySlug(slug, {
+      const slugExists = await genreServices.getGenreBySlug(slug, {
         attributes: ["id", "slug"],
       });
       if (slugExists) {
         slug += "-" + Date.now();
       }
-      const genre = await GenreServices.createGenre(
+      const genre = await genreServices.createGenre(
         { name, slug, description },
         { fields: ["name", "slug", "description"] }
       );
@@ -108,14 +125,14 @@ class GenreController {
     const { name, description } = req.body;
     try {
       let slug = generateSlug(name);
-      const genre = await GenreServices.getGenreById(id, {
+      const genre = await genreServices.getGenreById(id, {
         attributes: ["id", "slug"],
       });
       if (slug !== genre.slug) {
         slug = generateSlug(name) + "-" + Date.now();
       }
       if (!name) throw new Error("Vui lòng nhập tên thể loại");
-      const isUpdated = await GenreServices.updateGenreById(id, {
+      const isUpdated = await genreServices.updateGenreById(id, {
         name,
         description,
         slug,
@@ -135,14 +152,14 @@ class GenreController {
   static async handleDeleteGenre(req, res) {
     const { id } = req.params;
     try {
-      const genre = await GenreServices.getGenreByIdWithBooks(id, {
+      const genre = await genreServices.getGenreByIdWithBooks(id, {
         attributes: ["id", "name"],
         bookAttributes: ["id"],
       });
       if (genre.books && genre.books.length > 0) {
         throw new Error("Thể loại đang có sách, không thể xoá");
       }
-      const isDeleted = await GenreServices.deleteGenreById(id);
+      const isDeleted = await genreServices.deleteGenreById(id);
       if (!isDeleted) throw new Error("Xoá thể loại thất bại");
       return res.redirect(
         "/genre?success=" + encodeBase64("Xoá thể loại thành công")
@@ -157,7 +174,7 @@ class GenreController {
       const limit = 10;
       const offset = 0;
       const { rows: genres, count: total } =
-        await GenreServices.getAllGenresWithPagination({
+        await genreServices.getAllGenresWithPagination({
           ...query,
           limit,
           offset,

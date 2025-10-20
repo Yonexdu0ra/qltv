@@ -91,7 +91,7 @@ class BookController {
     const { slug } = req.params;
     try {
       const book = await bookServices.getBookBySlugWithAuthorsAndGenres(slug);
-
+      if(!book) throw new Error("Sách không tồn tại");
       return res.render("books/detail", { book, title: "Chi tiết sách" });
     } catch (error) {
       return res.redirect("/not-found?error=" + encodeBase64(error.message));
