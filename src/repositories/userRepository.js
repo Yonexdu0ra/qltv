@@ -54,6 +54,12 @@ class UserRepository {
     static create(data, options = {}) {
         return User.create(data, options);
     }
+    static update(data, query, options = {}) {
+        return User.update(data, {
+            where: query,
+            ...options
+        });
+    }
     static count(query, options = {}) {
         return User.count({
             where: query,

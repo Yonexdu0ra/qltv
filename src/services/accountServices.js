@@ -46,8 +46,9 @@ class AccountServices {
     static createAccount(data, options) {
         return accountRepository.create(data, options);
     }
-    static updateAccountById(data, id, options = {}) {
-        return accountRepository.update(data, { id }, options);
+    static async updateAccountById(data, id, options = {}) {
+        const [updatedRow] = await accountRepository.update(data, { id }, options);
+        return updatedRow > 0;
     }
     static async reissuePasswordAccountById(id, newPassword) {
         try {

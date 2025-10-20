@@ -1,62 +1,65 @@
-const userRepository = require("../repositories/userRepository");
+const { userRepository } = require("../repositories");
 
 
 
 class UserServices {
 
-    static async findUserById(id) {
-        try {
-            return await userRepository.findUser({ id }, { attributes: ['id', 'fullname', 'email', 'phone', 'address', 'createdAt'] });
-        } catch (error) {
-            throw error;
-        }
+    static async findUserById(id, options = {}) {
+        return userRepository.findByPk(id, options);
     }
-    static async findUsersPagination(options) {
-        try {
-            const where = {}
-            if (options.q) {
-                where.fullname = {
-                    [Op.like]: `%${options.q}%`
-                }
+    static async findUsersWithPagination(options) {
+        const where = {}
+        if (options.q) {
+            where.fullname = {
+                [Op.like]: `%${options.q}%`
             }
-            const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
-            const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
-            const offset = (page - 1) * limit
-            const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["fullname", "ASC"]
-            const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
-            const data = await userRepository.findUsersPagination({ where, limit, offset, order }, { attributes: ['id', 'fullname', 'email', 'phone', 'address', 'createdAt'] });
-            
-            return data;
-        } catch (error) {
-            console.log(error.message);
-            
-            throw error;
         }
+        const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
+        const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
+        const offset = (page - 1) * limit
+        const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["fullname", "ASC"]
+        const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
+        return userRepository.findAllAndCount(where, { limit, offset, order, ...options });
+
+    }
+    static async findUsersWithAccountPagination(options) {
+        const where = {}
+        const accountWhere = {}
+        if (options.q) {
+            where.fullname = {
+                [Op.like]: `%${options.q}%`
+            }
+            accountWhere.username = {
+                [Op.like]: `%${options.q}%`
+            }
+        }
+        const limit = options.limit ? options.limit > 0 ? parseInt(options.limit) : 10 : 10
+        const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page)
+        const offset = (page - 1) * limit
+        const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["fullname", "ASC"]
+        const order = [[sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]]
+        return userRepository.findAllWithAccountPagination(where, { accountWhere,limit, offset, order, ...options });
+
     }
     static async createUser(data, options = {}) {
-        try {
-            const user = await userRepository.createUser(data, {
-                fields: ['fullname', 'email', 'phone', 'address'],
-                ...options
-            });
-            return user;
-        } catch (error) {
-            throw error;
-        }
+        return await userRepository.create(data, {
+            fields: ['fullname', 'email', 'phone', 'address'],
+            ...options
+        });
+
     }
-    static async updateUser(id, data) {
-        try {
-            console.log(data);
-            
-            const [isUpdated] = await userRepository.updateUser({ id }, data, {
-                fields: ['fullname', 'email', 'phone', 'address']
-            });
-            return isUpdated > 0
-        } catch (error) {
-            console.log(error.message);
-            
-            throw error;
-        }
+    static async updateUserById(id, data) {
+        const [isUpdated] = await userRepository.update(data, { id }, {
+            fields: ['fullname', 'email', 'phone', 'address']
+        });
+        return isUpdated > 0
+    }
+    static async deleteUserById(id, options = {}) {
+        const deletedRowsCount = await userRepository.delete({ id }, options);
+        return deletedRowsCount > 0;
+    }
+    static async countUsers(query, options = {}) {
+        return await userRepository.count(query, options);
     }
 }
 
