@@ -62,7 +62,6 @@
         placeholder="Nhập ghi chú"
         id="note"
         class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        required
       ></textarea>
     </div>
 
@@ -83,11 +82,15 @@
       value: "LOSTED",
       label: "Đã mất",
     },
+    {
+      value: "Quá hạn",
+      label: "EXPIRED",
+    }
   ];
   useChoice("#status", null, () => {
     return data;
   });
-  useChoice("#borrow_detail_ids", "/dashboard/borrow-details/search", (data) => {
+  useChoice("#borrow_detail_ids", "/dashboard/borrow-details/search/", (data) => {
     return data.data.map((borrowDetail) => ({
       value: borrowDetail.id,
       label: borrowDetail.book.title + " - Phiếu mượn: " + borrowDetail.borrow_id,

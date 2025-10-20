@@ -64,10 +64,10 @@ class FineServices {
 
   }
   static async createFine(data, options) {
-    return fineRepository.createFine(data, options);
+    return fineRepository.create(data, options);
   }
   static async createFines(data, options = {}) {
-    return fineRepository.createFines(data, { ...options, fields: ['amount', 'is_paid', 'note', 'borrow_detail_id'] });
+    return fineRepository.createMany(data, { ...options, fields: ['amount', 'is_paid', 'note', 'borrow_detail_id'] });
   }
   static async updateFineById(data, id, options = {}) {
     return fineRepository.update(data, { id }, { fields: ['amount', 'is_paid', 'note'], ...options });

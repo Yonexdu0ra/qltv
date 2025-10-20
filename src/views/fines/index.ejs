@@ -64,6 +64,7 @@
           <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Thanh toán</th>
           <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Người mượn</th>
           <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Sách</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Ngày quá hạn</th>
           <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Hành động</th>
         </tr>
       </thead>
@@ -86,6 +87,7 @@
           </td>
           <td class="px-6 py-4 text-gray-700"><%= fine.borrowDetail.borrow.borrower.fullname %></td>
           <td class="px-6 py-4 text-gray-700"><%= fine.borrowDetail.book.title %></td>
+          <td class="px-6 py-4 text-gray-700"><%= fine.borrowDetail.borrow.due_date ? new Date(fine.borrowDetail.borrow.due_date).toLocaleDateString() : '' %></td>
           <td class="px-6 py-4 text-center">
             <div class="flex flex-wrap justify-center gap-2">
               <% if (!fine.is_paid) { %>
@@ -112,8 +114,7 @@
   </div>
 </div>
 
+<script src="/js/dispatchSelectForm.js"></script>
 <script>
   dispatchSelectForm('#search-form', '#sort');
 </script>
-
-<script src="js/dispatchSelectForm.js"></script>

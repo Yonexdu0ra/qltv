@@ -70,12 +70,12 @@ class BorrowDetailServices {
     return borrowDetailRepository.update(data, { id }, options);
   }
   static async updateBorrowDetailByIds(data, ids, options = {}) {
-    const [updatedRow] = await borrowDetailRepository.update(
+     await borrowDetailRepository.update(
       data,
       { id: { [Op.in]: ids } },
       options
     );
-    return updatedRow > 0;
+    return true;
   }
   static async markAsReturnedBorrowDetailByIds(ids, options = {}) {
     const [updatedRow] = await borrowDetailRepository.update(
@@ -86,6 +86,8 @@ class BorrowDetailServices {
         ...options,
       }
     );
+    console.log(updatedRow);
+    
     return updatedRow > 0;
   }
   

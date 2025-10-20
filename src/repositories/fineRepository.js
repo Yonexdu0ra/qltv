@@ -21,28 +21,28 @@ class FineRepository {
         {
           model: BorrowDetail,
           as: 'borrowDetail',
-          attributes: options.borrowDetailAttributes || [],
-          where: options.borrowDetailWhere || {},
+          attributes: options.borrowDetailAttributes,
+          where: options.borrowDetailWhere,
           include: [
             {
               model: Borrow,
               as: 'borrow',
-              attributes: options.borrowAttributes || [],
-              where: options.borrowWhere || {},
+              attributes: options.borrowAttributes,
+              where: options.borrowWhere,
               include: [
                 {
                   model: User,
                   as: 'borrower',
-                  attributes: options.borrowerAttributes || [],
-                  where: options.borrowerWhere || {}
+                  attributes: options.borrowerAttributes,
+                  where: options.borrowerWhere
                 }
               ]
             },
             {
               model: Book,
               as: 'book',
-              attributes: options.bookAttributes || [],
-              where: options.bookWhere || {}
+              attributes: options.bookAttributes,
+              where: options.bookWhere
             }
           ]
         }
@@ -65,28 +65,28 @@ class FineRepository {
         {
           model: BorrowDetail,
           as: 'borrowDetail',
-          attributes: options.borrowDetailAttributes || [],
-          where: options.borrowDetailWhere || {},
+          attributes: options.borrowDetailAttributes,
+          where: options.borrowDetailWhere,
           include: [
             {
               model: Borrow,
               as: 'borrow',
-              attributes: options.borrowAttributes || [],
-              where: options.borrowWhere || {},
+              attributes: options.borrowAttributes,
+              where: options.borrowWhere,
               include: [
                 {
                   model: User,
                   as: 'borrower',
-                  attributes: options.borrowerAttributes || [],
-                  where: options.borrowerWhere || {}
+                  attributes: options.borrowerAttributes,
+                  where: options.borrowerWhere
                 }
               ]
             },
             {
               model: Book,
               as: 'book',
-              attributes: options.bookAttributes || [],
-              where: options.bookWhere || {}
+              attributes: options.bookAttributes,
+              where: options.bookWhere
             }
           ]
         }
@@ -104,6 +104,9 @@ class FineRepository {
   }
   static create(data, options = {}) {
     return Fine.create(data, options);
+  }
+  static createMany(dataArray, options = {}) {
+    return Fine.bulkCreate(dataArray, options);
   }
   static update(data, query, options = {}) {
     return Fine.update(data, { where: query, ...options });

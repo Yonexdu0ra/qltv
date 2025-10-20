@@ -13,9 +13,13 @@ class FineController {
     const page = parseInt(req.query.page) || 1;
     try {
       const { rows: fines, count } =
-        await fineServices.getAllFinesWithBorrowDetailAndBorrowerAndBookPagination({ limit, query });
+        await fineServices.getAllFinesWithBorrowDetailAndBorrowerAndBookPagination({ limit, query }, {
+          attributes: ["id", "amount", "is_paid", "note", "created_at"],
+          bookAttributes: ["title"],
+          borrowDetailAttributes: ["id", "borrow_id", "status"],
+          borrowAttributes: ["id", "due_date"],
+        });
       const totalPages = Math.ceil(count / limit);
-      
       return res.render("fines/index", {
         title: "Quản lý phạt",
         fines,
@@ -52,7 +56,7 @@ class FineController {
       if (!fine) throw new Error("Phí không tồn tại");
       return res.render("fines/detail", { title: "Chi tiết phí", fine });
     } catch (error) {
-      return res.redirect("/fines?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/fines?error=" + encodeBase64(error.message));
     }
   }
 
@@ -99,20 +103,21 @@ class FineController {
           { status },
           { transaction, fields: ["status"] }
         );
+        console.log(isUpdateBorrowDetail);
+        
         if(!isUpdateBorrowDetail) {
           throw new Error("Cập nhật trạng thái chi tiết mượn thất bại");
         }
       const fines = await fineServices.createFines(listFine, { transaction });
-      
-
-
       await transaction.commit();
       return res.redirect(
-        "/fines?success=" + encodeBase64("Tạo phí thành công")
+        "/dashboard/fines?success=" + encodeBase64("Tạo phí thành công")
       );
     } catch (error) {
+      console.log(error);
+      
       await transaction.rollback();
-      return res.redirect("/fines?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/fines?error=" + encodeBase64(error.message));
     }
   }
 
@@ -123,16 +128,16 @@ class FineController {
       const fine = await fineServices.getFineById(id);
       if (!fine)
         return res.redirect(
-          "/fines?error=" + encodeBase64("Phí không tồn tại")
+          "/dashboard/fines?error=" + encodeBase64("Phí không tồn tại")
         );
       const isUpdated = await fineServices.markAsPaidFineById(id, { fields: ['is_paid'] });
       if (!isUpdated) throw new Error("Cập nhật trạng thái phí thất bại");
       return res.redirect(
-        "/fines?success=" +
+        "/dashboard/fines?success=" +
           encodeBase64("Đánh dấu phí đã thanh toán thành công")
       );
     } catch (error) {
-      return res.redirect("/fines?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/fines?error=" + encodeBase64(error.message));
     }
   }
 }
