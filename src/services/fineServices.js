@@ -1,91 +1,88 @@
 const fineRepository = require("../repositories/fineRepository");
 
 class FineServices {
-  static async getFines(query, options) {
-    return fineRepository.findFines(query, options);
-  }
-  static async getFinesPagination(query) {
+  static async getAllFines(query, options) {
     const where = {};
-    if (query) {
-      where.status = {
-        [Op.like]: `%${query}%`,
+    
+    const limit = options.limit
+      ? options.limit > 0
+        ? parseInt(options.limit)
+        : 10
+      : 10;
+    const page =
+      isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+        ? 1
+        : parseInt(options.page);
+    const offset = (page - 1) * limit;
+    const [sortBy, sortOrder] = options.sort
+      ? options.sort.split("-")
+      : ["created_at", "ASC"];
+    const order = [
+      [sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
+    ];
+    if (["is_paid"].includes(sortBy) && sortOrder) {
+      where.is_paid = { [Op.eq]: sortBy };
+      order[0] = ["created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"];
+    }
+    return fineRepository.findAll(where, { ...options, limit, offset, order });
+  }
+
+  static getFineByIdWithBorrowDetailAndBorrowerAndBook(id, options) {
+    return fineRepository.findOneWithBorrowDetailAndBorrowerAndBook({ id }, { ...options });
+  }
+  static getAllFinesWithBorrowDetailAndBorrowerAndBookPagination(query, options) {
+    const where = {};
+    const bookWhere = {};
+    if (query.q) {
+      bookWhere.title = {
+        [Op.like]: `%${query.q}%`,
       };
     }
-    const limit = 10;
-    const offset = 0;
-    const order = [["amount", "ASC"]];
-    const options = {
-      attributes: ["id", "amount", "status", "borrow_detail_id"],
-    };
-    return fineRepository.findFinesPagination(
-      where,
-      limit,
-      offset,
-      order,
-      options
-    );
-  }
-  static async getFineByIdWithBookAndBorrower(id) {
-    return fineRepository.findFineByIdWithBookAndBorrower(id);
-  }
-  static async getFinesPaginationWithBorrowAndBorrower(query) {
-    const where = {};
-    if (query) {
-      where.status = {
-        [Op.like]: `%${query}%`,
-      };
+    const limit = options.limit
+      ? options.limit > 0
+        ? parseInt(options.limit)
+        : 10
+      : 10;
+    const page =
+      isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+        ? 1
+        : parseInt(options.page);
+    const offset = (page - 1) * limit;
+    const [sortBy, sortOrder] = options.sort
+      ? options.sort.split("-")
+      : ["created_at", "ASC"];
+    const order = [
+      [sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
+    ];
+    if (["is_paid"].includes(sortBy) && sortOrder) {
+      where.is_paid = { [Op.eq]: sortBy };
+      order[0] = ["created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"];
     }
-    const limit = 10;
-    const offset = 0;
-    const order = [["amount", "ASC"]];
-    const options = {
-      attributes: ["id", "amount", "status", "borrow_detail_id"],
-    };
-    return fineRepository.findFinesPaginationWithBorrowDetailAndBorrower(
-      where,
-      limit,
-      offset,
-      order,
-      options
-    );
-  }
-  static async getFine(id, options) {
-    return fineRepository.findFine(id, options);
+    return fineRepository.findAllWithBorrowDetailAndBorrowerAndBookPagination(where, { ...options, limit, offset, order, bookWhere });
   }
   static async getFineById(id, options) {
-    try {
-    return fineRepository.findFine({ id }, options);
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-    
+    return fineRepository.findByPk(id, options);
+
   }
   static async createFine(data, options) {
     return fineRepository.createFine(data, options);
   }
-  static async createFines(data, options) {
-    return fineRepository.createFines(data, options);
+  static async createFines(data, options = {}) {
+    return fineRepository.createFines(data, { ...options, fields: ['amount', 'is_paid', 'note', 'borrow_detail_id'] });
   }
-  static async updateFine(id, data, options) {
-    return fineRepository.updateFine(id, data, options);
+  static async updateFineById(data, id, options = {}) {
+    return fineRepository.update(data, { id }, { fields: ['amount', 'is_paid', 'note'], ...options });
   }
-  static async markAsPaidFineById(id, options) {
-    try {
-      const [isUpdated] = await fineRepository.updateFine(
-        { id },
-        { is_paid: true },
-        {
-          fields: ["is_paid"],
-          ...options,
-        }
-      );
-      return isUpdated > 0;
-    } catch (error) {
-      console.log(error.message);
-      
-      throw error;
-    }
+  static async markAsPaidFineById(id, options = {}) {
+    const [updatedRow] = await fineRepository.update(
+      { is_paid: true },
+      { id },
+      {
+        fields: ["is_paid"],
+        ...options,
+      }
+    );
+    return updatedRow > 0;
   }
 }
 
