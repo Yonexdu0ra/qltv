@@ -93,6 +93,12 @@ class BookRepository {
   static countBooks(options = {}) {
     return Book.count(options);
   }
+  static increment(field, by = 1, query = {}, options = {}) {
+    return Book.increment(field, { by, where: query, ...options });
+  }
+  static decrement(field, by = 1, query = {}, options = {}) {
+    return Book.decrement(field, { by, where: query, ...options });
+  }
 }
 
 module.exports = BookRepository;

@@ -1,110 +1,106 @@
 const { Op } = require("sequelize");
-const borrowDetailRepository = require("../repositories/borrowDetailRepository");
+const { borrowDetailRepository } = require("../repositories");
 
 class BorrowDetailServices {
   static async createBorrowDetail(data, options = {}) {
-    try {
-      const borrowDetail = await borrowDetailRepository.createBorrowDetail(
-        data,
-        {
-          ...options,
-          include: [{ model: Book, as: "book" }],
-        }
-      );
-      return borrowDetail;
-    } catch (error) {
-      throw new Error("Error creating borrow detail");
-    }
-  }
-  static async searchBorrowDetailsWithBookPaginated(params, options = {}) {
-    try {
-      const where = {};
-
-      if (options.q) {
-        where.title = {
-          [Op.like]: `%${options.q}%`,
-        };
-      }
-      const limit = options.limit
-        ? options.limit > 0
-          ? parseInt(options.limit)
-          : 10
-        : 10;
-      const page =
-        isNaN(parseInt(options.page)) || parseInt(options.page) < 1
-          ? 1
-          : parseInt(options.page);
-      const offset = (page - 1) * limit;
-
-      const [sortBy, sortOrder] = options.sort
-        ? options.sort.split("-")
-        : ["createdAt", "ASC"];
-
-      const order = [
-        [sortBy, sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
-      ];
-      const borrowDetails =
-        await borrowDetailRepository.findBorrowDetailsPaginatedWithBook(
-          {
-            where: {},
-            offset,
-            limit,
-            order,
-          },
-          {
-            bookWhere: where,
-          }
-        );
-      return borrowDetails;
-    } catch (error) {
-      throw error;
-    }
-  }
-  static async getAllBorrowDetailById(ids, options = {}) {
-    return borrowDetailRepository.findBorrowDetails(
-      {
-        id: {
-          [Op.in]: ids,
-        },
-      },
-      options
-    );
-  }
-  static async updateBorrowDetailStatusByIds(ids, data, options = {}) {
-    return borrowDetailRepository.updateBorrowDetail(
-      {
-        id: {
-          [Op.in]: ids,
-        },
-      },
+    const borrowDetail = await borrowDetailRepository.create(
       data,
       {
-        fields: ["status"],
         ...options,
       }
     );
+    return borrowDetail;
+  }
+  static async getBorrowDetailWithBooksPagination(query, options = {}) {
+    const where = {};
+    const whereBook = {};
+    if (query.q) {
+      whereBook.title = {
+        [Op.like]: `%${query.q || ""}%`,
+      };
+    }
+    const limit = options.limit
+      ? options.limit > 0
+        ? parseInt(options.limit)
+        : 10
+      : 10;
+    const page = isNaN(parseInt(options.page)) || parseInt(options.page) < 1 ? 1 : parseInt(options.page);
+    const offset = (page - 1) * limit;
+    const [sortBy, sortOrder] = options.sort ? options.sort.split("-") : ["created_at", "ASC"];
+    const order = [[sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"]];
+    if (["BORROWED", "LOSTED", "DAMAGED", "RETURNED"].includes(sortBy) && sortOrder) {
+      where.status = { [Op.eq]: sortBy };
+      order[0] = ["created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"];
+    }
+
+    return borrowDetailRepository.findAllWithBorrowAndBookPanigation(where, {
+      whereBook,
+      limit,
+      offset,
+      order,
+      ...options,
+    });
   }
   static async getBorrowDetailById(id, options = {}) {
-    try {
-      return await borrowDetailRepository.findBorrowDetail({ id }, options);
-    } catch (error) {
-      throw error;
-    }
+    return borrowDetailRepository.findByPk(id, { ...options });
   }
-  static async markAsReturnedById(id, options = {}) {
-    try {
-      const [updatedRow] = await borrowDetailRepository.updateBorrowDetail(
-        { id },
+  static async getBorrowDetailByIdWithBooks(id, options = {}) {
+    return borrowDetailRepository.findOneWithBorrowAndBook({ id }, { ...options });
+  }
+  static async updateBorrowDetailById(data, id, options = {}) {
+    return borrowDetailRepository.update(data, { id }, options);
+  }
+  static async updateBorrowDetailByIds(data, ids, options = {}) {
+    return borrowDetailRepository.update(
+      data,
+      { id: { [Op.in]: ids } },
+      options
+    );
+  }
+  static async markAsReturnedAllBorrowDetailByIds(ids, options = {}) {
+    const [updatedRow] = await borrowDetailRepository.update(
         { status: "RETURNED" },
+        { id: { [Op.in]: ids } },
         {
           fields: ["status"],
           ...options,
         }
       );
       return updatedRow > 0;
-    } catch (error) {
-      throw error;
-    }
+  }
+  static async markAsReturnedBorrowDetailById(id, options = {}) {
+    const [updatedRow] = await borrowDetailRepository.update(
+        { status: "RETURNED" },
+        { id },
+        {
+          fields: ["status"],
+          ...options,
+        }
+      );
+      return updatedRow > 0;
+  }
+  static async markAsReturnBorrowDetailByBorrowedId(borrowId, options = {}) {
+    const [updatedRow] = await borrowDetailRepository.update(
+        { status: "RETURNED" },
+        { borrow_id: borrowId },
+        {
+          fields: ["status"],
+          ...options,
+        }
+      );
+      return updatedRow > 0;
+  }
+  static async deleteBorrowDetailById(id, options = {}) {
+    return borrowDetailRepository.delete({ id }, options);
+  }
+  static async deleteBorrowDetailByBorrowId(borrowId, options = {}) {
+    return borrowDetailRepository.delete({ borrow_id: borrowId }, options);
+  }
+  static async deleteBorrowDetailByIds(ids, options = {}) {
+    return borrowDetailRepository.delete(
+      { id: { [Op.in]: ids } },
+      options
+    );
   }
 }
 module.exports = BorrowDetailServices;
