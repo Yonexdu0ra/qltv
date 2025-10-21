@@ -1,15 +1,42 @@
-<div class="max-w-lg mx-auto p-6">
-  <h1 class="text-xl font-semibold mb-4">Sửa tác giả</h1>
+<div class="max-w-xl mx-auto mt-12 bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+  <!-- Header -->
+  <div class="mb-6 space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight text-gray-900">✏️ Sửa thông tin tác giả</h1>
+    <p class="text-sm text-gray-500">Chỉnh sửa tên tác giả và lưu lại thay đổi.</p>
+  </div>
+
+  <!-- Hiển thị lỗi -->
   <%- include('../error') %>
-  <form method="POST" class="space-y-3">
-    <input
-      type="text"
-      name="name"
-      value="<%= author.name %>"
-      required
-      class="w-full border rounded px-3 py-2"
-    />
-    <button class="bg-yellow-500 text-white px-4 py-2 rounded">Cập nhật</button>
-    <a href="/authors" class="text-gray-600 hover:underline ml-3">Hủy</a>
-  </form>
+
+    <!-- Form -->
+    <form method="POST" class="space-y-5">
+      <!-- Tên tác giả -->
+      <div class="space-y-2">
+        <label for="name" class="text-sm font-medium text-gray-700">Tên tác giả</label>
+        <input type="text" id="name" name="name" value="<%= author.name %>" placeholder="Nhập tên tác giả" required
+          class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder-gray-400 
+               focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition" />
+      </div>
+      <!-- Tiểu sử tác giả -->
+      <div class="space-y-2">
+        <label for="bio" class="text-sm font-medium text-gray-700">Tiểu sử tác giả</label>
+        <textarea id="bio" name="bio" placeholder="Nhập tiểu sử tác giả"
+          class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder-gray-400 
+           focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition resize-y min-h-[100px]"><%= author.bio %></textarea>
+      </div>
+
+
+      <!-- Hành động -->
+      <div class="pt-3 flex justify-between items-center gap-3">
+        <a href="/dashboard/authors"
+          class="text-sm font-medium text-gray-600 hover:text-gray-900 hover:underline transition">
+          Hủy
+        </a>
+        <button type="submit" class="cursor-pointer inline-flex items-center justify-center rounded-md bg-yellow-500 px-4 py-2.5 text-sm font-medium 
+               text-white shadow-sm hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 
+               focus:ring-offset-1 transition">
+          💾 Cập nhật
+        </button>
+      </div>
+    </form>
 </div>

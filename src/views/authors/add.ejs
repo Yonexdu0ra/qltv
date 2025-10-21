@@ -5,35 +5,30 @@
 
   <%- include('../error') %>
 
-  <form method="POST" class="space-y-5">
-    <div>
-      <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
-        Tên tác giả
-      </label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        placeholder="Nhập tên tác giả..."
-        required
-        value="<%= author ? author.name : '' %>"
-        class="w-full border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-      />
-    </div>
+    <form method="POST" class="space-y-5">
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+          Tên tác giả
+        </label>
+        <input type="text" id="name" name="name" placeholder="Nhập tên tác giả..." required
+          value="<%= author ? author.name : '' %>"
+          class="w-full border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+      </div>
+      <div class="space-y-2">
+        <label for="bio" class="text-sm font-medium text-gray-700">Tiểu sử tác giả</label>
+        <textarea id="bio" name="bio" placeholder="Nhập tiểu sử tác giả"
+          class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder-gray-400 
+           focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition resize-y min-h-[100px]"></textarea>
+      </div>
 
-    <div class="flex flex-wrap justify-between items-center gap-3 pt-4">
-      <a
-        href="/dashboard/authors"
-        class="text-gray-600 hover:text-blue-600 hover:underline transition"
-      >
-         Quay lại danh sách
-      </a>
-      <button
-        type="submit"
-        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium shadow transition"
-      >
-        💾 Lưu tác giả
-      </button>
-    </div>
-  </form>
+      <div class="flex flex-wrap justify-between items-center gap-3 pt-4">
+        <a href="/dashboard/authors" class="text-gray-600 hover:text-blue-600 hover:underline transition">
+          Quay lại danh sách
+        </a>
+        <button type="submit"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium shadow transition">
+          💾 Lưu tác giả
+        </button>
+      </div>
+    </form>
 </div>

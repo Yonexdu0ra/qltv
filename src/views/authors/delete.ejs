@@ -1,9 +1,27 @@
-<div class="max-w-md mx-auto p-6 bg-white shadow rounded-lg text-center">
-    <h1 class="text-xl font-semibold mb-4">Xóa tác giả</h1>
-    <%- include('../errorMessageWithQuery') %>
-    <p>Bạn có chắc muốn xóa tác giả <strong><%= author.name %></strong> không?</p>
-    <form  method="POST" class="mt-4 space-x-3">
-      <button class="bg-red-600 text-white px-4 py-2 rounded">Xóa</button>
-      <a href="/authors" class="text-gray-600 hover:underline">Hủy</a>
+<div class="max-w-md mx-auto mt-20 bg-white border border-gray-200 shadow-sm rounded-xl p-8 text-center">
+  <!-- Header -->
+  <h1 class="text-2xl font-semibold text-gray-900 mb-3">🗑️ Xóa tác giả</h1>
+  <p class="text-sm text-gray-500 mb-6">
+    Thao tác này <span class="font-semibold text-red-600">không thể hoàn tác</span>.
+    Bạn có chắc muốn xóa tác giả
+    <strong class="text-gray-800">
+      <%= author.name %>
+    </strong> không?
+  </p>
+
+  <!-- Hiển thị lỗi -->
+  <%- include('../errorMessageWithQuery') %>
+
+    <!-- Form xác nhận -->
+    <form method="POST" class="flex flex-col sm:flex-row justify-between items-center gap-3">
+      <button type="submit" class="cursor-pointer items-center justify-center bg-red-600 hover:bg-red-700 text-white 
+             px-5 py-2.5 rounded-md font-medium text-sm shadow-sm transition focus:outline-none 
+             focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+        🗑️ Xác nhận xóa
+      </button>
+      <a href="/dashboard/authors" class="inline-flex items-center justify-center px-5 py-2.5 rounded-md border border-gray-300 
+             text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+        Hủy
+      </a>
     </form>
-  </div>
+</div>

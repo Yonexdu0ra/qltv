@@ -1,0 +1,92 @@
+<div class="max-w-6xl mx-auto mt-8 space-y-10">
+  <h1 class="text-3xl font-bold text-gray-800">📚 Danh sách sách theo thể loại</h1>
+
+  <% if (!genres || genres.length === 0) { %>
+    <div class="bg-white p-6 rounded-lg shadow-sm text-gray-600">Không có thể loại nào.</div>
+  <% } %>
+
+  <% genres && genres.forEach(function(genre, gIndex) { %>
+    <section class="bg-white p-5 rounded-xl shadow">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">📂 <%= genre.name %></h2>
+        <div class="flex items-center gap-2">
+          <button data-action="prev" data-genre-index="<%= gIndex %>" class="prev-btn inline-flex items-center justify-center w-10 h-10 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700">◀</button>
+          <button data-action="next" data-genre-index="<%= gIndex %>" class="next-btn inline-flex items-center justify-center w-10 h-10 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700">▶</button>
+        </div>
+      </div>
+
+      <% if (!genre.books || genre.books.length === 0) { %>
+        <div class="text-gray-500 py-8">Không có sách trong thể loại này.</div>
+      <% } else { %>
+        <div class="relative">
+          <div class="overflow-x-auto scrollbar-hide" data-genre-carousel="<%= gIndex %>" style="scroll-behavior:smooth;">
+            <div class="flex gap-4 px-1">
+              <% genre.books.forEach(function(book) { %>
+                <article class="w-48 min-w-[12rem] bg-white border border-gray-100 rounded-lg shadow-sm flex-shrink-0">
+                  <a href="/dashboard/books/<%= book.id || book.slug %>/detail" class="block">
+                    <div class="h-64 w-full overflow-hidden rounded-t-lg bg-gray-50 flex items-center justify-center">
+                      <img src="<%= book.image_cover %>" alt="<%= book.title %>" class="object-cover h-full w-full" />
+                    </div>
+                    <div class="p-3">
+                      <h3 class="text-sm font-medium text-gray-800 truncate" title="<%= book.title %>"><%= book.title %></h3>
+                      <p class="text-xs text-gray-500 mt-1 truncate"><%= (book.authors || []).map(a => a.name).join(', ') %></p>
+                      <div class="mt-3 flex items-center justify-between">
+                        <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700"><%= book.quantity_available %> còn</span>
+                        <span class="text-xs text-blue-600 font-medium">Xem</span>
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </section>
+  <% }) %>
+
+</div>
+
+<% script = `
+<script>
+// Simple carousel navigation: scroll the container by the width of one card
+;(function(){
+  function qs(selector, context){ return (context || document).querySelector(selector); }
+  function qsa(selector, context){ return Array.from((context || document).querySelectorAll(selector)); }
+
+  function init() {
+    const prevBtns = qsa('.prev-btn');
+    const nextBtns = qsa('.next-btn');
+
+    prevBtns.forEach(btn => btn.addEventListener('click', onNavClick));
+    nextBtns.forEach(btn => btn.addEventListener('click', onNavClick));
+  }
+
+  function onNavClick(e){
+    const btn = e.currentTarget;
+    const action = btn.getAttribute('data-action');
+    const index = btn.getAttribute('data-genre-index');
+    const carousel = document.querySelector('[data-genre-carousel="'+index+'"]');
+    if (!carousel) return;
+    const card = carousel.querySelector('article') || carousel.querySelector('div > *');
+    const cardWidth = card ? (card.getBoundingClientRect().width + parseFloat(getComputedStyle(card).marginRight || 0)) : 240;
+    const delta = action === 'next' ? cardWidth * 3 : -cardWidth * 3; // scroll 3 cards
+    carousel.scrollBy({ left: delta, behavior: 'smooth' });
+  }
+
+  // keyboard navigation (optional)
+  function onKey(e){
+    if (!document.activeElement || ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+      const firstCarousel = document.querySelector('[data-genre-carousel]');
+      if (!firstCarousel) return;
+      const delta = e.key === 'ArrowRight' ? 300 : -300;
+      firstCarousel.scrollBy({ left: delta, behavior: 'smooth' });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('keydown', onKey);
+})();
+</script>
+` %>
