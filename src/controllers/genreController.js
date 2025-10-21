@@ -87,7 +87,7 @@ class GenreController {
       });
     } catch (error) {
       console.log(error);
-      
+
       return res.redirect("/not-found?error=" + encodeBase64(error.message));
     }
   }
@@ -178,6 +178,8 @@ class GenreController {
           ...query,
           limit,
           offset,
+        }, {
+          attributes: ["id", "name", "slug"],
         });
       return res.json({ success: true, data: genres, total });
     } catch (error) {
@@ -186,6 +188,39 @@ class GenreController {
         message: error.message,
         data: [],
         total: 0,
+      });
+    }
+  }
+  static async renderViewGenresForReader(req, res) {
+    const limit = req.query.limit
+      ? req.query.limit > 0
+        ? parseInt(req.query.limit)
+        : 5
+      : 5;
+    try {
+
+      const { count: totals, rows: genres } =
+        await genreServices.getAllGenresWithPagination({ ...req.query, limit });
+
+      const totalPages = Math.ceil(totals / limit);
+      const page = parseInt(req.query.page) || 1;
+      return res.render("genres/list", {
+        title: "Danh sách thể loại",
+        genres,
+        totals: totalPages,
+        page,
+        query: req.query,
+      });
+    } catch (error) {
+     
+      return res.render("genres/list", {
+        title: "Danh sách thể loại",
+        genres: [],
+        totals: 0,
+        totalPages: 0,
+        page: 1,
+        error: error.message,
+        query: req.query,
       });
     }
   }

@@ -1,12 +1,12 @@
 const authorService = require("../services/authorServices");
 const generateSlug = require("../utils/generateSlug");
 const encodeBase64 = require("../utils/base64");
-const { bookServices } = require("../services");
+const { bookServices, authorServices } = require("../services");
 
 class AuthorController {
   static async renderViewAuthor(req, res) {
     const { query } = req;
-    
+
     const page = parseInt(req.query.page) || 1;
     try {
       const limit = parseInt(req.query.limit) || 10;
@@ -159,7 +159,7 @@ class AuthorController {
   static async handleDeleteAuthor(req, res) {
     const { id } = req.params;
     try {
-    
+
       const author = await authorService.getAuthorByIdWithBooks(id, {
         attributes: ["id", "name"],
         bookAttributes: ["id"],
@@ -178,19 +178,18 @@ class AuthorController {
       );
     } catch (error) {
       console.log(error);
-      
+
       return res.redirect(`/dashboard/authors/delete/${id}?error=` + encodeBase64(error.message));
     }
   }
   static async handleSearchAuthors(req, res) {
+    const { query } = req;
     try {
-
-      const { q, limit, page } = req.query;
+      const limit = query.limit || 10;
+      const page = query.page || 1;
+      const q = query.q || "";
       const { rows: authors, count: total } =
-        await authorService.getAuthorsByName(q || "", {
-          limit: parseInt(limit) || 10,
-          offset: ((parseInt(page) || 1) - 1) * (parseInt(limit) || 10),
-        });
+        await authorService.getAuthorsByName(q, { limit, page, attributes: ["id", "name", "slug"] });
       return res.json({ success: true, data: authors, total });
     } catch (error) {
       console.log(error);
@@ -200,6 +199,33 @@ class AuthorController {
         message: error.message,
         data: [],
         total: 0,
+      });
+    }
+  }
+  static async renderViewAuthorForReader(req, res) {
+    const { query } = req;
+    const page = parseInt(req.query.page) || 1;
+    try {
+      const limit = parseInt(req.query.limit) || 10;
+      const { rows: authors, count: totals } =
+        await authorService.getAuthorsWithPagination({ ...query, limit });
+      const totalPages = Math.ceil(totals / limit);
+      return res.render("authors/index", {
+        authors,
+        totals: totalPages,
+        title: "Danh sách tác giả",
+        page,
+        query,
+      });
+    } catch (error) {
+      console.log("error render view author " + error.message);
+      return res.render("authors/list", {
+        authors: [],
+        totals: 0,
+        page,
+        title: "Danh sách tác giả",
+        error: error.message,
+        query,
       });
     }
   }

@@ -28,10 +28,15 @@ app.set("layout extractScripts", true);
 
 
 app.use(express.static(path.join(__dirname, "public")));
-// app.use(authenticationMiddleware);
+app.use(authenticationMiddleware);
 app.use((req, res, next) => {
     res.locals.currentPath = req.path;
     res.locals.user = req.user || {}
+    const role = req?.user?.role
+    console.log(role);
+    
+    const layout = !role || role === "Reader" ? "layouts/readerLayout" : "layout"
+    res.locals.layout = layout
     res.locals.constants = BORROW_STATUS_CONSTANTS
     res.locals.constantsReverse = STATUS_BORROW
     next();
@@ -68,7 +73,7 @@ routes(app);
         console.log("Kết nối đến database thành công");
     } catch (error) {
         console.log(error);
-        
+
         console.error("Không thể kết nối đến database:", error.message);
     }
 })();

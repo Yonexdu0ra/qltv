@@ -18,7 +18,8 @@ class AuthController {
             const TIME_ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 7 Ngày
             res.cookie('refresh_token', refresh_token, { httpOnly: true, maxAge: TIME_ONE_WEEK, sameSite: 'lax' });
             res.cookie('access_token', access_token, { httpOnly: true, maxAge: TIME_ONE_WEEK, sameSite: 'lax' });
-            return res.redirect("/");
+            const directUrl = req.query.redirect || "/";
+            return res.redirect(directUrl);
         } catch (error) {
             console.log(error.message);
             return res.render("auth/login", { title: "Đăng nhập", layout: false, error: error.message });

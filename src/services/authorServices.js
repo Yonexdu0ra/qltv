@@ -3,11 +3,12 @@ const { authorRepository } = require("../repositories");
 const generateSlug = require("../utils/generateSlug");
 class AuthorServices {
   static async getAuthorsByName(name, options = {}) {
-    const where = {
-      name: {
-        [Op.like]: `%${name || ""}%`,
-      },
-    };
+    const where = {};
+    if(name) {
+      where.name = {
+        [Op.like]: `%${name}%`,
+      };
+    }
     const limit = options.limit
       ? options.limit > 0
         ? parseInt(options.limit)
@@ -18,9 +19,10 @@ class AuthorServices {
         ? 1
         : parseInt(options.page);
     const offset = (page - 1) * limit;
+    const order = [["created_at", "DESC"]];
     const authors = await authorRepository.findAllAndCount(
-      { where },
-      { limit, offset, ...options }
+      where,
+      { limit, offset, ...options, order }
     );
     return authors;
   }

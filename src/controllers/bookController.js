@@ -47,8 +47,6 @@ class BookController {
   }
   static async renderViewEditBook(req, res) {
     const { id } = req.params;
-    console.log(id);
-
     try {
       if (!id) throw new Error("Sách không tồn tại không thể sửa");
       const book = await bookServices.getBookByIdWithAuthorsAndGenres(id, {
@@ -158,9 +156,7 @@ class BookController {
     const { id } = req.params;
     const image_cover = req.file?.path || null;
     const body = req.body || {};
-    const transaction = await sequelize.transaction();
-    console.log(image_cover);
-    console.log(body);
+    const transaction = await sequelize.transaction()
 
 
     try {
@@ -197,7 +193,9 @@ class BookController {
             "description",
             "image_cover",
             "published_year",
-            "quantity",
+            "quantity_total",
+            "quantity_available",
+            "slug"
           ],
           transaction,
         }
@@ -249,6 +247,40 @@ class BookController {
         message: error.message,
         data: [],
         total: 0,
+      });
+    }
+  }
+  static async renderViewBooksForReader(req, res) {
+    const { query } = req;
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
+        : 5
+      : 5;
+    const page =
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
+        ? 1
+        : parseInt(query.page);
+    try {
+      const { rows: books, count: totals } =
+        await bookServices.getBooksWithPagination({ ...query, limit });
+      const totalPages = Math.ceil(totals / limit);
+      return res.render("books/list", {
+        books,
+        totals: totalPages,
+        page,
+        query,
+        title: "Danh sách sách",
+      });
+    } catch (error) {
+      console.log("error render view books " + error.message);
+      return res.render("books/list", {
+        books: [],
+        totals: 0,
+        page,
+        error: error.message,
+        query,
+        title: "Danh sách sách",
       });
     }
   }

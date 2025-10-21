@@ -36,6 +36,7 @@
         </p>
       </div>
 
+<<<<<<< HEAD
       <div class="pt-6 flex justify-between items-center gap-4">
         <a
           href="/dashboard/books"
@@ -43,6 +44,9 @@
         >
            Quay lại danh sách
         </a>
+=======
+      <div class="pt-6 flex items-center gap-4">
+>>>>>>> 41ba9baea48ef917335bc6e3a9c70b3b53706415
         <% if(book.quantity_available > 0) { %>
           <a
           href="/dashboard/borrows/add/?q=<%= encodeURIComponent(book.title) %>"
@@ -53,6 +57,15 @@
         <% } else { %>
           <span class="text-red-600 font-medium">Hiện không còn sách để mượn</span>
         <% } %>
+<<<<<<< HEAD
+=======
+        <!-- <a
+          href="/books"
+          class="text-gray-600 hover:text-blue-600 hover:underline transition"
+        >
+          ← Quay lại danh sách
+        </a> -->
+>>>>>>> 41ba9baea48ef917335bc6e3a9c70b3b53706415
       </div>
     </div>
   </div>

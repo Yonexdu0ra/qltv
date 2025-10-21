@@ -12,12 +12,17 @@ class BorrowDetailServices {
     return borrowDetailRepository.findAll({ id: { [Op.in]: ids } }, options);
   }
   static async getBorrowDetailWithBooksPagination(query, options = {}) {
-    const where = {};
+ 
+    const where = {
+    };
     const whereBook = {};
     if (query.q) {
       whereBook.title = {
         [Op.like]: `%${query.q || ""}%`,
       };
+    }
+    if(query.b) {
+      where.borrow_id = query.b;
     }
     const limit = options.limit
       ? options.limit > 0
@@ -48,6 +53,7 @@ class BorrowDetailServices {
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ];
     }
+   
 
     return borrowDetailRepository.findAllWithBorrowAndBookPanigation(where, {
       whereBook,

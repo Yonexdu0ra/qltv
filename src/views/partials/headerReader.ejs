@@ -21,10 +21,11 @@
     </nav>
 
     <div class="hidden md:flex items-center gap-3">
-      <input type="text" placeholder="Tìm sách..."
-        class="border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-      <div class="relative">
+      <!-- <input type="text" placeholder="Tìm sách..."
+        class="border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" /> -->
+      <div class="relative w-full">
         <!-- Avatar / Tên -->
+        <% if(user.role) { %>
         <button id="userMenuButton" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 focus:outline-none">
           <span class="hidden sm:inline text-gray-600 font-medium">
             <%= user.fullname %>
@@ -52,6 +53,12 @@
             </button>
           </form>
         </div>
+          <% } %>
+          <%if(!user.role){ %>
+            <div>
+              <a href="/auth/login" class="bg-indigo-600 p-2 rounded text-white">Đăng nhập</a>
+            </div>
+          <% } %>
       </div>
 
     </nav>
@@ -62,14 +69,14 @@
   <!-- Menu mobile -->
   <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200">
     <nav class="flex flex-col px-4 py-2 space-y-2 font-medium">
-      <a href="#" class="hover:text-indigo-600">Trang chủ</a>
-      <a href="#" class="hover:text-indigo-600">Sách</a>
-      <a href="#" class="hover:text-indigo-600">Tác giả</a>
+      <a href="/" class="hover:text-indigo-600">Trang chủ</a>
+      <a href="/books" class="hover:text-indigo-600">Sách</a>
+      <a href="/authors" class="hover:text-indigo-600">Tác giả</a>
       <a href="#" class="hover:text-indigo-600">Thể loại</a>
       <a href="#" class="hover:text-indigo-600">Liên hệ</a>
 
-      <input type="text" placeholder="Tìm sách..."
-        class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+      <!-- <input type="text" placeholder="Tìm sách..."
+        class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" /> -->
 
       <div class="relative">
         <!-- Avatar / Tên -->
