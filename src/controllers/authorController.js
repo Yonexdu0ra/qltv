@@ -210,7 +210,7 @@ class AuthorController {
       const { rows: authors, count: totals } =
         await authorService.getAuthorsWithPagination({ ...query, limit });
       const totalPages = Math.ceil(totals / limit);
-      return res.render("authors/index", {
+      return res.render("authors/list", {
         authors,
         totals: totalPages,
         title: "Danh sách tác giả",

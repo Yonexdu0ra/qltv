@@ -82,7 +82,7 @@
         <% fines.forEach((fine, index) => { %>
         <tr class="hover:bg-rose-50 transition duration-150">
           <td class="px-6 py-4"><%= ++index %></td>
-          <td class="px-6 py-4 font-medium text-gray-800"><%= fine.amount.toLocaleString() %> đ</td>
+          <td class="px-6 py-4 font-medium text-gray-800"><%= formatVND(fine.amount) %> đ</td>
           <td class="px-6 py-4">
             <span class="px-3 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-700">
               <%= constantsReverse[fine.borrowDetail.status] %>
