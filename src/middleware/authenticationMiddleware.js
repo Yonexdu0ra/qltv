@@ -6,15 +6,17 @@ const authenticationMiddleware = async (req, res, next) => {
         const access_token = req.cookies.access_token;
         const refresh_token = req.cookies.refresh_token;
         const isPathLogin = req.path.startsWith("/auth/login");
-        if (
-            req.path.startsWith("/css") ||
-            req.path.startsWith("/js") ||
-            req.path.startsWith("/images") ||
-            req.path.startsWith("/fonts") ||
-            req.path === "/favicon.ico"
-        ) {
-            return next();
-        }
+        const isPublicRouter = (
+                req.path.startsWith("/css") ||
+                req.path.startsWith("/js") ||
+                req.path.startsWith("/images") ||
+                req.path.startsWith("/fonts") ||
+                req.path === "/favicon.ico" ||
+                req.path === "/" ||
+                req.path.startsWith("/books/")
+                || req.path.startsWith("/authors/")
+                || req.path.startsWith("/genres/")
+            )
         let decodedAccessToken = access_token ? await decodeJWT(access_token, process.env.JWT_SECRET) : null;
         const decodedRefreshToken = refresh_token ? await decodeJWT(refresh_token, process.env.JWT_SECRET) : null;
 
@@ -23,9 +25,10 @@ const authenticationMiddleware = async (req, res, next) => {
             return res.redirect("/");
         }
 
-        // Chưa có token hoặc refresh token invalid thì redirect về login nếu không phải trang login
-        if ((!decodedAccessToken || !decodedRefreshToken || decodedRefreshToken === "JsonWebTokenError") && !isPathLogin) {
-            return res.redirect("/auth/login");
+        // Chưa có token hoặc refresh token invalid thì redirect về login nếu không phải trang login và các router public
+        if ((!decodedAccessToken || !decodedRefreshToken || decodedRefreshToken === "JsonWebTokenError") && !isPathLogin && !isPublicRouter) {
+            const queryString = new URLSearchParams(req.query).toString();
+            return res.redirect("/auth/login" + "?redirect=" + encodeURIComponent(req.originalUrl) + "&" + queryString);
         }
 
         // Access token hết hạn nhưng refresh token còn hạn thì tạo access token mới
@@ -46,10 +49,6 @@ const authenticationMiddleware = async (req, res, next) => {
         // Gán user vào req
         if (decodedAccessToken && decodedAccessToken !== "TokenExpiredError") {
             req.user = decodedAccessToken;
-            res.locals.user = req.user || {};
-            const role = req?.user?.role
-            const layout = !role ? false : role === "Reader" ? "layouts/readerLayout" : "layout"
-            res.locals.layout = layout
 
         }
 

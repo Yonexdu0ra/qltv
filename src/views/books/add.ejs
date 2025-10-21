@@ -122,7 +122,7 @@
       label: author.name,
     }));
   });
-  useChoice("#genres", "/genre/search", (data) => {
+  useChoice("#genres", "/genres/search", (data) => {
     return data.data.map((genre) => ({
       value: genre.id,
       label: genre.name,

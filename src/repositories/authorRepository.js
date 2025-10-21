@@ -22,9 +22,9 @@ class AuthorRepository {
           required: options.bookRequired || false,
           model: Book,
           as: "books",
-          where: options.bookWhere || {},
-          attributes: options.bookAttributes || [],
-          through: { attributes: options.throughAttributes || [] },
+          where: options.bookWhere ,
+          attributes: options.bookAttributes ,
+          through: { attributes: options.throughAttributes  },
         },
       ],
     });
@@ -38,12 +38,12 @@ class AuthorRepository {
           model: Book,
           as: "books",
           required: options.bookRequired || false,
-          where: options.bookWhere || {},
-          attributes: options.bookAttributes || [],
-          through: { attributes: options.throughAttributes || [] },
-          limit: options.bookLimit || 10,
-          offset: options.bookOffset || 0,
-          order: options.bookOrder || [],
+          where: options.bookWhere ,
+          attributes: options.bookAttributes ,
+          through: { attributes: options.throughAttributes  },
+          limit: options.bookLimit ,
+          offset: options.bookOffset ,
+          order: options.bookOrder ,
         },
       ],
     });
@@ -64,9 +64,9 @@ class AuthorRepository {
         {
           model: Book,
           as: "books",
-          where: options.bookWhere || {},
-          attributes: options.bookAttributes || [],
-          through: { attributes: options.throughAttributes || [] },
+          where: options.bookWhere ,
+          attributes: options.bookAttributes ,
+          through: { attributes: options.throughAttributes  },
         },
       ],
       ...options,
@@ -74,27 +74,27 @@ class AuthorRepository {
   }
   static findWithPagination(query = {}, options = {}) {
     return Author.findAndCountAll({
-      where: { ...query } || {},
-      limit: options.limit || 10,
-      offset: options.offset || 0,
-      order: options.order || [],
+      where: { ...query } ,
+      limit: options.limit ,
+      offset: options.offset ,
+      order: options.order ,
       ...options,
     });
   }
   static findWithBookPagination(query = {}, options = {}) {
     return Author.findAndCountAll({
-      where: { ...query } || {},
-      limit: query.limit || 10,
-      offset: query.offset || 0,
-      order: query.order || [],
+      where: { ...query } ,
+      limit: query.limit ,
+      offset: query.offset ,
+      order: query.order ,
       ...options,
       include: [
         {
           model: Book,
           as: "books",
-          where: options.bookWhere || {},
-          attributes: options.bookAttributes || [],
-          through: { attributes: options.throughAttributes || [] },
+          where: options.bookWhere ,
+          attributes: options.bookAttributes ,
+          through: { attributes: options.throughAttributes  },
         },
       ],
     });
