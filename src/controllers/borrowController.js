@@ -25,7 +25,7 @@ class BorrowController {
         );
 
       const totalPages = Math.ceil(count / limit);
-      return res.render("borrows/index", {
+      return res.render("borrows/list", {
         title: "Mượn trả",
         borrows,
         totals: totalPages,
@@ -35,7 +35,7 @@ class BorrowController {
     } catch (error) {
       console.log(error);
 
-      return res.render("borrows/index", {
+      return res.render("borrows/list", {
         title: "Mượn trả",
         error: error.message,
         page,

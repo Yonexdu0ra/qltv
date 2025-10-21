@@ -5,7 +5,7 @@ class HomeController {
         try {
             const { rows: books } = await bookServices.getBooksWithPagination();
             
-            return res.render("index", { title: "Trang chủ", books, layout: "layouts/readerLayout" });
+            return res.render("index", { title: "Trang chủ", books,  });
         } catch (error) {
             console.log(error.message);
             return res.render("index", { title: "Trang chủ", books: [] });
@@ -20,6 +20,9 @@ class HomeController {
     }
     static async renderViewContact(req, res) {
         return res.render("contact", { title: "Liên hệ" });
+    }
+    static async renderViewDashboard(req, res) {
+        return res.render("reports/index", { title: "Bảng điều khiển" });
     }
 }
 

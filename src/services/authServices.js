@@ -27,6 +27,7 @@ class AuthServices {
             const access_token = await encodeJWT(dataEncode, { expiresIn: '15m' });
             const refresh_token = await encodeJWT(dataEncode, { expiresIn: '7d' });
             return {
+                role: account.role,
                 access_token,
                 refresh_token,
             }

@@ -4,9 +4,10 @@ const { requiredRoleLibrarianAndAdmin } = require("../../middleware/authorizatio
 
 const router = Router();
 
-router.get('/', fineController.renderViewFines);
-router.get('/add', fineController.renderViewCreateFine);
-router.post('/add', fineController.handlerCreateFine);
+router.get('/reader', fineController.renderViewFineForReader);
+router.get('/', requiredRoleLibrarianAndAdmin, fineController.renderViewFines);
+router.get('/add', requiredRoleLibrarianAndAdmin, fineController.renderViewCreateFine);
+router.post('/add', requiredRoleLibrarianAndAdmin, fineController.handlerCreateFine);
 router.get('/mark-as-paid/:id', requiredRoleLibrarianAndAdmin, fineController.handlerMarkAsPaidFine);
 
 module.exports = router;

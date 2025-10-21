@@ -155,6 +155,45 @@ class FineController {
       return res.redirect("/dashboard/fines?error=" + encodeBase64(error.message));
     }
   }
+  static async renderViewFineForReader(req, res, next) {
+    const { user_id } = req.user;
+    const { query } = req;
+    const limit = req.query.limit
+      ? req.query.limit > 0
+        ? parseInt(req.query.limit)
+        : 10
+      : 10;
+    const page = parseInt(req.query.page) || 1;
+    try {
+      const { rows: fines, count } =
+        await fineServices.getAllFinesWithBorrowDetailAndBorrowerAndBookPagination(user_id,{ limit, query }, {
+          attributes: ["id", "amount", "is_paid", "note", "created_at"],
+          bookAttributes: ["title"],
+          borrowDetailAttributes: ["id", "borrow_id", "status"],
+          borrowAttributes: ["id", "due_date"],
+        });
+      const totalPages = Math.ceil(count / limit);
+      return res.render("fines/list", {
+        title: "Quản lý phạt",
+        fines,
+        totals: totalPages,
+        page,
+        query,
+        formatVND,
+      });
+    } catch (error) {
+      console.log(error.message);
+      return res.render("fines/list", {
+        title: "Quản lý phạt",
+        fines: [],
+        totals: 0,
+        page,
+        query,
+        error: error.message,
+        formatVND,
+      });
+    }
+  }
 }
 
 module.exports = FineController;

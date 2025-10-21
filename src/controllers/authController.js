@@ -14,11 +14,11 @@ class AuthController {
             if (!password) throw new Error("Vui lòng nhập password");
             username = username.toLowerCase().trim();
             password = password.trim();
-            const { access_token, refresh_token } = await AuthServices.handleLogin(username, password);
+            const { access_token, refresh_token, role } = await AuthServices.handleLogin(username, password);
             const TIME_ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 7 Ngày
             res.cookie('refresh_token', refresh_token, { httpOnly: true, maxAge: TIME_ONE_WEEK, sameSite: 'lax' });
             res.cookie('access_token', access_token, { httpOnly: true, maxAge: TIME_ONE_WEEK, sameSite: 'lax' });
-            const directUrl = req.query.redirect || "/";
+            const directUrl = req.query.redirect || role === "Reader" ? "/" : "/dashboard";
             return res.redirect(directUrl);
         } catch (error) {
             console.log(error.message);
