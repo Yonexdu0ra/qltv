@@ -11,8 +11,8 @@ const authenticationMiddleware = async (req, res, next) => {
       ["/", "/favicon.ico"].includes(req.path) ||
       req.path.startsWith("/.well-known/appspecific/com.chrome.devtools.json");
 
-      
-      console.log(isPublicRouter);
+
+    // console.log(isPublicRouter);
     let decodedAccessToken = access_token
       ? await decodeJWT(access_token, process.env.JWT_SECRET)
       : null;
@@ -40,10 +40,10 @@ const authenticationMiddleware = async (req, res, next) => {
       const queryString = new URLSearchParams(req.query).toString();
       return res.redirect(
         "/auth/login" +
-          "?redirect=" +
-          encodeURIComponent(req.originalUrl) +
-          "&" +
-          queryString
+        "?redirect=" +
+        encodeURIComponent(req.originalUrl) +
+        "&" +
+        queryString
       );
     }
 
