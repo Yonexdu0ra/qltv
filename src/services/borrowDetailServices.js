@@ -102,7 +102,7 @@ class BorrowDetailServices {
       { status: "RETURNED" },
       { id },
       {
-        fields: ["status"],
+        
         ...options,
       }
     );

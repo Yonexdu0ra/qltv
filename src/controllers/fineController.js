@@ -103,8 +103,6 @@ class FineController {
           { status },
           { transaction, fields: ["status"] }
         );
-        console.log(isUpdateBorrowDetail);
-        
         if(!isUpdateBorrowDetail) {
           throw new Error("Cập nhật trạng thái chi tiết mượn thất bại");
         }

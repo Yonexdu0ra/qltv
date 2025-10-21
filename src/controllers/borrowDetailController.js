@@ -46,16 +46,21 @@ class BorrowDetailController {
     const { id } = req.params;
     try {
       await sequelize.transaction(async (t) => {
-        const borrowDetail = await borrowDetailServices.getBorrowDetailById(id, { attributes: ['id', 'status']});
+        const borrowDetail = await borrowDetailServices.getBorrowDetailById(id, { attributes: ['id', 'status', 'book_id']});
         if (!borrowDetail) throw new Error("Chi tiết phiếu mượn không tồn tại");
         if (borrowDetail.status === BORROW_STATUS_CONSTANTS.RETURNED) throw new Error("Sách đã được trả trước đó");
         const isUpdated =
-          await borrowDetailServices.markAsReturnedBorrowDetailById(borrowDetail.id, {
-            transaction: t,
-          });
+          await borrowDetailServices.markAsReturnedBorrowDetailById(
+            borrowDetail.id,
+            {
+              transaction: t,
+              fields: ["status"],
+            }
+          );
         const isUpdatedStock = await bookServices.incrementBookById(
-          borrowDetail.book_id,
+          'quantity_available',
           1,
+          borrowDetail.book_id,
           { transaction: t }
         );
 
