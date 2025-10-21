@@ -1,6 +1,7 @@
 const { sequelize } = require("../models");
 const { authorServices, genreServices, bookServices } = require("../services");
 const encodeBase64 = require("../utils/base64");
+const genaraterSlug = require("../utils/generateSlug");
 
 class BookController {
   static async renderViewBooks(req, res) {
@@ -71,7 +72,7 @@ class BookController {
     } catch (error) {
       console.log(error);
 
-      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async renderViewDeleteBook(req, res) {
@@ -82,7 +83,7 @@ class BookController {
       if (!book) throw new Error("Sách không tồn tại không thể sửa");
       return res.render("books/delete", { book, title: "Xóa sách" });
     } catch (error) {
-      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async renderViewDetailBook(req, res) {
@@ -121,15 +122,24 @@ class BookController {
       if (genresData.length !== genres.length) {
         throw new Error("Một số thể loại không tồn tại trong hệ thống");
       }
+      let slug = genaraterSlug(body.title);
+      const existingBook = await bookServices.getBookBySlug(slug, { attributes: ["id"] });
+      if (existingBook) {
+        slug = `${slug}-${Date.now()}`;
+      }
       const book = await bookServices.createBook(
-        { ...body, image_cover },
+        { ...body, image_cover, slug },
         {
           fields: [
             "title",
             "description",
             "image_cover",
             "published_year",
-            "quantity",
+            "quantity_total",
+            "quantity_available",
+            "slug",
+            "isbn",
+            'description',
           ],
           transaction,
         }
@@ -139,7 +149,7 @@ class BookController {
 
       await transaction.commit();
       return res.redirect(
-        "/books?success=" + encodeBase64("Thêm sách thành công")
+        "/dashboard/books?success=" + encodeBase64("Thêm sách thành công")
       );
     } catch (error) {
       await transaction.rollback();
@@ -208,7 +218,7 @@ class BookController {
 
       await transaction.commit();
       return res.redirect(
-        "/dashboard/books?success=" + encodeBase64("Cập nhật sách thành công")
+        "/dashboard/dashboard/books?success=" + encodeBase64("Cập nhật sách thành công")
       );
     } catch (error) {
       await transaction.rollback();
@@ -227,10 +237,10 @@ class BookController {
       const isDeleted = await bookServices.deleteBookById(book.id);
       if (!isDeleted) throw new Error("Xóa sách thất bại");
       return res.redirect(
-        "/books?success=" + encodeBase64("Xóa sách thành công")
+        "/dashboard/books?success=" + encodeBase64("Xóa sách thành công")
       );
     } catch (error) {
-      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async handleSearchBooks(req, res) {
