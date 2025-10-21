@@ -2,6 +2,7 @@ const fineServices = require("../services/fineServices");
 const borrowDetailServices = require("../services/borrowDetailServices");
 const encodeBase64 = require("../utils/base64");
 const { sequelize } = require("../models");
+const formatVND = require("../utils/formatVND");
 class FineController {
   static async renderViewFines(req, res, next) {
     const { query } = req;
@@ -26,6 +27,7 @@ class FineController {
         totals: totalPages,
         page,
         query,
+        formatVND,
       });
     } catch (error) {
       console.log(error.message);
@@ -36,6 +38,7 @@ class FineController {
         page,
         query,
         error: error.message,
+        formatVND,
       });
     }
   }
@@ -118,7 +121,21 @@ class FineController {
       return res.redirect("/dashboard/fines?error=" + encodeBase64(error.message));
     }
   }
-
+  static async renderViewDetailFine(req, res, next) {
+    const { id } = req.params;
+    try {
+      const fine = await fineServices.getFineByIdWithBorrowDetailAndBorrowerAndBook(id, {
+        attributes: ["id", "amount", "is_paid", "note", "created_at"],
+        bookAttributes: ["title"],
+        borrowDetailAttributes: ["id", "borrow_id", "status"],
+        borrowAttributes: ["id", "due_date"],
+      });
+      if (!fine) throw new Error("Phí không tồn tại");
+      return res.render("fines/detail", { title: "Chi tiết phí", fine, formatVND });
+    } catch (error) {
+      return res.redirect("/not-found/fines?error=" + encodeBase64(error.message));
+    }
+  }
   static async handlerEditFine(req, res, next) {}
   static async handlerMarkAsPaidFine(req, res) {
     const { id } = req.params;

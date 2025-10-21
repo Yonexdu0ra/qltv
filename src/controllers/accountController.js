@@ -93,7 +93,7 @@ class AccountController {
             return res.redirect("/accounts?error=" + encodeBase64(error.message));
         }
     }
-
+    
     static async handleCreateAccount(req, res) {
         const transaction = await sequelize.transaction();
         try {
