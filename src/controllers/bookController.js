@@ -193,7 +193,9 @@ class BookController {
             "description",
             "image_cover",
             "published_year",
-            "quantity",
+            "quantity_total",
+            "quantity_available",
+            "slug"
           ],
           transaction,
         }

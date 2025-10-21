@@ -2,6 +2,7 @@ const { sequelize } = require("../models");
 const borrowDetailServices = require("../services/borrowDetailServices");
 const bookServices = require("../services/bookServices");
 const encodeBase64 = require("../utils/base64");
+const { BORROW_STATUS_CONSTANTS } = require("../utils/constants");
 
 class BorrowDetailController {
   static async handleSearchBorrowDetailBooks(req, res) {
@@ -20,9 +21,9 @@ class BorrowDetailController {
     try {
       const { count, rows: borrowDetais } =
         await borrowDetailServices.getBorrowDetailWithBooksPagination({
-          query,
+          ...query,
           limit,
-        }, { attributes: ['id', 'borrow_id'], bookAttributes: ['title'], borrowAttributes: [] , page, limit, borrowWhere });
+        }, { attributes: ['id', 'borrow_id', 'status'], bookAttributes: ['title'], borrowAttributes: [] , page, limit, borrowWhere });
       const totalPages = Math.ceil(count / limit);
       return res.status(200).json({
         success: true,
@@ -32,7 +33,6 @@ class BorrowDetailController {
         message: "Lấy danh sách chi tiết phiếu mượn thành công",
       });
     } catch (error) {
-      console.log(error);
       return res.status(200).json({
         success: true,
         data: [],
@@ -46,11 +46,11 @@ class BorrowDetailController {
     const { id } = req.params;
     try {
       await sequelize.transaction(async (t) => {
-        const borrowDetail = await borrowDetailServices.getBorrowDetailById(id);
+        const borrowDetail = await borrowDetailServices.getBorrowDetailById(id, { attributes: ['id', 'status']});
         if (!borrowDetail) throw new Error("Chi tiết phiếu mượn không tồn tại");
-
+        if (borrowDetail.status === BORROW_STATUS_CONSTANTS.RETURNED) throw new Error("Sách đã được trả trước đó");
         const isUpdated =
-          await borrowDetailServices.markAsReturnedBorrowDetailById(id, {
+          await borrowDetailServices.markAsReturnedBorrowDetailById(borrowDetail.id, {
             transaction: t,
           });
         const isUpdatedStock = await bookServices.incrementBookById(
@@ -65,13 +65,13 @@ class BorrowDetailController {
       });
 
       return res.redirect(
-        `/borrows/?success=` +
+        `/dashboard/borrows/?success=` +
           encodeBase64("Cập nhật trạng thái trả sách thành công")
       );
     } catch (error) {
       console.error(error);
       return res.redirect(
-        `/borrows/?error=` +
+        `/dashboard/borrows/?error=` +
           encodeBase64(error.message || "Lỗi khi cập nhật trạng thái trả sách")
       );
     }

@@ -8,13 +8,11 @@
 <div class="max-w-5xl mx-auto p-6">
   <h1 class="text-xl font-semibold mb-4">Thêm phiếu phạt</h1>
   <%- include('../error') %>
-  <form
-    
-    method="POST"
-    class="p-4 rounded border border-gray-200 space-y-2"
-  >
+  <form method="POST" class="p-4 rounded border border-gray-200 space-y-2">
     <div class="flex flex-col gap-2">
-      <label for="borrow_detail_ids" class="block text-sm font-medium text-gray-700"
+      <label
+        for="borrow_detail_ids"
+        class="block text-sm font-medium text-gray-700"
         >Tên sách</label
       >
       <select
@@ -42,15 +40,13 @@
     </div>
     <div class="flex flex-col gap-2">
       <label for="status" class="block text-sm font-medium text-gray-700"
-      >Trạng thái</label
+        >Trạng thái</label
       >
       <select
-      name="status"
+        name="status"
         id="status"
         class="block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        >
-        
-      </select>
+      ></select>
     </div>
     <div class="flex flex-col gap-2">
       <label for="note" class="block text-sm font-medium text-gray-700"
@@ -66,13 +62,17 @@
     </div>
 
     <button class="bg-green-600 text-white px-4 py-2 rounded">Lưu</button>
-    <a href="/fines" class="text-gray-600 hover:underline ml-3">Quay lại</a>
+    <a href="/dashboard/fines" class="text-gray-600 hover:underline ml-3">Quay lại</a>
   </form>
 </div>
 
-
-
 <script>
+  const url = new URL(window.location.href);
+  const borrow_id = url.searchParams.get("b") ;
+  const borrow_detail_ids = url.searchParams.get("bd") || '';
+  const listBorrowDetailIds = borrow_detail_ids.split(",");
+ 
+  
   const data = [
     {
       value: "DAMAGED",
@@ -83,17 +83,33 @@
       label: "Đã mất",
     },
     {
-      value: "Quá hạn",
-      label: "EXPIRED",
-    }
+      value: "EXPIRED",
+      label: "Quá hạn",
+    },
   ];
   useChoice("#status", null, () => {
     return data;
   });
-  useChoice("#borrow_detail_ids", "/dashboard/borrow-details/search/", (data) => {
-    return data.data.map((borrowDetail) => ({
-      value: borrowDetail.id,
-      label: borrowDetail.book.title + " - Phiếu mượn: " + borrowDetail.borrow_id,
-    }));
-  });
+  useChoice(
+    "#borrow_detail_ids",
+    "/dashboard/borrow-details/search?" + (borrow_id ? "borrow_id=" + borrow_id : ""),
+    (data) => {
+      return data.data.map((borrowDetail) => {
+        const disabled =
+          ["RETURNED", "REQUESTED", "REJECTED", "CANCELED"].includes(
+            borrowDetail.status
+          );
+          const selected = listBorrowDetailIds.includes(borrowDetail.id.toString());
+        return {
+          value: borrowDetail.id,
+          label:
+            borrowDetail.book.title +
+            " - Phiếu mượn: " +
+            borrowDetail.borrow_id,
+          selected: !disabled && selected,
+          disabled,
+        };
+      });
+    }
+  );
 </script>

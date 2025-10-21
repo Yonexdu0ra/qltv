@@ -37,12 +37,16 @@
       </div>
 
       <div class="pt-6 flex items-center gap-4">
-        <a
+        <% if(book.quantity_available > 0) { %>
+          <a
           href="/dashboard/borrows/add/?q=<%= encodeURIComponent(book.title) %>"
           class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
         >
           📖 Mượn sách
         </a>
+        <% } else { %>
+          <span class="text-red-600 font-medium">Hiện không còn sách để mượn</span>
+        <% } %>
         <!-- <a
           href="/books"
           class="text-gray-600 hover:text-blue-600 hover:underline transition"
