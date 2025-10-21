@@ -28,34 +28,46 @@
   <% if (author.books && author.books.length> 0) { %>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <% author.books.forEach(book=> { %>
-        <div
-          class="group bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition transform duration-200 p-5 flex flex-col">
-          <div class="flex-1">
-            <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition">
-              <%= book.title %>
-            </h3>
-            <% if (book.published_year) { %>
-              <p class="text-sm text-gray-600 mb-1">📅 <strong>Năm:</strong>
-                <%= book.published_year %>
-              </p>
-              <% } %>
-                <% if (book.isbn) { %>
-                  <p class="text-sm text-gray-600 mb-1">🔖 <strong>ISBN:</strong>
-                    <%= book.isbn %>
-                  </p>
-                  <% } %>
-                    <% if (book.description) { %>
-                      <p class="text-sm text-gray-600 mt-2 line-clamp-3">
-                        <%= book.description %>
-                      </p>
-                      <% } %>
-          </div>
+        <div class="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition flex flex-col overflow-hidden">
+          
+          <!-- Ảnh bìa -->
+          <% if (book.image_cover) { %>
+            <div class="w-full h-52 bg-gray-100 overflow-hidden">
+              <img
+                src="<%= book.image_cover %>"
+                alt="<%= book.title %>"
+                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          <% } else { %>
+            <div class="w-full h-52 bg-gray-200 flex items-center justify-center text-gray-400 text-sm">
+              Không có ảnh bìa
+            </div>
+          <% } %>
 
-          <div class="mt-5">
-            <a href="/books/<%= book.id %>"
-              class="inline-block w-full text-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow hover:from-blue-600 hover:to-indigo-700 hover:shadow-md transition">
-              Xem chi tiết
-            </a>
+          <!-- Nội dung -->
+          <div class="p-4 flex flex-col flex-1">
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-800 mb-1 line-clamp-1"><%= book.title %></h3>
+              <% if (book.published_year) { %>
+                <p class="text-sm text-gray-500 mb-1">📅 Năm xuất bản: <%= book.published_year %></p>
+              <% } %>
+              <% if (book.isbn) { %>
+                <p class="text-sm text-gray-500 mb-1">ISBN: <%= book.isbn %></p>
+              <% } %>
+              <% if (book.description) { %>
+                <p class="text-sm text-gray-600 line-clamp-2 mt-2"><%= book.description %></p>
+              <% } %>
+            </div>
+
+            <div class="mt-4">
+              <a
+                href="/books/<%= book.slug %>"
+                class="inline-block w-full text-center bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition"
+              >
+                Xem chi tiết
+              </a>
+            </div>
           </div>
         </div>
         <% }) %>

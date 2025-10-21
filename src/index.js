@@ -33,7 +33,6 @@ app.use((req, res, next) => {
     res.locals.currentPath = req.path;
     res.locals.user = req.user || {}
     const role = req?.user?.role
-    console.log(role);
     
     const layout = !role || role === "Reader" ? "layouts/readerLayout" : "layout"
     res.locals.layout = layout

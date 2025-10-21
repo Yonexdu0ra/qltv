@@ -41,6 +41,7 @@
         name="borrow_date"
         id="borrow_date"
         required
+        min="<%= today.toISOString().split('T')[0] %>"
         class="border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
     </div>
@@ -54,6 +55,7 @@
         type="date"
         name="due_date"
         id="due_date"
+        min="<%= today.toISOString().split('T')[0] %>"
         required
         class="border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
@@ -84,19 +86,24 @@
       value: book.id,
       label: book.title,
     }));
+  }).then((obj) => {
+    const url = new URL(window.location.href);
+    const q = url.searchParams.get("q");
+    const inputSearchBook = document.querySelector(
+      ".choices__input.choices__input--cloned"
+    );
+    const choiceInner = document.querySelector(".choices__inner");
+    if (q && inputSearchBook) {
+      inputSearchBook.value = decodeURIComponent(q);
+      const event = new CustomEvent("search", {
+        detail: {
+          value: decodeURIComponent(q),
+        },
+        bubbles: true,
+      });
+      obj.element.dispatchEvent(event);
+      inputSearchBook.dispatchEvent(new Event("input", { bubbles: true }));
+      choiceInner.click();
+    }
   });
-
-  // Tự động tìm sách nếu có query ?q= trên URL
-  const url = new URL(window.location.href);
-  const q = url.searchParams.get("q");
-  const inputSearchBook = document.querySelector(
-    ".choices__input.choices__input--cloned"
-  );
-  const choiceInner = document.querySelector(".choices__inner");
-  if (q && inputSearchBook) {
-    inputSearchBook.value = q;
-    const event = new Event("input", { bubbles: true });
-    inputSearchBook.dispatchEvent(event);
-    choiceInner.click();
-  }
 </script>

@@ -83,7 +83,8 @@ class BorrowController {
     }
   }
   static async renderViewCreateBorrow(req, res) {
-    return res.render("borrows/add", { title: "Thêm phiếu mượn", borrow: {} });
+    const today = new Date();
+    return res.render("borrows/add", { title: "Thêm phiếu mượn", borrow: {}, today });
   }
   static async renderViewBorrowDetail(req, res) {
     const { id } = req.params;

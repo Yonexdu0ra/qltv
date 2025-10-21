@@ -60,6 +60,12 @@ async function useChoice(selector, apiURL, fnMap, options = {}) {
                 }
             });
         }
+        return {
+            choices,
+            showLoading,
+            handleSearch,
+            element
+        }
     } catch (error) {
         console.error("Error initializing Choices:", error);
     }

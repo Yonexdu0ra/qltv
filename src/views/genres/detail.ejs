@@ -1,4 +1,4 @@
-<div class=" mx-5 p-6 bg-white shadow-lg rounded-2xl my-5">
+<div class="mx-5 p-6 bg-white shadow-lg rounded-2xl my-5">
   <!-- Header -->
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
     <h1 class="text-2xl font-bold text-gray-800">📚 Chi tiết thể loại</h1>
@@ -6,11 +6,11 @@
       href="/dashboard/genres"
       class="mt-3 sm:mt-0 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
     >
-       Quay lại danh sách
+      Quay lại danh sách
     </a>
   </div>
 
-  <!-- Thông tin tác giả -->
+  <!-- Thông tin thể loại -->
   <div class="bg-gray-50 p-5 rounded-xl mb-8 border border-gray-100">
     <p class="text-lg font-semibold text-gray-800 mb-2">
       <span class="text-blue-600">Tên:</span> <%= genre.name %>
@@ -25,26 +25,46 @@
   <% if (genre.books && genre.books.length > 0) { %>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
       <% genre.books.forEach(book => { %>
-        <div class="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition p-4 flex flex-col">
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold text-gray-800 mb-1"><%= book.title %></h3>
-            <% if (book.published_year) { %>
-              <p class="text-sm text-gray-500 mb-1">📅 Năm xuất bản: <%= book.published_year %></p>
-            <% } %>
-            <% if (book.isbn) { %>
-              <p class="text-sm text-gray-500 mb-1">ISBN: <%= book.isbn %></p>
-            <% } %>
-            <% if (book.description) { %>
-              <p class="text-sm text-gray-600 line-clamp-2 mt-2"><%= book.description %></p>
-            <% } %>
-          </div>
-          <div class="mt-4">
-            <a
-              href="/books/<%= book.slug %>"
-              class="inline-block w-full text-center bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition"
-            >
-              Xem chi tiết
-            </a>
+        <div class="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition flex flex-col overflow-hidden">
+          
+          <!-- Ảnh bìa -->
+          <% if (book.image_cover) { %>
+            <div class="w-full h-52 bg-gray-100 overflow-hidden">
+              <img
+                src="<%= book.image_cover %>"
+                alt="<%= book.title %>"
+                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          <% } else { %>
+            <div class="w-full h-52 bg-gray-200 flex items-center justify-center text-gray-400 text-sm">
+              Không có ảnh bìa
+            </div>
+          <% } %>
+
+          <!-- Nội dung -->
+          <div class="p-4 flex flex-col flex-1">
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-800 mb-1 line-clamp-1"><%= book.title %></h3>
+              <% if (book.published_year) { %>
+                <p class="text-sm text-gray-500 mb-1">📅 Năm xuất bản: <%= book.published_year %></p>
+              <% } %>
+              <% if (book.isbn) { %>
+                <p class="text-sm text-gray-500 mb-1">ISBN: <%= book.isbn %></p>
+              <% } %>
+              <% if (book.description) { %>
+                <p class="text-sm text-gray-600 line-clamp-2 mt-2"><%= book.description %></p>
+              <% } %>
+            </div>
+
+            <div class="mt-4">
+              <a
+                href="/books/<%= book.slug %>"
+                class="inline-block w-full text-center bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition"
+              >
+                Xem chi tiết
+              </a>
+            </div>
           </div>
         </div>
       <% }) %>
@@ -53,5 +73,5 @@
     <p class="text-gray-500 italic">Thể loại này chưa có sách nào.</p>
   <% } %>
 </div>
-<%- include('../partials/pagination', { totals, page, query }) %>
 
+<%- include('../partials/pagination', { totals, page, query }) %>
