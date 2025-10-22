@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const fineRepository = require("../repositories/fineRepository");
 
 class FineServices {
@@ -42,6 +43,8 @@ class FineServices {
     query,
     options
   ) {
+
+
     const where = {};
     const bookWhere = {};
     if (query.q) {
@@ -59,22 +62,26 @@ class FineServices {
         ? 1
         : parseInt(query.page);
     const offset = (page - 1) * limit;
+
     const [sortBy, sortOrder] = query.sort
       ? query.sort.split("-")
-      : ["created_at", "ASC"];
+      : ["created_at", "DESC"];
     const order = [
       [
-        sortBy || "created_at",
+        sortBy,
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ],
+
     ];
-    if (["is_paid"].includes(sortBy) && sortOrder) {
-      where.is_paid = { [Op.eq]: sortBy };
+
+    if (sortBy === "is_paid" && sortOrder) {
+      where.is_paid = { [Op.eq]: sortOrder.toUpperCase() === "DESC" ? true : false };
       order[0] = [
         "created_at",
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ];
     }
+
     return fineRepository.findAllWithBorrowDetailAndBorrowerAndBookPagination(
       where,
       { ...options, limit, offset, order, bookWhere }
@@ -85,9 +92,12 @@ class FineServices {
     query,
     options
   ) {
+
     const where = {};
     const borrowWhere = {
-      borrower_id: borrower_id,
+      borrower_id: {
+        [Op.eq]: borrower_id,
+      },
     };
     const bookWhere = {};
     if (query.q) {
@@ -107,20 +117,24 @@ class FineServices {
     const offset = (page - 1) * limit;
     const [sortBy, sortOrder] = query.sort
       ? query.sort.split("-")
-      : ["created_at", "ASC"];
+      : ["created_at", "DESC"];
     const order = [
       [
-        sortBy || "created_at",
+        sortBy,
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ],
+
     ];
-    if (["is_paid"].includes(sortBy) && sortOrder) {
-      where.is_paid = { [Op.eq]: sortBy };
+
+    if (sortBy === "is_paid" && sortOrder) {
+      where.is_paid = { [Op.eq]: sortOrder.toUpperCase() === "DESC" ? true : false };
       order[0] = [
         "created_at",
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ];
     }
+
+
     return fineRepository.findAllWithBorrowDetailAndBorrowerAndBookPagination(
       where,
       { borrowWhere, ...options, limit, offset, order, bookWhere }

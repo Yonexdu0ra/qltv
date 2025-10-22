@@ -58,23 +58,27 @@ class FineRepository {
 
 
   static findAllWithBorrowDetailAndBorrowerAndBookPagination(query, options = {}) {
-    return Fine.findAndCountAll({
-      where: query,
+     return Fine.findAndCountAll({
+      where: {...query},
       ...options,
       include: [
         {
+          required: true,
           model: BorrowDetail,
           as: 'borrowDetail',
           attributes: options.borrowDetailAttributes,
           where: options.borrowDetailWhere,
           include: [
             {
+
               model: Borrow,
               as: 'borrow',
+              required: true,
               attributes: options.borrowAttributes,
               where: options.borrowWhere,
               include: [
                 {
+                  required: true,
                   model: User,
                   as: 'borrower',
                   attributes: options.borrowerAttributes,
@@ -83,6 +87,7 @@ class FineRepository {
               ]
             },
             {
+              required: true,
               model: Book,
               as: 'book',
               attributes: options.bookAttributes,
@@ -92,6 +97,7 @@ class FineRepository {
         }
       ]
     })
+    
   }
   static findByPk(id, options = {}) {
     return Fine.findByPk(id, options);

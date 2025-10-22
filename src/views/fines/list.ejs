@@ -38,12 +38,12 @@
       id="sort"
     >
       <option value="">-- Sắp xếp phí phạt --</option>
-      <option value="title-asc" <%= query.sort === 'title-asc' ? 'selected' : '' %>>Tên A-Z</option>
-      <option value="title-desc" <%= query.sort === 'title-desc' ? 'selected' : '' %>>Tên Z-A</option>
-      <option value="createdAt-desc" <%= query.sort === 'createdAt-desc' ? 'selected' : '' %>>Mới nhất</option>
-      <option value="createdAt-asc" <%= query.sort === 'createdAt-asc' ? 'selected' : '' %>>Cũ nhất</option>
-      <option value="is_paid-desc" <%= query.sort === 'is_paid-desc' ? 'selected' : '' %>>Chưa thanh toán</option>
-      <option value="is_paid-asc" <%= query.sort === 'is_paid-asc' ? 'selected' : '' %>>Đã thanh toán</option>
+     <option value="amount-asc" <%= query.sort === 'amount-asc' ? 'selected' : '' %>>Số tiền phạt tăng dần</option>
+      <option value="amount-desc" <%= query.sort === 'amount-desc' ? 'selected' : '' %>>Số tiền phạt giảm dần</option>
+      <option value="created_at-desc" <%= query.sort === 'created_at-desc' ? 'selected' : '' %>>Mới nhất</option>
+      <option value="created_at-asc" <%= query.sort === 'created_at-asc' ? 'selected' : '' %>>Cũ nhất</option>
+      <option value="is_paid-desc" <%= query.sort === 'is_paid-desc' ? 'selected' : '' %>>Đã thanh toán</option>
+      <option value="is_paid-asc" <%= query.sort === 'is_paid-asc' ? 'selected' : '' %>>Chưa thanh toán</option>
     </select>
 
     <button

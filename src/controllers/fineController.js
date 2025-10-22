@@ -14,7 +14,7 @@ class FineController {
     const page = parseInt(req.query.page) || 1;
     try {
       const { rows: fines, count } =
-        await fineServices.getAllFinesWithBorrowDetailAndBorrowerAndBookPagination({ limit, query }, {
+        await fineServices.getAllFinesWithBorrowDetailAndBorrowerAndBookPagination({ limit, ...query }, {
           attributes: ["id", "amount", "is_paid", "note", "created_at"],
           bookAttributes: ["title"],
           borrowDetailAttributes: ["id", "borrow_id", "status"],
@@ -42,15 +42,7 @@ class FineController {
       });
     }
   }
-  static async renderViewFinesByReader(req, res, next) {
-    const { user_id } = req.user;
-    try {
-      // const fines = await fineServices.getAllFines();
-      // return res.render('fines/index', { title: "Quản lý phí", fines });
-    } catch (error) {
-      return next(error);
-    }
-  }
+  
 
   static async renderViewFineDetail(req, res, next) {
     const { id } = req.params;
@@ -166,12 +158,14 @@ class FineController {
     const page = parseInt(req.query.page) || 1;
     try {
       const { rows: fines, count } =
-        await fineServices.getAllFinesWithBorrowDetailAndBorrowerAndBookPagination(user_id,{ limit, query }, {
+         await fineServices.getAllFinesByIdWithBorrowDetailAndBorrowerAndBookPagination(user_id,{ limit, ...query }, {
           attributes: ["id", "amount", "is_paid", "note", "created_at"],
           bookAttributes: ["title"],
           borrowDetailAttributes: ["id", "borrow_id", "status"],
-          borrowAttributes: ["id", "due_date"],
+          borrowAttributes: ["id", "due_date", "borrower_id"],
         });
+        // console.log(fines);
+        
       const totalPages = Math.ceil(count / limit);
       return res.render("fines/list", {
         title: "Quản lý phạt",

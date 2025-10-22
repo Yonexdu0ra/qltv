@@ -111,6 +111,7 @@ class BorrowDetailRepository {
     return BorrowDetail.findAndCountAll({
       where: { ...query },
       ...options,
+      distinct: true,
       include: [
         {
           model: Borrow,

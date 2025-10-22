@@ -53,6 +53,12 @@
       <option value="borrow_date-desc" <%= query.sort === 'borrow_date-desc' ? 'selected' : '' %>>Ngày mượn mới nhất</option>
       <option value="created_at-desc" <%= query.sort === 'created_at-desc' ? 'selected' : '' %>>Mới thêm</option>
       <option value="created_at-asc" <%= query.sort === 'created_at-asc' ? 'selected' : '' %>>Cũ nhất</option>
+      <option value="BORROWED" <%= query.sort === 'BORROWED' ? 'selected' : '' %>><%= constantsReverse["BORROWED"] %></option>
+      <option value="APPROVED" <%= query.sort === 'APPROVED' ? 'selected' : '' %>><%= constantsReverse["APPROVED"] %></option>
+      <option value="REJECTED" <%= query.sort === 'REJECTED' ? 'selected' : '' %>><%= constantsReverse["REJECTED"] %></option>
+      <option value="RETURNED" <%= query.sort === 'RETURNED' ? 'selected' : '' %>><%= constantsReverse["RETURNED"] %></option>
+      <option value="REQUESTED" <%= query.sort === 'REQUESTED' ? 'selected' : '' %>><%= constantsReverse["REQUESTED"] %></option>
+      <option value="CANCELLED" <%= query.sort === 'CANCELLED' ? 'selected' : '' %>><%= constantsReverse["CANCELLED"] %></option>
     </select>
 
     <button

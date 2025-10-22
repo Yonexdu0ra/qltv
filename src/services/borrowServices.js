@@ -89,7 +89,7 @@ class BorrowServices {
   static async getAllBorrowWithBorrowerAndApproverAndBooks(query, options = {}) {
     const where = {};
     const bookWhere = {};
-    
+
     const borrowerWhere = {};
     if (query.q) {
       bookWhere.title = {
@@ -99,39 +99,38 @@ class BorrowServices {
         [Op.like]: `%${query.q}%`,
       };
     }
-    const limit = options.limit
-      ? options.limit > 0
-        ? parseInt(options.limit)
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
         : 10
       : 10;
-    const page = options.page
-      ? options.page > 0
-        ? parseInt(options.page)
+    const page = query.page
+      ? query.page > 0
+        ? parseInt(query.page)
         : 1
       : 1;
     const offset = (page - 1) * limit;
-    const [sortBy, sortOrder] = options.sort
-      ? options.sort.split("-")
-      : ["created_at", "ASC"];
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
+      : ["created_at", "DESC"];
     const order = [
       [
         sortBy || "created_at",
-        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+        sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ],
     ];
     if (
-      ["BORROWED", "APPROVED", "REJECTED", "CANCELLED", "RETURNED"].includes(
+      ["BORROWED", "APPROVED", "REJECTED", "CANCELLED", "RETURNED", "REQUESTED", "CANCELLED"].includes(
         sortBy
       ) &&
-      sortOrder
+      !sortOrder
     ) {
       where.status = { [Op.eq]: sortBy };
       order[0] = [
         "created_at",
-        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+        sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ];
     }
-    
     return borrowRepository.findAllWithBorrowerAndApproverAndBookPagination(
       where,
       { ...options, bookWhere, limit, offset, order, borrowerWhere }
@@ -149,37 +148,41 @@ class BorrowServices {
       bookWhere.title = {
         [Op.like]: `%${query.q}%`,
       };
-     
+
     }
-    const limit = options.limit
-      ? options.limit > 0
-        ? parseInt(options.limit)
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
         : 10
       : 10;
-    const page = options.page
-      ? options.page > 0
-        ? parseInt(options.page)
+    const page = query.page
+      ? query.page > 0
+        ? parseInt(query.page)
         : 1
       : 1;
     const offset = (page - 1) * limit;
-    const [sortBy, sortOrder] = options.sort
-      ? options.sort.split("-")
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
       [
-        sortBy || "created_at",
-        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+        sortBy ,
+        sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ],
     ];
-    if (["BORROWED", "APPROVED", "REJECTED", "CANCELLED", "RETURNED"].includes(sortBy) && sortOrder) {
+    if (
+      ["BORROWED", "APPROVED", "REJECTED", "CANCELLED", "RETURNED", "REQUESTED", "CANCELLED"].includes(
+        sortBy
+      ) &&
+      !sortOrder
+    ) {
       where.status = { [Op.eq]: sortBy };
       order[0] = [
         "created_at",
-        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+        sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ];
     }
-    
-    
+
     return borrowRepository.findAllWithBorrowerAndApproverAndBookPagination(
       where,
       { ...options, bookWhere, limit, offset, order }
@@ -196,18 +199,18 @@ class BorrowServices {
         [Op.like]: `%${query.q}%`,
       };
     }
-    const limit = options.limit
-      ? options.limit > 0
-        ? parseInt(options.limit)
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
         : 10
       : 10;
     const page =
-      isNaN(parseInt(options.page)) || parseInt(options.page) < 1
+      isNaN(parseInt(query.page)) || parseInt(query.page) < 1
         ? 1
-        : parseInt(options.page);
+        : parseInt(query.page);
     const offset = (page - 1) * limit;
-    const [sortBy, sortOrder] = options.sort
-      ? options.sort.split("-")
+    const [sortBy, sortOrder] = query.sort
+      ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
       [

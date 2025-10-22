@@ -36,10 +36,10 @@ class BorrowDetailServices {
     const offset = (page - 1) * limit;
     const [sortBy, sortOrder] = options.sort
       ? options.sort.split("-")
-      : ["created_at", "ASC"];
+      : ["updated_at", "DESC"];
     const order = [
       [
-        sortBy || "created_at",
+        sortBy || "updated_at",
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ],
     ];

@@ -21,7 +21,7 @@ class BorrowController {
       const { count, rows: borrows } =
         await borrowServices.getAllBorrowByBorrowerIdWithBorrowerAndApproverAndBooks(
           borrower_id,
-          req.query
+          { ...req.query, limit }
         );
 
       const totalPages = Math.ceil(count / limit);
@@ -59,7 +59,7 @@ class BorrowController {
         await borrowServices.getAllBorrowWithBorrowerAndApproverAndBooks(
           { ...limit, ...query }
         );
-      
+
 
       const totalPages = Math.ceil(count / limit);
       return res.render("borrows/index", {
@@ -91,7 +91,7 @@ class BorrowController {
     try {
       const borrow =
         await borrowServices.getBorrowByIdWithBorrowerAndApproverAndBooks(id);
-        
+
       if (!borrow) throw new Error("Phiếu mượn không tồn tại");
       return res.render("borrows/detail", {
         title: "Chi tiết phiếu mượn",
@@ -122,7 +122,7 @@ class BorrowController {
     const borrower_id = req.user.user_id;
     const transaction = await sequelize.transaction();
     try {
-      const books = [...req.body.books];
+      const books = [...(Array.isArray(req.body.books) ? req.body.books : [req.body.books])].filter(b => b);
       if (books.length === 0) throw new Error("Vui lòng chọn sách để mượn");
       const bookIdsInt = books.map((id) => parseInt(id));
       // kiểm tra sách có tồn tại không
@@ -185,6 +185,7 @@ class BorrowController {
         title: "Thêm phiếu mượn",
         error: error.message,
         borrow: req.body,
+        today: new Date(),
       });
     }
   }
@@ -198,7 +199,7 @@ class BorrowController {
         if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
         const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
           attributes: ["id", "status"],
-          borrowDetailAttributes: ["id", "book_id", "borrow_id"],
+          borrowDetailAttributes: ["id", "book_id", "borrow_id", "status"],
         });
         if (!borrow)
           throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
@@ -236,7 +237,6 @@ class BorrowController {
       );
     } catch (error) {
       console.log(error);
-    
       return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
     }
   }
@@ -275,7 +275,7 @@ class BorrowController {
       const isUpdateBorrowDetail = await borrowDetailServices.markAsCancelledBorrowDetailByIds(
         borrowDetailIds,
         { transaction }
-      );  
+      );
       if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
       await transaction.commit();
 
