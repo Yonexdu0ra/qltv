@@ -30,22 +30,22 @@ function routes(app) {
     app.use('/', homeRoutesPublic)
 
     // cấu hình phải đăng nhập mới được truy cập và quyền admin, thủ thư
-    app.use('/dashboard', requiredRoleLibrarianAndAdmin, homeRoutesPrivate);
     app.use('/dashboard/genres/', requiredRoleLibrarianAndAdmin, genreRoutesPrivate);
     app.use('/dashboard/authors/', requiredRoleLibrarianAndAdmin, authorRoutesPrivate);
     app.use('/dashboard/books/', requiredRoleLibrarianAndAdmin, bookRoutesPrivate);
     app.use('/dashboard/users/', requiredRoleLibrarianAndAdmin, userRoutesPrivate);
-
+    
     // phải đăng nhập và quyền admin
     app.use('/dashboard/accounts/', requiredRoleAdmin, accountRoutesPrivate);
-
+    
     // phải đăng nhập nhưng có 1 số chức năng không cần quyền admin
-
+    
     app.use('/dashboard/borrow-details/', borrowDetailRoutesPublic);
     app.use('/dashboard/borrows/', borrowRoutesPrivate);
     app.use('/dashboard/borrow-details/', borrowDetailRoutesPrivate);
     app.use('/dashboard/fines/', fineRoutesPrivate);
-
+    
+    app.use('/dashboard', requiredRoleLibrarianAndAdmin, homeRoutesPrivate);
     app.use('/auth', authRoutesPrivate);
 }
 
