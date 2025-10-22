@@ -1,1 +1,64 @@
-<h1>a</h1>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        <%= title || 'Danh sách sách' %>
+    </title>
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body class="bg-gray-50">
+    <main class="max-w-6xl mx-auto py-8 px-4">
+        <!-- Carousel: featuredBooks -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Sách nổi bật</h2>
+            <div id="book-carousel" class="overflow-hidden relative">
+                <div id="book-carousel-track" class="flex space-x-4 transition-transform duration-500">
+                    <% (featuredBooks || []).forEach(function(book){ %>
+                        <a href="/books/<%= book.slug %>" class="w-48 flex-shrink-0 bg-white rounded shadow p-2">
+                            <img src="<%= book.image_cover || 'https://picsum.photos/200/280' %>"
+                                alt="<%= book.title %>" class="w-full h-60 object-cover rounded" />
+                            <h3 class="text-sm font-medium mt-2 truncate">
+                                <%= book.title %>
+                            </h3>
+                        </a>
+                        <% }) %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Books grid with pagination -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-4">Tất cả sách</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 py-4">
+                <% (books || []).forEach(function(book){ %>
+                    <div class="bg-white rounded shadow p-3">
+                        <a href="/books/<%= book.slug %>">
+                            <img src="<%= book.image_cover || 'https://picsum.photos/300/400' %>"
+                                alt="<%= book.title %>" class="w-full h-64 object-cover rounded" />
+                        </a>
+                        <h3 class="mt-2 font-semibold truncate"><a href="/books/<%= book.slug %>">
+                                <%= book.title %>
+                            </a></h3>
+                        <p class="text-sm text-gray-600 truncate">
+                            <%= book.authors?.map(a=> a.name).join(', ') || 'Không rõ tác giả' %>
+                        </p>
+                    </div>
+                    <% }) %>
+            </div>
+
+            <!-- Pagination controls -->
+            <!-- Phân trang -->
+            <div class="mt-4 flex justify-center">
+                <%- include('../partials/pagination', { totals, page, query }) %>
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/bookCarousel.js"></script>
+</body>
+
+</html>

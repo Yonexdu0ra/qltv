@@ -274,11 +274,14 @@ class BookController {
     try {
       const { rows: books, count: totals } =
         await bookServices.getBooksWithPagination({ ...query, limit });
+      // fetch 10 books for the top carousel (most recent)
+      const { rows: featuredBooks = [] } = await bookServices.getBooksWithPagination({ page: 1, limit: 10 }, { attributes: ["id", "title", "image_cover", "slug"] });
       const totalPages = Math.ceil(totals / limit);
       return res.render("books/list", {
         books,
         totals: totalPages,
         page,
+        featuredBooks,
         query,
         title: "Danh sách sách",
       });
