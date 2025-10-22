@@ -1,1 +1,127 @@
-<h1>Dashboard Report</h1>
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title><%= title || 'Bảng điều khiển' %></title>
+		<link rel="stylesheet" href="/css/styles.css" />
+	</head>
+	<body class="bg-gray-50">
+			<main class="max-w-7xl mx-auto px-12 py-10">
+				<div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+					<div class="flex items-center justify-between mb-8">
+					<h1 class="text-3xl font-bold text-gray-800">Bảng điều khiển thống kê</h1>
+					<p class="text-sm text-gray-500">Tổng quan hệ thống</p>
+				</div>
+
+				<!-- Stat cards -->
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+					<div class="p-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-lg">
+						<div class="flex items-center justify-between">
+							<div>
+								<p class="text-sm opacity-80">Số sách</p>
+								<p class="text-3xl font-bold mt-2"><%= stats?.books ?? 0 %></p>
+							</div>
+							<div class="text-4xl opacity-90">📚</div>
+						</div>
+					</div>
+
+					<div class="p-6 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-400 text-white shadow-lg">
+						<div class="flex items-center justify-between">
+							<div>
+								<p class="text-sm opacity-80">Số tác giả</p>
+								<p class="text-3xl font-bold mt-2"><%= stats?.authors ?? 0 %></p>
+							</div>
+							<div class="text-4xl opacity-90">✍️</div>
+						</div>
+					</div>
+
+					<div class="p-6 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg">
+						<div class="flex items-center justify-between">
+							<div>
+								<p class="text-sm opacity-80">Số thể loại</p>
+								<p class="text-3xl font-bold mt-2"><%= stats?.genres ?? 0 %></p>
+							</div>
+							<div class="text-4xl opacity-90">🏷️</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Charts area -->
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+					<div class="lg:col-span-2 bg-white rounded-2xl shadow p-6">
+						<h3 class="text-lg font-semibold mb-4">Số lượng theo loại</h3>
+						<canvas id="statsChart" height="200"></canvas>
+					</div>
+
+					<div class="bg-white rounded-2xl shadow p-6 flex flex-col gap-4">
+						<h3 class="text-lg font-semibold">Tỷ lệ</h3>
+						<canvas id="doughnutChart" height="200"></canvas>
+
+						<div class="mt-2 grid grid-cols-2 gap-2">
+							<div class="flex items-center gap-3"><span class="w-3 h-3 bg-indigo-500 rounded-full"></span> Sách</div>
+							<div class="flex items-center gap-3"><span class="w-3 h-3 bg-emerald-400 rounded-full"></span> Tác giả</div>
+							<div class="flex items-center gap-3"><span class="w-3 h-3 bg-yellow-400 rounded-full"></span> Thể loại</div>
+							<div class="flex items-center gap-3"><span class="w-3 h-3 bg-red-400 rounded-full"></span> Độc giả</div>
+						</div>
+					</div>
+					</div>
+				</div>
+			</main>
+
+			<!-- Chart.js CDN -->
+			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+			<!-- serialized stats (hidden) -->
+			<div id="stats-data" data-json='<%- JSON.stringify(stats || {}) %>' style="display:none"></div>
+			<script>
+				(function(){
+					const raw = document.getElementById('stats-data')?.dataset?.json || '{}';
+					let stats = {};
+					try { stats = JSON.parse(raw); } catch(e) { stats = {}; }
+					const ctx = document.getElementById('statsChart').getContext('2d');
+					const labels = ['Sách','Tác giả','Thể loại','Độc giả','Lượt mượn'];
+					const data = [stats.books||0, stats.authors||0, stats.genres||0, stats.users||0, stats.borrows||0];
+
+					new Chart(ctx, {
+						type: 'bar',
+						data: {
+							labels,
+							datasets: [{
+								label: 'Số lượng',
+								data,
+								backgroundColor: ['#6366F1','#10B981','#F59E0B','#EF4444','#3B82F6'],
+							}]
+						},
+						options: {
+							responsive: true,
+							plugins: {
+								legend: { display: false }
+							},
+							scales: {
+								y: { beginAtZero: true }
+							}
+						}
+					});
+
+					// Doughnut chart
+					const dctx = document.getElementById('doughnutChart').getContext('2d');
+					new Chart(dctx, {
+						type: 'doughnut',
+						data: {
+							labels: ['Sách','Tác giả','Thể loại','Độc giả'],
+							datasets: [{
+								data: [stats.books||0, stats.authors||0, stats.genres||0, stats.users||0],
+								backgroundColor: ['#6366F1','#10B981','#F59E0B','#EF4444'],
+								hoverOffset: 6,
+								borderWidth: 0
+							}]
+						},
+						options: {
+							responsive: true,
+							plugins: { legend: { position: 'bottom' } },
+						}
+					});
+				})();
+			</script>
+	</body>
+	</html>
