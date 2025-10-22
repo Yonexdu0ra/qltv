@@ -3,7 +3,7 @@
   <h2 class="text-2xl font-bold text-gray-700">Mượn/trả</h2>
   <%- include('../errorMessageWithQuery') %> <%-
   include('../successMessageWithQuery') %>
-  <a href="/borrow/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm phiếu mượn</a>
+  <a href="/dashboard/borrows/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm phiếu mượn</a>
   <form id="search-form" class="flex flex-col gap-4">
     <div class="flex flex-col sm:flex-row items-center flex-wrap justify-center gap-2">
       <input
@@ -33,51 +33,53 @@
     <table
       class="min-w-full bg-white border rounded border-gray-200 relative z-0"
     >
-      <thead class="sticky top-0 bg-gray-50 z-10">
+      <thead class="bg-gray-50">
         <tr>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            #
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            ngày mượn
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            ngày lấy
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            hạn trả
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            trạng thái
-          </th>
-          <th
-            class="px-6 py-3 border-b border-gray-200 text-left text-sm font-semibold text-gray-600"
-          >
-            người mượn
-          </th>
-          
-          
-          
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">#</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Ngày mượn</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Hạn trả</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Trạng thái</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Sách</th>
+          <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Hành động</th>
         </tr>
       </thead>
-      <tbody class="relative z-0">
+      <tbody class="divide-y divide-gray-100">
         <% borrows.forEach((borrow, index) => { %>
-        <tr class="hover:bg-gray-100 relative">
-          <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
-            <%= ++index %>
+        <tr class="hover:bg-blue-50 transition duration-150">
+          <td class="px-4 py-4"><%= ++index %></td>
+          <td class="px-4 py-4"><%= borrow.borrow_date.toLocaleDateString() %></td>
+          <td class="px-4 py-4"><%= borrow.due_date.toLocaleDateString() %></td>
+          <td class="px-4 py-4 font-medium">
+            <% const status = constantsReverse[borrow.status]; %>
+            <% if (borrow.status === constants.REQUESTED) { %>
+              <span class="text-yellow-600 bg-yellow-100 px-2 py-1 rounded-lg text-xs font-semibold"><%= status %></span>
+            <% } else if (borrow.status === constants.APPROVED) { %>
+              <span class="text-blue-600 bg-blue-100 px-2 py-1 rounded-lg text-xs font-semibold"><%= status %></span>
+            <% } else if (borrow.status === constants.BORROWED) { %>
+              <span class="text-green-600 bg-green-100 px-2 py-1 rounded-lg text-xs font-semibold"><%= status %></span>
+            <% } else if (borrow.status === constants.EXPIRED) { %>
+              <span class="text-red-600 bg-red-100 px-2 py-1 rounded-lg text-xs font-semibold"><%= status %></span>
+            <% } else { %>
+              <span class="text-gray-600 bg-gray-100 px-2 py-1 rounded-lg text-xs font-semibold"><%= status %></span>
+            <% } %>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex flex-col gap-1">
+              <% borrow.borrowDetails.forEach(borrowDetail => { %>
+                <a href="/books/<%= borrowDetail.book.slug %>" class="text-blue-600 hover:underline"><%= borrowDetail.book.title %></a>
+              <% }) %>
+            </div>
           </td>
           
-         
+
+          <td class="px-6 py-4 text-center">
+            <div class="flex flex-wrap justify-center gap-2">
+              <a href="/dashboard/borrows/detail/<%= borrow.id %>" class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-200 transition font-medium text-sm">Chi tiết</a>
+              
+              <% if(borrow.status === constants.REQUESTED) { %>
+                <a href="/dashboard/borrows/mark-as-canceled/<%= borrow.id %>" class="bg-red-100 text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-200 transition font-medium text-sm">Hủy</a>
+              <% } %>
+            </div>
           </td>
         </tr>
         <% }) %>

@@ -25,7 +25,7 @@ class BorrowController {
         );
 
       const totalPages = Math.ceil(count / limit);
-      return res.render("borrows/list", {
+      return res.render("borrows/reader", {
         title: "Mượn trả",
         borrows,
         totals: totalPages,
@@ -35,7 +35,7 @@ class BorrowController {
     } catch (error) {
       console.log(error);
 
-      return res.render("borrows/list", {
+      return res.render("borrows/reader", {
         title: "Mượn trả",
         error: error.message,
         page,
@@ -59,7 +59,7 @@ class BorrowController {
         await borrowServices.getAllBorrowWithBorrowerAndApproverAndBooks(
           { ...limit, ...query }
         );
-      // console.log(borrows[0].toJSON());
+      
 
       const totalPages = Math.ceil(count / limit);
       return res.render("borrows/index", {
@@ -91,7 +91,6 @@ class BorrowController {
     try {
       const borrow =
         await borrowServices.getBorrowByIdWithBorrowerAndApproverAndBooks(id);
-        console.log(borrow.toJSON());
         
       if (!borrow) throw new Error("Phiếu mượn không tồn tại");
       return res.render("borrows/detail", {
@@ -175,8 +174,9 @@ class BorrowController {
         transaction,
       });
       await transaction.commit();
+      const routes = req.user.role === "Reader" ? '/dashboard/borrows/reader' : '/dashboard/borrows';
       return res.redirect(
-        "/dashboard/borrows?success=" + encodeBase64("Thêm phiếu mượn thành công")
+        routes + "?success=" + encodeBase64("Thêm phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
@@ -412,9 +412,9 @@ class BorrowController {
       const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id);
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      if (borrow.status !== BORROW_STATUS_CONSTANTS.BORROWED)
+      if (borrow.status !== BORROW_STATUS_CONSTANTS.REQUESTED)
         throw new Error(
-          "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn"
+          "chỉ có thể cập nhật phiếu mượn ở trạng thái yêu cầu mượn"
         );
       const isUpdated = await borrowServices.markAsCancelledBorrowById(borrow.id);
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
@@ -434,12 +434,12 @@ class BorrowController {
       if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
       await transaction.commit();
       return res.redirect(
-        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows/reader?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       await transaction.rollback();
       console.log(error);
-      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/borrows/reader?error=" + encodeBase64(error.message));
     }
   }
   // đánh dấu đã lấy sách

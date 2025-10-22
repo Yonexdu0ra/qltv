@@ -89,8 +89,13 @@ class BorrowServices {
   static async getAllBorrowWithBorrowerAndApproverAndBooks(query, options = {}) {
     const where = {};
     const bookWhere = {};
+    
+    const borrowerWhere = {};
     if (query.q) {
       bookWhere.title = {
+        [Op.like]: `%${query.q}%`,
+      };
+      borrowerWhere.fullname = {
         [Op.like]: `%${query.q}%`,
       };
     }
@@ -126,10 +131,10 @@ class BorrowServices {
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ];
     }
-
+    
     return borrowRepository.findAllWithBorrowerAndApproverAndBookPagination(
       where,
-      { ...options, bookWhere, limit, offset, order }
+      { ...options, bookWhere, limit, offset, order, borrowerWhere }
     );
   }
 
@@ -144,6 +149,7 @@ class BorrowServices {
       bookWhere.title = {
         [Op.like]: `%${query.q}%`,
       };
+     
     }
     const limit = options.limit
       ? options.limit > 0
@@ -172,7 +178,8 @@ class BorrowServices {
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ];
     }
-
+    
+    
     return borrowRepository.findAllWithBorrowerAndApproverAndBookPagination(
       where,
       { ...options, bookWhere, limit, offset, order }
