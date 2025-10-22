@@ -74,8 +74,8 @@ class AuthorController {
       const author =
         await authorService.getAuthorBySlug(slug);
       if (!author) throw new Error("Tác giả không tồn tại");
-      const { rows: books, count } = await bookServices.getBooksWithAuthorPagination({ ...limit, query, page }, { authorWhere: { id: author.id }, authorAttributes: [] })
-      const totalPages = Math.ceil(count / limit);
+  const { rows: books, count } = await bookServices.getBooksWithAuthorPagination({ ...query, limit, page }, { authorWhere: { id: author.id }, authorAttributes: [] });
+  const totalPages = Math.ceil(count / limit);
       const data = {
         ...author.toJSON(),
         books,
