@@ -1,0 +1,107 @@
+<% 
+  // Normalize base path: remove trailing /detail/:id from currentPath if present
+  const basePath = (typeof currentPath === 'string' && /\/detail\/[0-9A-Za-z_-]+$/.test(currentPath))
+    ? currentPath.replace(/\/detail\/[0-9A-Za-z_-]+$/, '')
+    : (currentPath || '/dashboard/fines');
+%>
+
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-rose-600" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 8c-1.1 0-2 .9-2 2 0 1.5 2 3.5 2 3.5s2-2 2-3.5c0-1.1-.9-2-2-2zm0 10c-4.418 0-8-2.686-8-6h2c0 2.209 2.239 4 6 4s6-1.791 6-4h2c0 3.314-3.582 6-8 6z" />
+      </svg>
+      Chi tiết phí phạt
+    </h2>
+
+    <a href="<%= basePath %>"
+      class="inline-flex items-center gap-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-rose-700 hover:to-pink-700 transition duration-200 font-medium">
+      Quay lại
+    </a>
+  </div>
+
+  <!-- Nội dung -->
+  <div class="bg-white shadow-md rounded-2xl border border-gray-200 p-8 space-y-6">
+    <div class="grid sm:grid-cols-2 gap-6">
+      <!-- Số tiền -->
+      <div>
+        <p class="text-sm text-gray-500 mb-1">Số tiền</p>
+        <p
+          class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-semibold text-gray-800 cursor-default">
+          <%= fine.amount ? fine.amount.toLocaleString() : '' %> đ
+        </p>
+      </div>
+
+      <!-- Trạng thái thanh toán -->
+      <div>
+        <p class="text-sm text-gray-500 mb-1">Trạng thái thanh toán</p>
+        <p
+          class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+          <% if (fine.is_paid) { %>
+          <span class="px-3 py-1 rounded-full bg-green-100 text-green-700">Đã thanh toán</span>
+          <% } else { %>
+          <span class="px-3 py-1 rounded-full bg-red-100 text-red-700">Chưa thanh toán</span>
+          <% } %>
+        </p>
+      </div>
+
+      <!-- Người mượn -->
+      <div>
+        <p class="text-sm text-gray-500 mb-1">Người mượn</p>
+        <p
+          class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+          <%= fine.borrowDetail && fine.borrowDetail.borrow ? fine.borrowDetail.borrow.borrower.fullname : '' %>
+        </p>
+      </div>
+
+      <!-- Sách -->
+      <div>
+        <p class="text-sm text-gray-500 mb-1">Sách</p>
+        <p
+          class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+          <%= fine.borrowDetail && fine.borrowDetail.book ? fine.borrowDetail.book.title : '' %>
+        </p>
+      </div>
+
+      <!-- Ngày quá hạn -->
+      <div>
+        <p class="text-sm text-gray-500 mb-1">Ngày quá hạn</p>
+        <p
+          class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+          <%= fine.borrowDetail && fine.borrowDetail.borrow && fine.borrowDetail.borrow.due_date ? new Date(fine.borrowDetail.borrow.due_date).toLocaleDateString('vi-VN') : '' %>
+        </p>
+      </div>
+
+      <!-- Ngày tạo -->
+      <div>
+        <p class="text-sm text-gray-500 mb-1">Ngày tạo</p>
+        <p
+          class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+          <%= fine.created_at ? new Date(fine.created_at).toLocaleString('vi-VN') : '' %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Ghi chú -->
+    <div>
+      <p class="text-sm text-gray-500 mb-1">Lý do / Ghi chú</p>
+      <p
+        class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-700 cursor-default whitespace-pre-line">
+        <%= fine.note || 'Không có ghi chú' %>
+      </p>
+    </div>
+
+    <!-- Nút hành động -->
+    <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+      <% if (!fine.is_paid) { %>
+        <a href="<%= basePath %>/mark-as-paid/<%= fine.id %>"
+          class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition text-sm font-medium">
+          Đánh dấu đã thanh toán
+        </a>
+      <% } %>
+    </div>
+  </div>
+</div>

@@ -1,107 +1,103 @@
-<div class="max-w-2xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-md">
-  <h1 class="text-3xl font-bold mb-6 text-gray-700 flex items-center gap-2">
-    👤 Thêm tài khoản
-  </h1>
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-green-600" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      👤 Thêm tài khoản
+    </h2>
 
-  <%- include('../error') %>
+    <a href="/dashboard/accounts"
+      class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 transition duration-200 font-medium">
+      Quay lại
+    </a>
+  </div>
 
-    <form method="POST" class="space-y-5">
-      <!-- Tên đăng nhập -->
-      <div class="flex flex-col gap-2">
-        <label for="username" class="text-sm font-medium text-gray-700">
-          Tài khoản
-        </label>
-        <input type="text" id="username" name="username" placeholder="Nhập tên tài khoản" required
-          class="border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          value="<%= account ? account.username : '' %>" />
-      </div>
+  <!-- Nội dung form -->
+  <div class="bg-white shadow-md rounded-2xl border border-gray-200 p-8 space-y-6">
+    <%- include('../error') %>
 
-      <!-- Mật khẩu -->
-      <div class="flex flex-col gap-2">
-        <label for="password" class="text-sm font-medium text-gray-700">
-          Mật khẩu
-        </label>
-        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required
-          class="border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
-      </div>
+      <form method="POST" class="space-y-6">
+        <div class="grid sm:grid-cols-2 gap-6">
 
-      <!-- Vai trò -->
-      <div class="flex flex-col gap-2">
-        <label for="role" class="text-sm font-medium text-gray-700">
-          Vai trò
-        </label>
-        <select name="role" id="role" required
-          class="border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-          <option value="Reader" <%=account && account.role=='Reader' ? 'selected' : '' %>>
-            Độc giả
-          </option>
-          <option value="Librarian" <%=user.role !=="Admin" ? "disabled" : "" %>
-            <%= account && account.role=='Librarian' ? 'selected' : '' %>
-              >
-              Thủ thư
-          </option>
-          <option value="Admin" <%=user.role !=="Admin" ? "disabled" : "" %>
-            <%= account && account.role=='Admin' ? 'selected' : '' %>
-              >
-              Quản trị viên
-          </option>
-        </select>
-        <% if (user.role !=='Admin' ) { %>
-          <p class="text-xs text-gray-500 italic">
-            (Chỉ Admin mới có thể tạo tài khoản Thủ thư hoặc Quản trị viên)
-          </p>
-          <% } %>
-      </div>
+          <!-- Tên đăng nhập -->
+          <div>
+            <label for="username" class="text-sm text-gray-500 mb-1 block">Tài khoản</label>
+            <input type="text" id="username" name="username" placeholder="Nhập tên tài khoản" required
+              value="<%= account ? account.username : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm" />
+          </div>
 
-      <!-- Họ tên -->
-      <div class="flex flex-col gap-2">
-        <label for="fullname" class="text-sm font-medium text-gray-700">
-          Họ và tên
-        </label>
-        <input type="text" id="fullname" name="fullname" placeholder="Nhập họ và tên" required
-          class="border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          value="<%= account ? account.fullname : '' %>" />
-      </div>
+          <div class="grid sm:grid-cols-2 gap-6">
+            <!-- Mật khẩu -->
+            <div>
+              <label for="password" class="text-sm text-gray-500 mb-1 block">Mật khẩu</label>
+              <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm" />
+            </div>
 
-      <!-- Email -->
-      <div class="flex flex-col gap-2">
-        <label for="email" class="text-sm font-medium text-gray-700">
-          Email
-        </label>
-        <input type="email" id="email" name="email" placeholder="Nhập email" required
-          class="border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          value="<%= account ? account.email : '' %>" />
-      </div>
+            <!-- Vai trò -->
+            <div>
+              <label for="role" class="text-sm text-gray-500 mb-1 block">Vai trò</label>
+              <select name="role" id="role" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                <option value="Reader" <%=account && account.role==='Reader' ? 'selected' : '' %>>Độc giả</option>
+                <option value="Librarian" <%=user.role !=='Admin' ? 'disabled' : '' %>
+                  <%= account && account.role==='Librarian' ? 'selected' : '' %>>Thủ thư
+                </option>
+                <option value="Admin" <%=user.role !=='Admin' ? 'disabled' : '' %>
+                  <%= account && account.role==='Admin' ? 'selected' : '' %>>Quản trị viên
+                </option>
+              </select>
+              <% if (user.role !=='Admin' ) { %>
+                <p class="text-xs text-gray-500 italic mt-1">
+                  (Chỉ Admin mới có thể tạo tài khoản Thủ thư hoặc Quản trị viên)
+                </p>
+                <% } %>
+            </div>
+          </div>
+          <!-- Họ và tên -->
+          <div>
+            <label for="fullname" class="text-sm text-gray-500 mb-1 block">Họ và tên</label>
+            <input type="text" id="fullname" name="fullname" placeholder="Nhập họ và tên" required
+              value="<%= account ? account.fullname : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm" />
+          </div>
 
-      <!-- Địa chỉ -->
-      <div class="flex flex-col gap-2">
-        <label for="address" class="text-sm font-medium text-gray-700">
-          Địa chỉ
-        </label>
-        <input type="text" id="address" name="address" placeholder="Nhập địa chỉ" required
-          class="border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          value="<%= account ? account.address : '' %>" />
-      </div>
+          <!-- Email -->
+          <div>
+            <label for="email" class="text-sm text-gray-500 mb-1 block">Email</label>
+            <input type="email" id="email" name="email" placeholder="Nhập email" required
+              value="<%= account ? account.email : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm" />
+          </div>
 
-      <!-- Số điện thoại -->
-      <div class="flex flex-col gap-2">
-        <label for="phone" class="text-sm font-medium text-gray-700">
-          Số điện thoại
-        </label>
-        <input type="text" id="phone" name="phone" placeholder="Nhập số điện thoại" required
-          class="border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          value="<%= account ? account.phone : '' %>" />
-      </div>
+          <!-- Địa chỉ -->
+          <div>
+            <label for="address" class="text-sm text-gray-500 mb-1 block">Địa chỉ</label>
+            <input type="text" id="address" name="address" placeholder="Nhập địa chỉ" required
+              value="<%= account ? account.address : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm" />
+          </div>
 
-      <!-- Nút hành động -->
-      <div class="flex items-center justify-between gap-4 pt-5">
-        <a href="/dashboard/accounts" class="text-gray-600 hover:text-blue-600 hover:underline transition">
-           Quay lại danh sách
-        </a>
-        <button type="submit"
-          class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium shadow transition">
-          💾 Lưu tài khoản
-        </button>
-      </div>
-    </form>
+          <!-- Số điện thoại -->
+          <div>
+            <label for="phone" class="text-sm text-gray-500 mb-1 block">Số điện thoại</label>
+            <input type="text" id="phone" name="phone" placeholder="Nhập số điện thoại" required
+              value="<%= account ? account.phone : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm" />
+          </div>
+        </div>
+
+        <!-- Nút hành động -->
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+          <button type="submit"
+            class="cursor-pointer bg-green-600 text-white px-5 py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-md hover:shadow-lg">
+            💾 Lưu tài khoản
+          </button>
+        </div>
+      </form>
+  </div>
 </div>

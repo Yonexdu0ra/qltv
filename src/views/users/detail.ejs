@@ -1,1 +1,84 @@
-<h1>Thông tin người dùng</h1>
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M12 12a5 5 0 100-10 5 5 0 000 10z" />
+            </svg>
+            Chi tiết người dùng
+        </h2>
+
+        <a href="/dashboard/users"
+            class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 transition duration-200 font-medium">
+            Quay lại
+        </a>
+    </div>
+
+    <!-- Nội dung -->
+    <div class="bg-white shadow-md rounded-2xl border border-gray-200 p-8 space-y-6">
+        <div class="grid sm:grid-cols-2 gap-6">
+            <!-- Họ tên -->
+            <div>
+                <p class="text-sm text-gray-500 mb-1">Họ và tên</p>
+                <p
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+                    <%= user ? user.fullname : '' %>
+                </p>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <p class="text-sm text-gray-500 mb-1">Email</p>
+                <p
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+                    <%= user ? user.email : '' %>
+                </p>
+            </div>
+
+            <!-- Địa chỉ -->
+            <div>
+                <p class="text-sm text-gray-500 mb-1">Địa chỉ</p>
+                <p
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+                    <%= user ? user.address : '' %>
+                </p>
+            </div>
+
+            <!-- Số điện thoại -->
+            <div>
+                <p class="text-sm text-gray-500 mb-1">Số điện thoại</p>
+                <p
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+                    <%= user ? user.phone : '' %>
+                </p>
+            </div>
+
+            <!-- Ngày tạo -->
+            <div>
+                <p class="text-sm text-gray-500 mb-1">Ngày tạo</p>
+                <p
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+                    <%= user && user.created_at ? new Date(user.created_at).toLocaleString('vi-VN') : '' %>
+                </p>
+            </div>
+            <!-- Lần sửa cuối cùng -->
+            <div>
+                <p class="text-sm text-gray-500 mb-1">Lần sửa cuối cùng</p>
+                <p
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 cursor-default">
+                    <%= user && user.updated_at ? new Date(user.updated_at).toLocaleString('vi-VN') : '' %>
+                </p>
+            </div>
+        </div>
+
+        <!-- Nút hành động -->
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+            <a href="/dashboard/users/edit/<%= user ? user.id : '' %>"
+                class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-lg hover:bg-yellow-200 transition text-sm font-medium">
+                ✏️ Chỉnh sửa
+            </a>
+        </div>
+    </div>
+</div>

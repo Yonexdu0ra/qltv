@@ -1,0 +1,81 @@
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M11 5h2m-1 0v14m0 0H7m4 0h4m-4-4H7m4 0h4m0 0V5m0 14h4" />
+      </svg>
+       Chỉnh sửa tài khoản
+    </h2>
+
+    <a href="/dashboard/accounts"
+      class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 transition duration-200 font-medium">
+      Quay lại
+    </a>
+  </div>
+
+  <!-- Nội dung form -->
+  <div class="bg-white shadow-md rounded-2xl border border-gray-200 p-8 space-y-6">
+    <%- include('../error') %>
+
+      <form method="POST" action="/dashboard/accounts/<%= account.id %>?_method=PUT" class="space-y-6">
+        <div class="grid sm:grid-cols-2 gap-6">
+          <!-- Tài khoản -->
+          <div>
+            <label class="text-sm text-gray-500 mb-1 block">Tài khoản</label>
+            <input type="text" name="username" value="<%= account.username %>" readonly
+              class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-medium text-gray-800 focus:outline-none cursor-not-allowed" />
+          </div>
+
+          <!-- Vai trò -->
+          <div>
+            <label class="text-sm text-gray-500 mb-1 block">Vai trò</label>
+            <select name="role"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+              <option value="admin" <%=account.role==='Admin' ? 'selected' : '' %>>Quản trị viên</option>
+              <option value="staff" <%=account.role==='Librarian' ? 'selected' : '' %>>Thủ thư</option>
+              <option value="user" <%=account.role==='Reader' ? 'selected' : '' %>>Độc giả</option>
+            </select>
+          </div>
+
+          <!-- Họ tên -->
+          <div>
+            <label class="text-sm text-gray-500 mb-1 block">Họ và tên</label>
+            <input type="text" name="fullname" value="<%= account.user ? account.user.fullname : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="text-sm text-gray-500 mb-1 block">Email</label>
+            <input type="email" name="email" value="<%= account.user ? account.user.email : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
+
+          <!-- Địa chỉ -->
+          <div>
+            <label class="text-sm text-gray-500 mb-1 block">Địa chỉ</label>
+            <input type="text" name="address" value="<%= account.user ? account.user.address : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
+
+          <!-- Số điện thoại -->
+          <div>
+            <label class="text-sm text-gray-500 mb-1 block">Số điện thoại</label>
+            <input type="text" name="phone" value="<%= account.user ? account.user.phone : '' %>"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
+        </div>
+
+        <!-- Nút hành động -->
+        <div class="flex justify-end gap-3">
+          <button type="submit"
+            class="cursor-pointer bg-green-600 text-white px-5 py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-md hover:shadow-lg">
+            💾 Lưu thay đổi
+          </button>
+        </div>
+      </form>
+  </div>
+</div>

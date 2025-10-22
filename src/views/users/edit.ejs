@@ -1,57 +1,66 @@
-<div class="max-w-2xl mx-auto mt-12 p-8 bg-white border border-gray-200 rounded-xl shadow-sm">
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
   <!-- Header -->
-  <div class="mb-8 space-y-1">
-    <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Cập nhật thông tin người dùng</h1>
-    <p class="text-sm text-gray-500">Chỉnh sửa thông tin cá nhân bên dưới và lưu lại thay đổi.</p>
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M11 5h2m-1 0v14m0 0H7m4 0h4m-4-4H7m4 0h4m0 0V5m0 14h4" />
+      </svg>
+      Chỉnh sửa tài khoản
+    </h2>
+
+    <a href="/dashboard/users"
+      class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 transition duration-200 font-medium">
+      Quay lại
+    </a>
   </div>
+  <div class="bg-white shadow-md rounded-2xl border border-gray-200 p-8 space-y-6">
+    <!-- Error Message -->
+    <%- include('../error') %>
 
-  <!-- Error Message -->
-  <%- include('../error') %>
+      <!-- Form -->
+      <form method="POST" class="space-y-6">
+        <!-- Fullname -->
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label for="fullname" class="text-sm font-medium text-gray-700">Họ tên</label>
+            <input type="text" id="fullname" name="fullname" value="<%= user ? user.fullname : '' %>"
+              placeholder="Nhập họ tên" required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
 
-    <!-- Form -->
-    <form method="POST" class="space-y-5">
-      <!-- Fullname -->
-      <div class="space-y-2">
-        <label for="fullname" class="text-sm font-medium text-gray-700">Họ tên</label>
-        <input type="text" id="fullname" name="fullname" value="<%= user ? user.fullname : '' %>"
-          placeholder="Nhập họ tên" required
-          class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
-      </div>
+          <!-- Email -->
+          <div class="space-y-2">
+            <label for="email" class="text-sm font-medium text-gray-700">Email</label>
+            <input type="email" id="email" name="email" value="<%= user ? user.email : '' %>" placeholder="Nhập email"
+              required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
 
-      <!-- Email -->
-      <div class="space-y-2">
-        <label for="email" class="text-sm font-medium text-gray-700">Email</label>
-        <input type="email" id="email" name="email" value="<%= user ? user.email : '' %>" placeholder="Nhập email"
-          required
-          class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
-      </div>
+          <!-- Address -->
+          <div class="space-y-2">
+            <label for="address" class="text-sm font-medium text-gray-700">Địa chỉ</label>
+            <input type="text" id="address" name="address" value="<%= user ? user.address : '' %>"
+              placeholder="Nhập địa chỉ" required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
 
-      <!-- Address -->
-      <div class="space-y-2">
-        <label for="address" class="text-sm font-medium text-gray-700">Địa chỉ</label>
-        <input type="text" id="address" name="address" value="<%= user ? user.address : '' %>"
-          placeholder="Nhập địa chỉ" required
-          class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
-      </div>
-
-      <!-- Phone -->
-      <div class="space-y-2">
-        <label for="phone" class="text-sm font-medium text-gray-700">Số điện thoại</label>
-        <input type="text" id="phone" name="phone" value="<%= user ? user.phone : '' %>"
-          placeholder="Nhập số điện thoại" required
-          class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
-      </div>
-
-      <!-- Actions -->
-      <div class="pt-4 flex justify-between items-center gap-3">
-        <a href="dashboard/users"
-          class="text-sm font-medium text-gray-600 hover:text-gray-900 hover:underline transition">
-          Quay lại
-        </a>
-        <button type="submit"
-          class="cursor-pointer inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition">
-          Lưu thay đổi
-        </button>
-      </div>
-    </form>
+          <!-- Phone -->
+          <div class="space-y-2">
+            <label for="phone" class="text-sm font-medium text-gray-700">Số điện thoại</label>
+            <input type="text" id="phone" name="phone" value="<%= user ? user.phone : '' %>"
+              placeholder="Nhập số điện thoại" required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
+        </div>
+        <!-- Actions -->
+        <div class="flex justify-end gap-3">
+          <button type="submit"
+            class="cursor-pointer bg-green-600 text-white px-5 py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-md hover:shadow-lg">
+            💾 Lưu thay đổi
+          </button>
+        </div>
+      </form>
+  </div>
 </div>

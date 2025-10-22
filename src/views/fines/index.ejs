@@ -102,12 +102,12 @@
           <td class="px-6 py-4 text-center">
             <div class="flex flex-wrap justify-center gap-2">
               <% if (!fine.is_paid) { %>
-                <a href="fines/mark-as-paid/<%= fine.id %>"
+                <a href="<%= currentPath %>/mark-as-paid/<%= fine.id %>"
                   class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition text-sm font-medium">
                   Đánh dấu đã thanh toán
                 </a>
               <% } %>
-              <a href="/fines/detail/<%= fine.id %>"
+              <a href="<%= currentPath %>/detail/<%= fine.id %>"
                 class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-200 transition text-sm font-medium">
                 Chi tiết
               </a>
