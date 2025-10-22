@@ -52,8 +52,8 @@ class BookService {
     const limit = options.limit
       ? options.limit > 0
         ? parseInt(options.limit)
-        : 10
-      : 10;
+        : 12
+      : 12;
     const page =
       isNaN(parseInt(query.page)) || parseInt(query.page) < 1
         ? 1
