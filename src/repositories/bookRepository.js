@@ -4,13 +4,13 @@ class BookRepository {
   static findAll(query = {}, options = {}) {
     return Book.findAll({
       where: query,
-      ...options
+      ...options,
     });
   }
   static findOne(query = {}, options = {}) {
     return Book.findOne({
       where: query,
-      ...options
+      ...options,
     });
   }
   static findOneWithAuthorAndGenre(query = {}, options = {}) {
@@ -19,18 +19,18 @@ class BookRepository {
       include: [
         {
           model: Author,
-          as: 'authors',
+          as: "authors",
           where: options.authorWhere || {},
           attributes: options.authorAttributes,
         },
         {
           model: Genre,
-          as: 'genres',
+          as: "genres",
           where: options.genreWhere || {},
           attributes: options.genreAttributes,
-        }
+        },
       ],
-      ...options
+      ...options,
     });
   }
   static findByPk(id, options = {}) {
@@ -39,9 +39,9 @@ class BookRepository {
   static findAllAndCount(query = {}, options = {}) {
     return Book.findAndCountAll({
       where: {
-        ...query
+        ...query,
       },
-      ...options
+      ...options,
     });
   }
   static findWithPagination(query = {}, options = {}) {
@@ -50,7 +50,7 @@ class BookRepository {
       limit: query.limit || 10,
       offset: query.offset || 0,
       order: query.order || [],
-      ...options
+      ...options,
     });
   }
   static findWithAuthorPagination(query = {}, options = {}) {
@@ -63,11 +63,11 @@ class BookRepository {
       include: [
         {
           model: Author,
-          as: 'authors',
+          as: "authors",
           where: options.authorWhere || {},
           attributes: options.authorAttributes || [],
-        }
-      ]
+        },
+      ],
     });
   }
   static findWithGenrePagination(query = {}, options = {}) {
@@ -80,11 +80,11 @@ class BookRepository {
       include: [
         {
           model: Genre,
-          as: 'genres',
+          as: "genres",
           where: options.genreWhere || {},
           attributes: options.genreAttributes || [],
-        }
-      ]
+        },
+      ],
     });
   }
   static findWithAuthorAndGenrePagination(query = {}, options = {}) {
@@ -96,18 +96,18 @@ class BookRepository {
       include: [
         {
           model: Author,
-          as: 'authors',
+          as: "authors",
           where: options.authorWhere || {},
           attributes: options.authorAttributes || [],
         },
         {
           model: Genre,
-          as: 'genres',
+          as: "genres",
           where: options.genreWhere || {},
           attributes: options.genreAttributes || [],
-        }
+        },
       ],
-      ...options
+      ...options,
     });
   }
 
@@ -117,13 +117,13 @@ class BookRepository {
   static update(data, query = {}, options = {}) {
     return Book.update(data, {
       where: query,
-      ...options
+      ...options,
     });
   }
   static delete(query = {}, options = {}) {
     return Book.destroy({
       where: query,
-      ...options
+      ...options,
     });
   }
   static countBooks(options = {}) {
@@ -134,6 +134,9 @@ class BookRepository {
   }
   static decrement(field, by = 1, query = {}, options = {}) {
     return Book.decrement(field, { by, where: query, ...options });
+  }
+  static count(query = {}) {
+    return Book.count({ where: query });
   }
 }
 

@@ -61,6 +61,9 @@ class UserServices {
     static async countUsers(query, options = {}) {
         return await userRepository.count(query, options);
     }
+    static async countUsers(where = {}) {
+        return userRepository.count(where);
+    }
 }
 
 module.exports = UserServices;

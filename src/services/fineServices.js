@@ -17,19 +17,31 @@ class FineServices {
       ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
-      [sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
+      [
+        sortBy || "created_at",
+        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+      ],
     ];
     if (["is_paid"].includes(sortBy) && sortOrder) {
       where.is_paid = { [Op.eq]: sortBy };
-      order[0] = ["created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"];
+      order[0] = [
+        "created_at",
+        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+      ];
     }
     return fineRepository.findAll(where, { ...options, limit, offset, order });
   }
 
   static getFineByIdWithBorrowDetailAndBorrowerAndBook(id, options) {
-    return fineRepository.findOneWithBorrowDetailAndBorrowerAndBook({ id }, { ...options });
+    return fineRepository.findOneWithBorrowDetailAndBorrowerAndBook(
+      { id },
+      { ...options }
+    );
   }
-  static getAllFinesWithBorrowDetailAndBorrowerAndBookPagination(query, options) {
+  static getAllFinesWithBorrowDetailAndBorrowerAndBookPagination(
+    query,
+    options
+  ) {
     const where = {};
     const bookWhere = {};
     if (query.q) {
@@ -51,19 +63,32 @@ class FineServices {
       ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
-      [sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
+      [
+        sortBy || "created_at",
+        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+      ],
     ];
     if (["is_paid"].includes(sortBy) && sortOrder) {
       where.is_paid = { [Op.eq]: sortBy };
-      order[0] = ["created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"];
+      order[0] = [
+        "created_at",
+        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+      ];
     }
-    return fineRepository.findAllWithBorrowDetailAndBorrowerAndBookPagination(where, { ...options, limit, offset, order, bookWhere });
+    return fineRepository.findAllWithBorrowDetailAndBorrowerAndBookPagination(
+      where,
+      { ...options, limit, offset, order, bookWhere }
+    );
   }
-  static getAllFinesByIdWithBorrowDetailAndBorrowerAndBookPagination(borrower_id, query, options) {
+  static getAllFinesByIdWithBorrowDetailAndBorrowerAndBookPagination(
+    borrower_id,
+    query,
+    options
+  ) {
     const where = {};
     const borrowWhere = {
       borrower_id: borrower_id,
-    }
+    };
     const bookWhere = {};
     if (query.q) {
       bookWhere.title = {
@@ -84,37 +109,54 @@ class FineServices {
       ? query.sort.split("-")
       : ["created_at", "ASC"];
     const order = [
-      [sortBy || "created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"],
+      [
+        sortBy || "created_at",
+        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+      ],
     ];
     if (["is_paid"].includes(sortBy) && sortOrder) {
       where.is_paid = { [Op.eq]: sortBy };
-      order[0] = ["created_at", sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC"];
+      order[0] = [
+        "created_at",
+        sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
+      ];
     }
-    return fineRepository.findAllWithBorrowDetailAndBorrowerAndBookPagination(where, { borrowWhere, ...options, limit, offset, order, bookWhere });
+    return fineRepository.findAllWithBorrowDetailAndBorrowerAndBookPagination(
+      where,
+      { borrowWhere, ...options, limit, offset, order, bookWhere }
+    );
   }
   static async getFineById(id, options) {
     return fineRepository.findByPk(id, options);
-
   }
   static async createFine(data, options) {
     return fineRepository.create(data, options);
   }
   static async createFines(data, options = {}) {
-    return fineRepository.createMany(data, { ...options, fields: ['amount', 'is_paid', 'note', 'borrow_detail_id'] });
+    return fineRepository.createMany(data, {
+      ...options,
+      fields: ["amount", "is_paid", "note", "borrow_detail_id"],
+    });
   }
   static async updateFineById(data, id, options = {}) {
-    return fineRepository.update(data, { id }, { fields: ['amount', 'is_paid', 'note'], ...options });
+    return fineRepository.update(
+      data,
+      { id },
+      { fields: ["amount", "is_paid", "note"], ...options }
+    );
   }
   static async markAsPaidFineById(id, options = {}) {
     const [updatedRow] = await fineRepository.update(
       { is_paid: true },
       { id },
       {
-
         ...options,
       }
     );
     return updatedRow > 0;
+  }
+  static async sumAmount(field, where = {}, options = {}) {
+    return fineRepository.sum(field, { ...where }, { ...options });
   }
 }
 

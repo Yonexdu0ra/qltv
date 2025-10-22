@@ -225,6 +225,9 @@ class BorrowServices {
       { bookWhere, limit, offset, order, ...options }
     );
   }
+  static async countBorrows(where = {}) {
+    return borrowRepository.count(where);
+  }
 }
 
 module.exports = BorrowServices;

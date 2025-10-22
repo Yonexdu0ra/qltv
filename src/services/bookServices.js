@@ -208,6 +208,9 @@ class BookService {
   static async incrementBookByIds(field, by = 1, ids = [], options = {}) {
     return bookRepository.increment(field, by, { id: { [Op.in]: ids } }, options);
   }
+  static async countBooks(where = {}) {
+    return bookRepository.count(where);
+  }
 }
 
 module.exports = BookService;

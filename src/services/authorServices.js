@@ -168,6 +168,9 @@ class AuthorServices {
     const deletedRows = await authorRepository.delete({ id }, options);
     return deletedRows > 0;
   }
+  static async countAuthors(where = {}) {
+    return authorRepository.count(where);
+  }
 }
 
 module.exports = AuthorServices;

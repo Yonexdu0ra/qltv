@@ -114,7 +114,9 @@ class FineRepository {
   static delete(query, options = {}) {
     return Fine.destroy({ where: query, ...options });
   }
-
+  static sum(field, query, options = {}) {
+    return Fine.sum(field, { where: query, ...options });
+  }
 
 }
 

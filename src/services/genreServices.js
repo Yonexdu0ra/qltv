@@ -107,8 +107,8 @@ class GenreServices {
 
         return GenreRepository.findAllAndCount(where, { ...options, limit, offset, order });
     }
-    static countGenres() {
-        return GenreRepository.count();
+    static countGenres(where = {}) {
+        return GenreRepository.count(where);
     }
 }
 
