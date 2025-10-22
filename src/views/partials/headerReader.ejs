@@ -17,7 +17,7 @@
       <a href="/books" class="hover:text-indigo-600">Sách</a>
       <a href="/authors" class="hover:text-indigo-600">Tác giả</a>
       <a href="/genres" class="hover:text-indigo-600">Thể loại</a>
-      <a href="/fines" class="hover:text-indigo-600">Phí trễ</a>
+      <a href="/dashboard/fines/reader" class="hover:text-indigo-600">Phí trễ</a>
       <a href="/borrows" class="hover:text-indigo-600">Phiếu mượn</a>
       <a href="/contact" class="hover:text-indigo-600">Liên hệ</a>
     </nav>
@@ -43,10 +43,7 @@
           <span class="block sm:hidden text-sky-600 font-medium text-center">
             <%= user.fullname %>
           </span>
-          <a href="/dashboard/books" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-            Trang quản lý
-          </a>
-          <a href="/profile/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          <a href="/auth/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
             Đổi mật khẩu
           </a>
           <form action="/auth/logout/<%= user.user_id %>" method="POST">
@@ -75,7 +72,7 @@
       <a href="/books" class="hover:text-indigo-600">Sách</a>
       <a href="/authors" class="hover:text-indigo-600">Tác giả</a>
       <a href="/genres" class="hover:text-indigo-600">Thể loại</a>
-      <a href="/fines" class="hover:text-indigo-600">Phí trễ</a>
+      <a href="/dashboard/fines/reader" class="hover:text-indigo-600">Phí trễ</a>
       <a href="/borrows" class="hover:text-indigo-600">Phiếu mượn</a>
       <a href="/contact" class="hover:text-indigo-600">Liên hệ</a>
 
@@ -99,7 +96,7 @@
           <span class="block sm:hidden text-sky-600 font-medium text-center">
             <%= user.fullname %>
           </span>
-          <a href="/profile/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          <a href="/auth/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
             Đổi mật khẩu
           </a>
           <form action="/auth/logout/<%= user.user_id %>" method="POST">

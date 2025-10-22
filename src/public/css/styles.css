@@ -831,6 +831,9 @@
   .border-green-200 {
     border-color: var(--color-green-200);
   }
+  .border-indigo-100 {
+    border-color: var(--color-indigo-100);
+  }
   .border-red-200 {
     border-color: var(--color-red-200);
   }
@@ -1589,6 +1592,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-green-700);
+      }
+    }
+  }
+  .hover\:bg-indigo-100 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-indigo-100);
       }
     }
   }

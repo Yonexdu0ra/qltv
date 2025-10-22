@@ -6,8 +6,8 @@ class GenreController {
     const limit = req.query.limit
       ? req.query.limit > 0
         ? parseInt(req.query.limit)
-        : 5
-      : 5;
+        : 8
+      : 8;
     try {
 
       const { count: totals, rows: genres } =
@@ -195,8 +195,8 @@ class GenreController {
     const limit = req.query.limit
       ? req.query.limit > 0
         ? parseInt(req.query.limit)
-        : 5
-      : 5;
+        : 20
+      : 20;
     try {
 
       const { count: totals, rows: genres } =

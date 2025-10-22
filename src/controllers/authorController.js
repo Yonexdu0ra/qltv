@@ -206,7 +206,7 @@ class AuthorController {
     const { query } = req;
     const page = parseInt(req.query.page) || 1;
     try {
-      const limit = parseInt(req.query.limit) || 10;
+      const limit = parseInt(req.query.limit) || 9;
       const { rows: authors, count: totals } =
         await authorService.getAuthorsWithPagination({ ...query, limit });
       const totalPages = Math.ceil(totals / limit);
