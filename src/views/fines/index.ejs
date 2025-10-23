@@ -67,15 +67,15 @@
     <table class="min-w-full divide-y divide-gray-200 text-gray-700">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">#</th>
-          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Số tiền phạt</th>
-          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Trạng thái sách</th>
-          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Thanh toán</th>
-          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Người mượn</th>
-          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Sách</th>
-          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Ngày quá hạn</th>
-          <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Lý do</th>
-          <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Hành động</th>
+          <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">#</th>
+          <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Số tiền phạt</th>
+          <th class="px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Trạng thái sách</th>
+          <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Thanh toán</th>
+          <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Người mượn</th>
+          <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Sách</th>
+          <th class="px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Ngày quá hạn</th>
+          <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Lý do</th>
+          <th class="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Hành động</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -88,15 +88,15 @@
               <%= constantsReverse[fine.borrowDetail.status] %>
             </span>
           </td>
-          <td class="px-6 py-4">
+          <td class="px-3 py-4">
             <% if (fine.is_paid) { %>
               <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">Đã thanh toán</span>
             <% } else { %>
-              <span class="px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-700">Chưa thanh toán</span>
+              <span class="px-2 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-700">Chưa thanh toán</span>
             <% } %>
           </td>
           <td class="px-6 py-4 text-gray-700"><%= fine.borrowDetail.borrow.borrower.fullname %></td>
-          <td class="px-6 py-4 text-gray-700"><%= fine.borrowDetail.book.title %></td>
+          <td class="px-9 py-4 text-gray-700"><%= fine.borrowDetail.book.title %></td>
           <td class="px-6 py-4 text-gray-700"><%= fine.borrowDetail.borrow.due_date ? new Date(fine.borrowDetail.borrow.due_date).toLocaleDateString() : '' %></td>
           <td class="px-6 py-4 text-gray-700"><%= fine.note %></td>
           <td class="px-6 py-4 text-center">
