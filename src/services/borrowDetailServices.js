@@ -1,5 +1,6 @@
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const { borrowDetailRepository } = require("../repositories");
+const { Fine } = require("../models");
 
 class BorrowDetailServices {
   static async createBorrowDetail(data, options = {}) {
@@ -12,18 +13,29 @@ class BorrowDetailServices {
     return borrowDetailRepository.findAll({ id: { [Op.in]: ids } }, options);
   }
   static async getBorrowDetailWithBooksPagination(query, options = {}) {
- 
+
     const where = {
     };
     const whereBook = {};
+    const borrowWhere = {};
     if (query.q) {
       whereBook.title = {
         [Op.like]: `%${query.q || ""}%`,
       };
     }
-    if(query.b) {
-      where.borrow_id = query.b;
+    if (query.b) {
+      borrowWhere.id = query.b;
     }
+    if (query.bd) {
+      where.id = {
+        [Op.in]: query.bd
+          .split(",")
+          .filter((item) => item)
+          .map((item) => parseInt(item)),
+      };
+    }
+
+
     const limit = options.limit
       ? options.limit > 0
         ? parseInt(options.limit)
@@ -53,7 +65,6 @@ class BorrowDetailServices {
         sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ];
     }
-   
 
     return borrowDetailRepository.findAllWithBorrowAndBookPanigation(where, {
       whereBook,
@@ -61,10 +72,16 @@ class BorrowDetailServices {
       offset,
       order,
       ...options,
+      borrowWhere,
     });
   }
   static async getBorrowDetailById(id, options = {}) {
     return borrowDetailRepository.findByPk(id, { ...options });
+  }
+  static async getBorrowDetailByIdFine(id, options = {}) {
+    return borrowDetailRepository.findOneWithFine({ id }, {
+      ...options,
+    });
   }
   static async getBorrowDetailByIdWithBooks(id, options = {}) {
     return borrowDetailRepository.findOneWithBorrowAndBook(
@@ -76,7 +93,7 @@ class BorrowDetailServices {
     return borrowDetailRepository.update(data, { id }, options);
   }
   static async updateBorrowDetailByIds(data, ids, options = {}) {
-     await borrowDetailRepository.update(
+    await borrowDetailRepository.update(
       data,
       { id: { [Op.in]: ids } },
       options
@@ -92,17 +109,16 @@ class BorrowDetailServices {
         ...options,
       }
     );
-    console.log(updatedRow);
-    
+
     return updatedRow > 0;
   }
-  
+
   static async markAsReturnedBorrowDetailById(id, options = {}) {
     const [updatedRow] = await borrowDetailRepository.update(
       { status: "RETURNED" },
       { id },
       {
-        
+
         ...options,
       }
     );

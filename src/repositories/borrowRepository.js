@@ -1,4 +1,4 @@
-const { Borrow, Book, User, BorrowDetail } = require("../models");
+const { Borrow, Book, User, BorrowDetail, Fine } = require("../models");
 
 class BorrowRepository {
   static findAll(query, options = {}) {
@@ -23,6 +23,28 @@ class BorrowRepository {
           as: "borrowDetails",
           attributes: options.borrowDetailAttributes,
           where: options.borrowDetailWhere,
+        },
+      ],
+    });
+  }
+  static findOneWithBorrowDetailsAndFine(query, options = {}) {
+    return Borrow.findOne({
+      where: query,
+      ...options,
+      include: [
+        {
+          model: BorrowDetail,
+          as: "borrowDetails",
+          attributes: options.borrowDetailAttributes,
+          where: options.borrowDetailWhere,
+          include: [
+            {
+              model: Fine,
+              as: "fine",
+              attributes: options.fineAttributes,
+              where: options.fineWhere,
+            },
+          ],
         },
       ],
     });
@@ -107,7 +129,6 @@ class BorrowRepository {
             },
           ],
         },
-
       ],
     });
   }
@@ -116,6 +137,7 @@ class BorrowRepository {
     return Borrow.findAndCountAll({
       where: query,
       ...options,
+      distinct: true,
       include: [
         {
           model: User,

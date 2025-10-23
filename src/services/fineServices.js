@@ -153,11 +153,12 @@ class FineServices {
     });
   }
   static async updateFineById(data, id, options = {}) {
-    return fineRepository.update(
+    const [updatedRow] = await fineRepository.update(
       data,
       { id },
       { fields: ["amount", "is_paid", "note"], ...options }
     );
+    return updatedRow > 0;
   }
   static async markAsPaidFineById(id, options = {}) {
     const [updatedRow] = await fineRepository.update(

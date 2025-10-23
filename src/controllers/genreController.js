@@ -41,7 +41,7 @@ class GenreController {
     try {
       return res.render("genres/add", { title: "Thêm thể loại", genre: {} });
     } catch (error) {
-      return res.redirect("/genre?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/genres?error=" + encodeBase64(error.message));
     }
   }
   static async renderViewUpdateGenre(req, res) {
@@ -109,7 +109,7 @@ class GenreController {
       );
       if (!genre) throw new Error("Tạo thể loại thất bại");
       return res.redirect(
-        "/genre?success=" + encodeBase64("Thêm thể loại thành công")
+        "/dashboard/genres?success=" + encodeBase64("Thêm thể loại thành công")
       );
     } catch (error) {
       return res.render("genres/add", {
@@ -139,7 +139,7 @@ class GenreController {
       });
       if (!isUpdated) throw new Error("Cập nhật thể loại thất bại");
       return res.redirect(
-        "/genre?success=" + encodeBase64("Cập nhật thể loại thành công")
+        "/dashboard/genres?success=" + encodeBase64("Cập nhật thể loại thành công")
       );
     } catch (error) {
       return res.render("genres/edit", {
@@ -162,10 +162,10 @@ class GenreController {
       const isDeleted = await genreServices.deleteGenreById(id);
       if (!isDeleted) throw new Error("Xoá thể loại thất bại");
       return res.redirect(
-        "/genre?success=" + encodeBase64("Xoá thể loại thành công")
+        "/dashboard/genres?success=" + encodeBase64("Xoá thể loại thành công")
       );
     } catch (error) {
-      return res.redirect("/genre?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/genres?error=" + encodeBase64(error.message));
     }
   }
   static async handleSearchGenre(req, res) {

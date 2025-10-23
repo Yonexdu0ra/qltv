@@ -92,7 +92,7 @@
   });
   useChoice(
     "#borrow_detail_ids",
-    "/dashboard/borrow-details/search?" + (borrow_id ? "borrow_id=" + borrow_id : ""),
+    "/dashboard/borrow-details/search?" + (borrow_id ? "b=" + borrow_id : "") + (borrow_detail_ids ? "&bd=" + borrow_detail_ids : ""),
     (data) => {
       return data.data.map((borrowDetail) => {
         const disabled =

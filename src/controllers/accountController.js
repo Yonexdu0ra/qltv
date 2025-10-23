@@ -8,7 +8,7 @@ class AccountController {
         const { query } = req;
         const page = isNaN(parseInt(query.page)) || parseInt(query.page) < 1 ? 1 : parseInt(query.page);
         try {
-            const limit = query.limit ? query.limit > 0 ? parseInt(query.limit) : 10 : 10
+            const limit = query.limit ? query.limit > 0 ? parseInt(query.limit) :9 : 9
             const { count, rows: accounts } = await accountServices.getAllAccountWithUserPagination({ limit, ...query }, {
                 attributes: ['id', 'username', 'role', 'created_at'],
                 userAttributes: ['fullname', 'id']
@@ -35,7 +35,7 @@ class AccountController {
             return res.render("accounts/reissuePassword", { title: "Cấp lại mật khẩu", account });
         } catch (error) {
             console.error("Error rendering reissue password view:", error);
-            return res.redirect("/accounts?error=" + encodeBase64(error.message));
+            return res.redirect("/dashboard/accounts?error=" + encodeBase64(error.message));
         }
     }
 
@@ -47,18 +47,18 @@ class AccountController {
             return res.render("accounts/delete", { title: "Xóa tài khoản", account });
         } catch (error) {
             console.error("Error rendering delete account view:", error);
-            return res.redirect("/accounts?error=" + encodeBase64(error.message));
+            return res.redirect("/dashboard/accounts?error=" + encodeBase64(error.message));
         }
     }
     static async renderViewEditAccount(req, res) {
         const { id } = req.params;
         try {
-            const account = await accountServices.getAccountByIdWithUser(id, { attributes: ['id', 'role', 'user_id'], userAttributes: ['fullname', 'email', 'phone', 'address'] });
+            const account = await accountServices.getAccountByIdWithUser(id, { attributes: ['id',"username", 'role', 'user_id'], userAttributes: ['fullname', 'email', 'phone', 'address'] });
             if (!account) throw new Error("Tài khoản không tồn tại không thể sửa");
             return res.render("accounts/edit", { title: "Sửa tài khoản", account });
         } catch (error) {
             console.error("Error rendering edit account view:", error);
-            return res.redirect("/accounts?error=" + encodeBase64(error.message));
+            return res.redirect("/dashboard/accounts?error=" + encodeBase64(error.message));
         }
     }
 
@@ -67,18 +67,18 @@ class AccountController {
         const { fullname, email, phone, address, role } = req.body;
         const transaction = await sequelize.transaction();
         try {
-            const account = await accountServices.findAccountById(id, { attributes: ['id', 'user_id'] });
+            const account = await accountServices.getAccountById(id, { attributes: ['id', 'user_id'] });
             if (!account) throw new Error("Tài khoản không tồn tại không thể sửa");
             const isAccountUpdated = await accountServices.updateAccountById({ role }, account.id, { transaction, fields: ['role'] });
             if (!isAccountUpdated) throw new Error("Cập nhật tài khoản không thành công");
             const isUserUpdated = await userServices.updateUserById(account.user_id, { fullname, email, phone, address }, { transaction, fields: ['fullname', 'email', 'phone', 'address'] });
             if (!isUserUpdated) throw new Error("Cập nhật người dùng không thành công");
             await transaction.commit();
-            return res.redirect('/accounts?success=' + encodeBase64("Cập nhật tài khoản thành công"));
+            return res.redirect('/dashboard/accounts?success=' + encodeBase64("Cập nhật tài khoản thành công"));
         } catch (error) {
             await transaction.rollback();
             console.error("Error editing account:", error);
-            return res.render("accounts/edit", { title: "Sửa tài khoản", account: { id, role, user: { id, fullname, email, phone, address } }, error: error.message });
+            return res.redirect("/dashboard/accounts?error=" + encodeBase64(error.message));
         }
     }
 
@@ -90,7 +90,7 @@ class AccountController {
             return res.render("accounts/detail", { title: "Chi tiết tài khoản", account });
         } catch (error) {
             console.error("Error rendering account detail view:", error);
-            return res.redirect("/accounts?error=" + encodeBase64(error.message));
+            return res.redirect("/dashboard/accounts?error=" + encodeBase64(error.message));
         }
     }
     
@@ -112,11 +112,11 @@ class AccountController {
             }, { transaction, fields: ['username', 'password', 'role', 'user_id'] });
             if (!account) throw new Error("Tạo tài khoản không thành công");
             await transaction.commit();
-            return res.redirect('/accounts?success=' + encodeBase64("Tạo tài khoản thành công"));
+            return res.redirect('/dashboard/accounts?success=' + encodeBase64("Tạo tài khoản thành công"));
         } catch (error) {
             await transaction.rollback();
             console.error("Error creating account:", error);
-            return res.redirect("/accounts?error=" + encodeBase64(error.message));
+            return res.redirect("/dashboard/accounts?error=" + encodeBase64(error.message));
         }
     }
 
@@ -131,9 +131,9 @@ class AccountController {
             if (role !== "Admin" && account.role !== "Reader") throw new Error("Bạn không có quyền đặt lại mật khẩu cho tài khoản này");
             const isReissued = await accountServices.reissuePasswordAccountById(account.id, password);
             if (!isReissued) throw new Error("Đặt lại mật khẩu không thành công");
-            return res.redirect('/accounts?success=' + encodeBase64("Đặt lại mật khẩu thành công"));
+            return res.redirect('/dashboard/accounts?success=' + encodeBase64("Đặt lại mật khẩu thành công"));
         } catch (error) {
-            return res.redirect("/accounts?error=" + encodeBase64(error.message));
+            return res.redirect("/dashboard/accounts?error=" + encodeBase64(error.message));
         }
     }
 

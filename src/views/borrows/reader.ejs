@@ -19,16 +19,17 @@
         id="sort"
       >
         <option value="">--Sắp xếp mượn/trả--</option>
-        <option value="title-asc" <%= query.sort === 'title-asc' ? 'selected' : '' %>>Sắp xếp theo tên A-Z</option>
-        <option value="title-desc" <%= query.sort === 'title-desc' ? 'selected' : '' %>>Sắp xếp theo tên Z-A</option>
-        <option value="createdAt-desc" <%= query.sort === 'createdAt-desc' ? 'selected' : '' %>>Mới nhất</option>
-        <option value="createdAt-asc" <%= query.sort === 'createdAt-asc' ? 'selected' : '' %>>Cũ nhất</option>
-        <option value="BORROWED" <%= query.sort === 'BORROWED' ? 'selected' : '' %>><%= constantsReverse["BORROWED"] %></option>
-        <option value="APPROVED" <%= query.sort === 'APPROVED' ? 'selected' : '' %>><%= constantsReverse["APPROVED"] %></option>
-        <option value="REJECTED" <%= query.sort === 'REJECTED' ? 'selected' : '' %>><%= constantsReverse["REJECTED"] %></option>
-        <option value="RETURNED" <%= query.sort === 'RETURNED' ? 'selected' : '' %>><%= constantsReverse["RETURNED"] %></option>
-        <option value="REQUESTED" <%= query.sort === 'REQUESTED' ? 'selected' : '' %>><%= constantsReverse["REQUESTED"] %></option>
-        <option value="CANCELLED" <%= query.sort === 'CANCELLED' ? 'selected' : '' %>><%= constantsReverse["CANCELLED"] %></option>
+       <option value="">-- Sắp xếp mượn/trả --</option>
+      <option value="borrow_date-asc" <%= query.sort === 'borrow_date-asc' ? 'selected' : '' %>>Ngày mượn cũ nhất</option>
+      <option value="borrow_date-desc" <%= query.sort === 'borrow_date-desc' ? 'selected' : '' %>>Ngày mượn mới nhất</option>
+      <option value="created_at-desc" <%= query.sort === 'created_at-desc' ? 'selected' : '' %>>Mới thêm</option>
+      <option value="created_at-asc" <%= query.sort === 'created_at-asc' ? 'selected' : '' %>>Cũ nhất</option>
+      <option value="BORROWED" <%= query.sort === 'BORROWED' ? 'selected' : '' %>><%= constantsReverse["BORROWED"] %></option>
+      <option value="APPROVED" <%= query.sort === 'APPROVED' ? 'selected' : '' %>><%= constantsReverse["APPROVED"] %></option>
+      <option value="REJECTED" <%= query.sort === 'REJECTED' ? 'selected' : '' %>><%= constantsReverse["REJECTED"] %></option>
+      <option value="RETURNED" <%= query.sort === 'RETURNED' ? 'selected' : '' %>><%= constantsReverse["RETURNED"] %></option>
+      <option value="REQUESTED" <%= query.sort === 'REQUESTED' ? 'selected' : '' %>><%= constantsReverse["REQUESTED"] %></option>
+      <option value="CANCELLED" <%= query.sort === 'CANCELLED' ? 'selected' : '' %>><%= constantsReverse["CANCELLED"] %></option>
       </select>
       <button class="bg-blue-600 w-full sm:w-25 text-white px-4 py-2 rounded">
         Tìm kiếm

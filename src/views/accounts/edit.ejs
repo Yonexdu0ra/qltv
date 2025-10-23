@@ -20,7 +20,7 @@
   <div class="bg-white shadow-md rounded-2xl border border-gray-200 p-8 space-y-6">
     <%- include('../error') %>
 
-      <form method="POST" action="/dashboard/accounts/<%= account.id %>?_method=PUT" class="space-y-6">
+      <form method="POST"  class="space-y-6">
         <div class="grid sm:grid-cols-2 gap-6">
           <!-- Tài khoản -->
           <div>
@@ -34,9 +34,9 @@
             <label class="text-sm text-gray-500 mb-1 block">Vai trò</label>
             <select name="role"
               class="w-full border border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-              <option value="admin" <%=account.role==='Admin' ? 'selected' : '' %>>Quản trị viên</option>
-              <option value="staff" <%=account.role==='Librarian' ? 'selected' : '' %>>Thủ thư</option>
-              <option value="user" <%=account.role==='Reader' ? 'selected' : '' %>>Độc giả</option>
+              <option value="Admin" <%=account.role==='Admin' ? 'selected' : '' %>>Quản trị viên</option>
+              <option value="Librarian" <%=account.role==='Librarian' ? 'selected' : '' %>>Thủ thư</option>
+              <option value="Reader" <%=account.role==='Reader' ? 'selected' : '' %>>Độc giả</option>
             </select>
           </div>
 

@@ -46,9 +46,15 @@ class BorrowDetailController {
     const { id } = req.params;
     try {
       await sequelize.transaction(async (t) => {
-        const borrowDetail = await borrowDetailServices.getBorrowDetailById(id, { attributes: ['id', 'status', 'book_id'] });
+        const borrowDetail = await borrowDetailServices.getBorrowDetailByIdFine(id, { attributes: ['id', 'status', 'book_id'], fineAttributes: ['id', 'is_paid'],  });
         if (!borrowDetail) throw new Error("Chi tiết phiếu mượn không tồn tại");
+        
+        if(borrowDetail.fine && !borrowDetail.fine.is_paid) {
+          throw new Error("Không thể trả sách khi còn phí phạt chưa thanh toán");
+        }
+        const statusAllowReturn = [BORROW_STATUS_CONSTANTS.BORROWED, BORROW_STATUS_CONSTANTS.OVERDUE, BORROW_STATUS_CONSTANTS.LOSTED, BORROW_STATUS_CONSTANTS.DAMAGED, BORROW_STATUS_CONSTANTS.EXPIRED].includes(borrowDetail.status);
         if (borrowDetail.status === BORROW_STATUS_CONSTANTS.RETURNED) throw new Error("Sách đã được trả trước đó");
+        if(!statusAllowReturn) throw new Error("Trạng thái phiếu mượn không hợp lệ để đánh dấu đã trả sách");
         const isUpdated =
           await borrowDetailServices.markAsReturnedBorrowDetailById(
             borrowDetail.id,
@@ -80,6 +86,9 @@ class BorrowDetailController {
         encodeBase64(error.message || "Lỗi khi cập nhật trạng thái trả sách")
       );
     }
+  }
+  static async markAsReturnForPaidFine(req, res) {
+    
   }
 }
 

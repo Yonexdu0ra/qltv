@@ -74,6 +74,12 @@ class BorrowServices {
   static async getBorrowByIdWithBorrowDetails(id, options = {}) {
     return borrowRepository.findOneWithBorrowDetails({ id }, { ...options });
   }
+  static async getBorrowByIdWithBorrowDetailsAndFine(id, options = {}) {
+    return borrowRepository.findOneWithBorrowDetailsAndFine(
+      { id },
+      { ...options }
+    );
+  }
   static async getBorrowByIdWithBorrowerAndApproverAndBooks(id, options = {}) {
     return borrowRepository.findOneWithBorrowerAndApproverAndBook(
       { id },
@@ -112,10 +118,10 @@ class BorrowServices {
     const offset = (page - 1) * limit;
     const [sortBy, sortOrder] = query.sort
       ? query.sort.split("-")
-      : ["created_at", "DESC"];
+      : ["updated_at", "DESC"];
     const order = [
       [
-        sortBy || "created_at",
+        sortBy || "updated_at",
         sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC",
       ],
     ];

@@ -1,0 +1,71 @@
+<div class="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-xl mt-8 border border-gray-100">
+  <h1 class="text-2xl font-bold mb-6 text-gray-800 text-center flex items-center justify-center gap-2">
+    ✏️ Cập nhật phiếu phạt
+  </h1>
+
+  <form method="POST" class="space-y-5">
+
+
+    <div>
+      <label for="amount" class="block text-gray-600 font-medium mb-1">💰 Số tiền phạt (VNĐ)</label>
+      <input 
+        type="number" 
+        id="amount"
+        name="amount"
+        value="<%= fine.amount %>"
+        min="0"
+        class="w-full border rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition"
+        required
+      >
+    </div>
+
+
+    <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border hover:bg-gray-100 transition">
+      <input 
+        type="checkbox" 
+        id="is_paid" 
+        name="is_paid"
+        value="true"
+        <%= fine.is_paid ? "checked" : "" %>
+        class="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+      >
+      <label for="is_paid" class="text-gray-700 font-medium">Đã thanh toán</label>
+    </div>
+
+
+    <div>
+      <label for="note" class="block text-gray-600 font-medium mb-1">📝 Ghi chú</label>
+      <textarea 
+        id="note" 
+        name="note" 
+        rows="3"
+        class="w-full border rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition"
+        placeholder="Nhập ghi chú (nếu có)..."><%= fine.note || "" %></textarea>
+    </div>
+
+    <div>
+      <label class="block text-gray-600 font-medium mb-1">📅 Ngày tạo</label>
+      <input 
+        type="text" 
+        value="<%= fine.created_at.toLocaleDateString('vi-VN') %>" 
+        readonly
+        class="w-full border rounded-lg p-3 bg-gray-100 text-gray-500 cursor-not-allowed shadow-sm"
+      >
+    </div>
+
+
+    <div class="flex items-center justify-between pt-4">
+      <a href="/dashboard/fines" 
+        class="text-gray-600 hover:text-gray-900 flex items-center gap-1 transition">
+        ← Quay lại
+      </a>
+
+      <button 
+        type="submit"
+        class="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium shadow hover:bg-blue-700 active:scale-95 transition"
+      >
+        💾 Lưu thay đổi
+      </button>
+    </div>
+  </form>
+</div>

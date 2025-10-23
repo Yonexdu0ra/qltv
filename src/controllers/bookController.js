@@ -72,7 +72,7 @@ class BookController {
     } catch (error) {
       console.log(error);
 
-      return res.redirect("/dashboard/dashboard/books?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async renderViewDeleteBook(req, res) {
@@ -83,13 +83,13 @@ class BookController {
       if (!book) throw new Error("Sách không tồn tại không thể sửa");
       return res.render("books/delete", { book, title: "Xóa sách" });
     } catch (error) {
-      return res.redirect("/dashboard/dashboard/books?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async renderViewDetailBook(req, res) {
     const { slug } = req.params;
     try {
-      const book = await bookServices.getBookBySlugWithAuthorsAndGenres(slug);
+      const book = await bookServices.getBookBySlugWithAuthorsAndGenres(slug, { attributes: ['id', 'title', 'image_cover', 'slug', 'created_at', 'quantity_available', 'quantity_total', 'description'], genreAttributes: ['id', 'name', 'slug'], authorAttributes: ['id', 'name', 'slug'], throughAttributes: [] });
       if (!book) throw new Error("Sách không tồn tại");
       return res.render("books/detail", { book, title: "Chi tiết sách" });
     } catch (error) {
@@ -218,14 +218,14 @@ class BookController {
 
       await transaction.commit();
       return res.redirect(
-        "/dashboard/dashboard/books?success=" + encodeBase64("Cập nhật sách thành công")
+        "/dashboard/books?success=" + encodeBase64("Cập nhật sách thành công")
       );
     } catch (error) {
       await transaction.rollback();
       console.log(error.message);
 
       return res.redirect(
-        "/books/edit/" + req.params.id + "?error=" + encodeBase64(error.message)
+        "/dashboard/books/edit/" + req.params.id + "?error=" + encodeBase64(error.message)
       );
     }
   }
@@ -240,7 +240,7 @@ class BookController {
         "/dashboard/books?success=" + encodeBase64("Xóa sách thành công")
       );
     } catch (error) {
-      return res.redirect("/dashboard/dashboard/books?error=" + encodeBase64(error.message));
+      return res.redirect("/dashboard/books?error=" + encodeBase64(error.message));
     }
   }
   static async handleSearchBooks(req, res) {
@@ -273,9 +273,11 @@ class BookController {
         : parseInt(query.page);
     try {
       const { rows: books, count: totals } =
-        await bookServices.getBooksWithPagination({ ...query, limit });
+        await await bookServices.getBooksWithAuthorPagination({ page: 1, limit: 10 }, { attributes: ["id", "title", "image_cover", "slug", "created_at"], authorAttributes: ['id', 'name'], throughAttributes: [] });
       // fetch 10 books for the top carousel (most recent)
       const { rows: featuredBooks = [] } = await bookServices.getBooksWithPagination({ page: 1, limit: 10 }, { attributes: ["id", "title", "image_cover", "slug"] });
+      console.log(featuredBooks);
+      
       const totalPages = Math.ceil(totals / limit);
       return res.render("books/list", {
         books,

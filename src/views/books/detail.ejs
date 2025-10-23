@@ -22,40 +22,62 @@
 
       <!-- <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       </div> -->
-        <p><span class="font-medium text-gray-800">📅 Năm xuất bản:</span> <%= book.published_year %></p>
-        <!-- <p><span class="font-medium text-gray-800">📦 Số lượng tổng:</span> <%= book.quantity_total %></p> -->
-      <p><span class="font-medium text-gray-800">📘 Còn lại:</span> <%= book.quantity_available %> / <%= book.quantity_total %></p>
+      <p>
+        <span class="font-medium text-gray-800">📅 Năm xuất bản:</span> <%=
+        book.published_year %>
+      </p>
+      <!-- <p><span class="font-medium text-gray-800">📦 Số lượng tổng:</span> <%= book.quantity_total %></p> -->
+      <p>
+        <span class="font-medium text-gray-800">📘 Còn lại:</span> <%=
+        book.quantity_available %> / <%= book.quantity_total %>
+      </p>
 
-      <p><span class="font-medium text-gray-800">✍️ Tác giả:</span> <%= book.authors.map(a => a.name).join(', ') %></p>
-      <p><span class="font-medium text-gray-800">🏷️ Thể loại:</span> <%= book.genres.map(g => g.name).join(', ') %></p>
+      <p>
+        <span class="font-medium text-gray-800">✍️ Tác giả:</span>
+        <% book.authors.forEach((a, i) => { %>
+        <a href="/authors/<%= a.slug %>" class="text-blue-600 hover:underline"
+          ><%= a.name %></a
+        ><%= i < book.authors.length - 1 ? ', ' : '' %> <% }) %>
+      </p>
+
+      <p>
+        <span class="font-medium text-gray-800">🏷️ Thể loại:</span>
+        <% book.genres.forEach((g, i) => { %>
+        <a href="/genres/<%= g.slug %>" class="text-blue-600 hover:underline"
+          ><%= g.name %></a
+        ><%= i < book.genres.length - 1 ? ', ' : '' %> <% }) %>
+      </p>
 
       <div>
         <p class="font-medium text-gray-800">📝 Mô tả:</p>
-        <p class="bg-gray-50 p-3 rounded-lg border border-gray-200 mt-1 text-gray-600 leading-relaxed">
+        <p
+          class="bg-gray-50 p-3 rounded-lg border border-gray-200 mt-1 text-gray-600 leading-relaxed"
+        >
           <%= book.description || 'Không có mô tả' %>
         </p>
       </div>
 
-
       <div class="pt-6 flex justify-between items-center gap-4">
-        
-      <div class="pt-6 flex items-center gap-4">
-        <% if(book.quantity_available > 0) { %>
+        <div class="pt-6 flex items-center gap-4">
+          <% if(book.quantity_available > 0) { %>
           <a
-          href="/dashboard/borrows/add/?q=<%= encodeURIComponent(book.title) %>"
-          class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
-        >
-          📖 Mượn sách
-        </a>
-        <% } else { %>
-          <span class="text-red-600 font-medium">Hiện không còn sách để mượn</span>
-        <% } %>
-        <!-- <a
+            href="/dashboard/borrows/add/?q=<%= encodeURIComponent(book.title) %>"
+            class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+          >
+            📖 Mượn sách
+          </a>
+          <% } else { %>
+          <span class="text-red-600 font-medium"
+            >Hiện không còn sách để mượn</span
+          >
+          <% } %>
+          <!-- <a
           href="/books"
           class="text-gray-600 hover:text-blue-600 hover:underline transition"
         >
           ← Quay lại danh sách
         </a> -->
+        </div>
       </div>
     </div>
   </div>

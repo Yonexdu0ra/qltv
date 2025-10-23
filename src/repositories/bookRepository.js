@@ -64,8 +64,9 @@ class BookRepository {
         {
           model: Author,
           as: "authors",
-          where: options.authorWhere || {},
-          attributes: options.authorAttributes || [],
+          where: options.authorWhere ,
+          attributes: options.authorAttributes ,
+          through: { attributes: options.throughAttributes  },
         },
       ],
     });

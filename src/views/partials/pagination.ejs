@@ -4,7 +4,7 @@
 
   <!-- Nút trang trước -->
   <a
-    href="<%= !prevDisabled ? `?page=${page - 1}&sort=${query.sort || ''}&q=${query.q || ''}` : '#' %>"
+    href="<%= !prevDisabled ? `?page=${parseInt(page) - 1}&sort=${query.sort || ''}&q=${query.q || ''}` : '#' %>"
     class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
            <%= prevDisabled 
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
@@ -21,7 +21,7 @@
 
   <!-- Nút trang sau -->
   <a
-    href="<%= !nextDisabled ? `?page=${page + 1}&sort=${query.sort || ''}&q=${query.q || ''}` : '#' %>"
+    href="<%= !nextDisabled ? `?page=${parseInt(page) + 1}&sort=${query.sort || ''}&q=${query.q || ''}` : '#' %>"
     class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
            <%= nextDisabled 
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 

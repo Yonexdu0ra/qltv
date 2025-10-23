@@ -61,6 +61,7 @@ class FineRepository {
      return Fine.findAndCountAll({
       where: {...query},
       ...options,
+      distinct: true,
       include: [
         {
           required: true,

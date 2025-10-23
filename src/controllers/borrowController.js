@@ -56,10 +56,10 @@ class BorrowController {
     const page = parseInt(req.query.page) || 1;
     try {
       const { count, rows: borrows } =
-        await borrowServices.getAllBorrowWithBorrowerAndApproverAndBooks(
-          { ...limit, ...query }
-        );
-
+        await borrowServices.getAllBorrowWithBorrowerAndApproverAndBooks({
+          ...limit,
+          ...query,
+        });
 
       const totalPages = Math.ceil(count / limit);
       return res.render("borrows/index", {
@@ -84,7 +84,11 @@ class BorrowController {
   }
   static async renderViewCreateBorrow(req, res) {
     const today = new Date();
-    return res.render("borrows/add", { title: "Thêm phiếu mượn", borrow: {}, today });
+    return res.render("borrows/add", {
+      title: "Thêm phiếu mượn",
+      borrow: {},
+      today,
+    });
   }
   static async renderViewBorrowDetail(req, res) {
     const { id } = req.params;
@@ -114,7 +118,9 @@ class BorrowController {
       if (!borrow) throw new Error("Phiếu mượn không tồn tại không thể sửa");
       return res.render("borrows/edit", { title: "Sửa phiếu mượn", borrow });
     } catch (error) {
-      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
+      return res.redirect(
+        "/dashboard/borrows?error=" + encodeBase64(error.message)
+      );
     }
   }
 
@@ -122,7 +128,9 @@ class BorrowController {
     const borrower_id = req.user.user_id;
     const transaction = await sequelize.transaction();
     try {
-      const books = [...(Array.isArray(req.body.books) ? req.body.books : [req.body.books])].filter(b => b);
+      const books = [
+        ...(Array.isArray(req.body.books) ? req.body.books : [req.body.books]),
+      ].filter((b) => b);
       if (books.length === 0) throw new Error("Vui lòng chọn sách để mượn");
       const bookIdsInt = books.map((id) => parseInt(id));
       // kiểm tra sách có tồn tại không
@@ -170,11 +178,17 @@ class BorrowController {
         book_id,
         status: BORROW_STATUS_CONSTANTS.REQUESTED,
       }));
-      await borrowDetailServices.createBorrowDetailsBulk(dataBulk, {
+
+      const x = await borrowDetailServices.createBorrowDetailsBulk(dataBulk, {
         transaction,
+        validate: true,
       });
+
       await transaction.commit();
-      const routes = req.user.role === "Reader" ? '/dashboard/borrows/reader' : '/dashboard/borrows';
+      const routes =
+        req.user.role === "Reader"
+          ? "/dashboard/borrows/reader"
+          : "/dashboard/borrows";
       return res.redirect(
         routes + "?success=" + encodeBase64("Thêm phiếu mượn thành công")
       );
@@ -218,26 +232,31 @@ class BorrowController {
         const isUpdated = await borrowServices.markAsRejectedBorrowById(
           borrow.id,
           {
-            transaction: t
+            transaction: t,
           }
         );
         // đánh dấu từ chối trạng thái các sách trong chi tiết phiếu mượn
         const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-        const isUpdateBorrowDetail = await borrowDetailServices.markAsRejectedBorrowDetailByIds(
-          borrowDetailIds,
-          {
-            transaction: t
-          }
-        );
-        if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+        const isUpdateBorrowDetail =
+          await borrowDetailServices.markAsRejectedBorrowDetailByIds(
+            borrowDetailIds,
+            {
+              transaction: t,
+            }
+          );
+        if (!isUpdateBorrowDetail)
+          throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
         if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       });
       return res.redirect(
-        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" +
+          encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
-      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
+      return res.redirect(
+        "/dashboard/borrows?error=" + encodeBase64(error.message)
+      );
     }
   }
   // đánh dấu hủy phiếu mượn
@@ -272,20 +291,25 @@ class BorrowController {
       if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
       // đánh dấu hủy trạng thái các sách trong chi tiết phiếu mượn
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      const isUpdateBorrowDetail = await borrowDetailServices.markAsCancelledBorrowDetailByIds(
-        borrowDetailIds,
-        { transaction }
-      );
-      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      const isUpdateBorrowDetail =
+        await borrowDetailServices.markAsCancelledBorrowDetailByIds(
+          borrowDetailIds,
+          { transaction }
+        );
+      if (!isUpdateBorrowDetail)
+        throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
       await transaction.commit();
 
       return res.redirect(
-        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" +
+          encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
       await transaction.rollback();
-      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
+      return res.redirect(
+        "/dashboard/borrows?error=" + encodeBase64(error.message)
+      );
     }
   }
   // đánh dấu đã duyệt, chờ lấy sách
@@ -307,26 +331,33 @@ class BorrowController {
         );
       const isUpdated = await borrowServices.markAsApprovedBorrowById(
         borrow.id,
-        approver_id, {
-        transaction
-      }
+        approver_id,
+        {
+          transaction,
+        }
       );
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      const isUpdateBorrowDetail = await borrowDetailServices.markAsApprovedBorrowDetailByIds(
-        borrowDetailIds, {
-        transaction
-      }
-      );
-      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      const isUpdateBorrowDetail =
+        await borrowDetailServices.markAsApprovedBorrowDetailByIds(
+          borrowDetailIds,
+          {
+            transaction,
+          }
+        );
+      if (!isUpdateBorrowDetail)
+        throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
       await transaction.commit();
       return res.redirect(
-        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" +
+          encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       await transaction.rollback();
       console.log(error);
-      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
+      return res.redirect(
+        "/dashboard/borrows?error=" + encodeBase64(error.message)
+      );
     }
   }
   // đánh dấu quá hạn
@@ -345,22 +376,30 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn"
         );
-      const isUpdated = await borrowServices.markAsExpiredBorrowById(borrow.id, { transaction });
-      if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
-      const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      const isUpdateBorrowDetail = await borrowDetailServices.markAsExpiredBorrowDetailByIds(
-        borrowDetailIds,
+      const isUpdated = await borrowServices.markAsExpiredBorrowById(
+        borrow.id,
         { transaction }
       );
-      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
+      const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
+      const isUpdateBorrowDetail =
+        await borrowDetailServices.markAsExpiredBorrowDetailByIds(
+          borrowDetailIds,
+          { transaction }
+        );
+      if (!isUpdateBorrowDetail)
+        throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
       await transaction.commit();
       return res.redirect(
-        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" +
+          encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
       await transaction.rollback();
-      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
+      return res.redirect(
+        "/dashboard/borrows?error=" + encodeBase64(error.message)
+      );
     }
   }
   // đánh dấu đã trả sách
@@ -369,10 +408,16 @@ class BorrowController {
     const transaction = await sequelize.transaction();
     try {
       if (!id) throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
-      const borrow = await borrowServices.getBorrowByIdWithBorrowDetails(id, {
-        attributes: ["id", "status"],
-        borrowDetailAttributes: ["id", "book_id", "borrow_id"],
-      });
+      const borrow = await borrowServices.getBorrowByIdWithBorrowDetailsAndFine(
+        id,
+        {
+          attributes: ["id", "status"],
+          borrowDetailAttributes: ["id", "book_id", "borrow_id"],
+          fineAttributes: ["id", "is_paid"],
+        }
+      );
+      // console.log(borrow);
+
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       if (
@@ -382,7 +427,22 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn hoặc Quá hạn"
         );
-      const isUpdated = await borrowServices.markAsReturnedBorrowById(borrow.id, { transaction });
+      console.log(borrow.borrowDetails.map((bd) => bd.toJSON()));
+
+      const isNotPaidFines = borrow.borrowDetails?.every(
+        (bd) => bd.fine && !bd?.fine.is_paid
+      );
+      
+      // nếu còn phiếu phạt chưa thanh toán thì không thể đánh dấu trả sách
+      if (isNotPaidFines) {
+        throw new Error(
+          "Không thể trả sách khi còn phiếu phạt chưa thanh toán"
+        );
+      }
+      const isUpdated = await borrowServices.markAsReturnedBorrowById(
+        borrow.id,
+        { transaction }
+      );
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const isUpdatedStock = await bookServices.incrementBookByIds(
         "quantity_available",
@@ -392,15 +452,23 @@ class BorrowController {
       );
       if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      await borrowDetailServices.markAsReturnedBorrowDetailByIds(borrowDetailIds, {
-        transaction,
-      });
+      await borrowDetailServices.markAsReturnedBorrowDetailByIds(
+        borrowDetailIds,
+        {
+          transaction,
+        }
+      );
       await transaction.commit();
-      return res.redirect('/dashboard/borrows?success=' + encodeBase64('Cập nhật phiếu mượn thành công'));
+      return res.redirect(
+        "/dashboard/borrows?success=" +
+          encodeBase64("Cập nhật phiếu mượn thành công")
+      );
     } catch (error) {
       console.log(error);
       await transaction.rollback();
-      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
+      return res.redirect(
+        "/dashboard/borrows?error=" + encodeBase64(error.message)
+      );
     }
   }
   // đánh dấu hủy phiếu mượn
@@ -416,15 +484,20 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái yêu cầu mượn"
         );
-      const isUpdated = await borrowServices.markAsCancelledBorrowById(borrow.id);
+      const isUpdated = await borrowServices.markAsCancelledBorrowById(
+        borrow.id
+      );
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      const isUpdateBorrowDetail = await borrowDetailServices.markAsCancelledBorrowDetailByIds(
-        borrowDetailIds, {
-        transaction,
-      }
-      );
-      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      const isUpdateBorrowDetail =
+        await borrowDetailServices.markAsCancelledBorrowDetailByIds(
+          borrowDetailIds,
+          {
+            transaction,
+          }
+        );
+      if (!isUpdateBorrowDetail)
+        throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
       const isUpdatedStock = await bookServices.incrementBookByIds(
         "quantity_available",
         1,
@@ -434,12 +507,15 @@ class BorrowController {
       if (!isUpdatedStock) throw new Error("Cập nhật số lượng sách thất bại");
       await transaction.commit();
       return res.redirect(
-        "/dashboard/borrows/reader?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows/reader?success=" +
+          encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       await transaction.rollback();
       console.log(error);
-      return res.redirect("/dashboard/borrows/reader?error=" + encodeBase64(error.message));
+      return res.redirect(
+        "/dashboard/borrows/reader?error=" + encodeBase64(error.message)
+      );
     }
   }
   // đánh dấu đã lấy sách
@@ -458,21 +534,32 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đã phê duyệt, chờ lấy"
         );
-      const isUpdated = await borrowServices.markAsBorrowedBorrowById(borrow.id, { transaction });
+      const isUpdated = await borrowServices.markAsBorrowedBorrowById(
+        borrow.id,
+        { transaction }
+      );
       if (!isUpdated) throw new Error("Cập nhật phiếu mượn thất bại");
       const borrowDetailIds = borrow.borrowDetails.map((bd) => bd.id);
-      const isUpdateBorrowDetail = await borrowDetailServices.markAsBorrowedBorrowDetailByIds(borrowDetailIds, {
-        transaction,
-      });
-      if (!isUpdateBorrowDetail) throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
+      const isUpdateBorrowDetail =
+        await borrowDetailServices.markAsBorrowedBorrowDetailByIds(
+          borrowDetailIds,
+          {
+            transaction,
+          }
+        );
+      if (!isUpdateBorrowDetail)
+        throw new Error("Cập nhật chi tiết phiếu mượn thất bại");
       await transaction.commit();
       return res.redirect(
-        "/dashboard/borrows?success=" + encodeBase64("Cập nhật phiếu mượn thành công")
+        "/dashboard/borrows?success=" +
+          encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       await transaction.rollback();
       console.log(error);
-      return res.redirect("/dashboard/borrows?error=" + encodeBase64(error.message));
+      return res.redirect(
+        "/dashboard/borrows?error=" + encodeBase64(error.message)
+      );
     }
   }
 }
