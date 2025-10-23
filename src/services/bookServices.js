@@ -49,9 +49,9 @@ class BookService {
         [Op.like]: `%${query.q || ""}%`,
       };
     }
-    const limit = options.limit
-      ? options.limit > 0
-        ? parseInt(options.limit)
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
         : 12
       : 12;
     const page =
@@ -81,9 +81,9 @@ class BookService {
         [Op.like]: `%${query.q || ""}%`,
       };
     }
-    const limit = options.limit
-      ? options.limit > 0
-        ? parseInt(options.limit)
+    const limit = query.limit
+      ? query.limit > 0
+        ? parseInt(query.limit)
         : 10
       : 10;
     const page =

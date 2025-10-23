@@ -273,11 +273,10 @@ class BookController {
         : parseInt(query.page);
     try {
       const { rows: books, count: totals } =
-        await await bookServices.getBooksWithAuthorPagination({ page: 1, limit: 10 }, { attributes: ["id", "title", "image_cover", "slug", "created_at"], authorAttributes: ['id', 'name'], throughAttributes: [] });
+       await bookServices.getBooksWithAuthorPagination({ page: 1, limit: 12 }, { attributes: ["id", "title", "image_cover", "slug", "created_at"], authorAttributes: ['id', 'name'], throughAttributes: [] });
       // fetch 10 books for the top carousel (most recent)
       const { rows: featuredBooks = [] } = await bookServices.getBooksWithPagination({ page: 1, limit: 10 }, { attributes: ["id", "title", "image_cover", "slug"] });
-      console.log(featuredBooks);
-      
+     
       const totalPages = Math.ceil(totals / limit);
       return res.render("books/list", {
         books,

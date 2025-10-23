@@ -20,12 +20,12 @@ const BorrowDetails = sequelize.define(
 
     //  đang mượn, đã trả, làm mất, làm hỏng, hết hạn, đã yêu cầu, đã hủy, đã duyệt, bị từ chối
     status: {
-      type: DataTypes.ENUM("BORROWED", "RETURNED", "LOSTED", "DAMAGED", "EXPIRED", "REQUESTED", "CANCELED", "APPROVED", "REJECTED"),
+      type: DataTypes.ENUM("BORROWED", "RETURNED", "LOSTED", "DAMAGED", "EXPIRED", "REQUESTED", "CANCELLED", "APPROVED", "REJECTED"),
       allowNull: false,
       defaultValue: "REQUESTED",
       validate: {
         isIn: {
-          args: [["BORROWED", "RETURNED", "LOSTED", "DAMAGED", "EXPIRED", "REQUESTED", "CANCELED", "APPROVED", "REJECTED"]],
+          args: [["BORROWED", "RETURNED", "LOSTED", "DAMAGED", "EXPIRED", "REQUESTED", "CANCELLED", "APPROVED", "REJECTED"]],
           msg: "Trạng thái không hợp lệ",
         },
       },
