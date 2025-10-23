@@ -1,25 +1,55 @@
+<div class="p-6 bg-gray-100 min-h-screen flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10m-7 4h4m-9 4h14a2 2 0 002-2v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7a2 2 0 002 2z" />
+      </svg>
+      Quản lý mượn / trả
+    </h2>
 
-<div class="flex flex-col gap-4 relative">
-  <h2 class="text-2xl font-bold text-gray-700">Mượn/trả</h2>
-  <%- include('../errorMessageWithQuery') %> <%-
-  include('../successMessageWithQuery') %>
-  <a href="/dashboard/borrows/add" class="text-white hover:underline bg-green-600 w-52 text-center p-2 rounded">Thêm phiếu mượn</a>
-  <form id="search-form" class="flex flex-col gap-4">
-    <div class="flex flex-col sm:flex-row items-center flex-wrap justify-center gap-2">
+    <a
+      href="/dashboard/borrows/add"
+      class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:from-green-600 hover:to-emerald-700 transition duration-200 font-medium"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Thêm phiếu mượn
+    </a>
+  </div>
+
+  <!-- Thông báo -->
+  <%- include('../error') %>
+  <%- include('../errorMessageWithQuery') %>
+  <%- include('../successMessageWithQuery') %>
+
+  <!-- Form tìm kiếm -->
+  <form
+    id="search-form"
+    class="bg-white shadow-sm rounded-2xl p-5 flex flex-col lg:flex-row items-center justify-between gap-4 border border-gray-200"
+  >
+    <div class="relative flex-1 w-full">
       <input
         name="q"
         type="text"
         placeholder="Tìm kiếm tên sách, người mượn..."
         value="<%= query.q || '' %>"
-        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
+        class="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
-      <select
-        class="flex-1 border rounded px-3 py-2 max-w-md w-full"
-        name="sort"
-        id="sort"
-      >
-        <option value="">--Sắp xếp mượn/trả--</option>
-       <option value="">-- Sắp xếp mượn/trả --</option>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+      </svg>
+    </div>
+
+    <select
+      class="border border-gray-300 rounded-xl px-4 py-2.5 w-full lg:w-auto focus:ring-2 focus:ring-blue-500 transition"
+      name="sort"
+      id="sort"
+    >
+      <option value="">-- Sắp xếp mượn/trả --</option>
       <option value="borrow_date-asc" <%= query.sort === 'borrow_date-asc' ? 'selected' : '' %>>Ngày mượn cũ nhất</option>
       <option value="borrow_date-desc" <%= query.sort === 'borrow_date-desc' ? 'selected' : '' %>>Ngày mượn mới nhất</option>
       <option value="created_at-desc" <%= query.sort === 'created_at-desc' ? 'selected' : '' %>>Mới thêm</option>
@@ -30,16 +60,18 @@
       <option value="RETURNED" <%= query.sort === 'RETURNED' ? 'selected' : '' %>><%= constantsReverse["RETURNED"] %></option>
       <option value="REQUESTED" <%= query.sort === 'REQUESTED' ? 'selected' : '' %>><%= constantsReverse["REQUESTED"] %></option>
       <option value="CANCELLED" <%= query.sort === 'CANCELLED' ? 'selected' : '' %>><%= constantsReverse["CANCELLED"] %></option>
-      </select>
-      <button class="bg-blue-600 w-full sm:w-25 text-white px-4 py-2 rounded">
-        Tìm kiếm
-      </button>
-    </div>
-  </form>
-  <div class="overflow-x-auto relative">
-    <table
-      class="min-w-full bg-white border rounded border-gray-200 relative z-0"
+    </select>
+
+    <button
+      class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 font-medium w-full lg:w-auto"
     >
+      Tìm kiếm
+    </button>
+  </form>
+
+  <!-- Bảng dữ liệu -->
+  <div class="overflow-x-auto bg-white shadow-md rounded-2xl border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-gray-700">
       <thead class="bg-gray-50">
         <tr>
           <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">#</th>
@@ -47,9 +79,11 @@
           <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Hạn trả</th>
           <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Trạng thái</th>
           <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Sách</th>
+          <!-- <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Người mượn</th> -->
           <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Hành động</th>
         </tr>
       </thead>
+
       <tbody class="divide-y divide-gray-100">
         <% borrows.forEach((borrow, index) => { %>
         <tr class="hover:bg-blue-50 transition duration-150">
@@ -93,26 +127,12 @@
       </tbody>
     </table>
   </div>
-  <%- include('../partials/pagination', { totals, page, query }) %>
 
-  
+  <!-- Pagination -->
+  <div class="mt-4 flex justify-center">
+    <%- include('../partials/pagination', { totals, page, query }) %>
+  </div>
 </div>
-  <script>
-    function toggleMenu(id) {
-      document.querySelectorAll('[id^="menu-"]').forEach((m) => {
-        if (m.id !== "menu-" + id) m.classList.add("hidden");
-      }); // Hiện / ẩn menu được chọn
-      const menu = document.getElementById("menu-" + id);
-      menu.classList.toggle("hidden");
-    }
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest("td")) {
-        document
-          .querySelectorAll('[id^="menu-"]')
-          .forEach((m) => m.classList.add("hidden"));
-      }
-    });
-  </script>
 
 <script src="/js/dispatchSelectForm.js"></script>
 <script>
