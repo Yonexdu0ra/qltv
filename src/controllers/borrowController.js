@@ -128,6 +128,20 @@ class BorrowController {
     const borrower_id = req.user.user_id;
     const transaction = await sequelize.transaction();
     try {
+      const today = new Date();
+      const borrow_date = new Date(req.body.borrow_date);
+      const due_date = new Date(req.body.due_date);
+      if (isNaN(borrow_date.getTime()))
+        throw new Error("Ngày mượn không hợp lệ");
+      if (isNaN(due_date.getTime())) throw new Error("Ngày hẹn trả không hợp lệ");
+      if (due_date <= borrow_date)
+        throw new Error("Ngày hẹn trả phải sau ngày mượn");
+      today.setHours(0, 0, 0, 0);
+      today.setMilliseconds(0);
+      if (today.getTime() > borrow_date.getTime()) throw new Error("Ngày mượn không được trước ngày hiện tại");
+
+      if (borrow_date < today)
+        throw new Error("Ngày mượn không được trước ngày hiện tại");
       const books = [
         ...(Array.isArray(req.body.books) ? req.body.books : [req.body.books]),
       ].filter((b) => b);
@@ -250,7 +264,7 @@ class BorrowController {
       });
       return res.redirect(
         "/dashboard/borrows?success=" +
-          encodeBase64("Cập nhật phiếu mượn thành công")
+        encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
@@ -302,7 +316,7 @@ class BorrowController {
 
       return res.redirect(
         "/dashboard/borrows?success=" +
-          encodeBase64("Cập nhật phiếu mượn thành công")
+        encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
@@ -350,7 +364,7 @@ class BorrowController {
       await transaction.commit();
       return res.redirect(
         "/dashboard/borrows?success=" +
-          encodeBase64("Cập nhật phiếu mượn thành công")
+        encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       await transaction.rollback();
@@ -392,7 +406,7 @@ class BorrowController {
       await transaction.commit();
       return res.redirect(
         "/dashboard/borrows?success=" +
-          encodeBase64("Cập nhật phiếu mượn thành công")
+        encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
@@ -416,8 +430,6 @@ class BorrowController {
           fineAttributes: ["id", "is_paid"],
         }
       );
-      // console.log(borrow);
-
       if (!borrow)
         throw new Error("Phiếu mượn không tồn tại không thể cập nhật");
       if (
@@ -427,12 +439,11 @@ class BorrowController {
         throw new Error(
           "chỉ có thể cập nhật phiếu mượn ở trạng thái Đang mượn hoặc Quá hạn"
         );
-      console.log(borrow.borrowDetails.map((bd) => bd.toJSON()));
 
-      const isNotPaidFines = borrow.borrowDetails?.every(
+      const isNotPaidFines = borrow.borrowDetails?.some(
         (bd) => bd.fine && !bd?.fine.is_paid
       );
-      
+
       // nếu còn phiếu phạt chưa thanh toán thì không thể đánh dấu trả sách
       if (isNotPaidFines) {
         throw new Error(
@@ -461,7 +472,7 @@ class BorrowController {
       await transaction.commit();
       return res.redirect(
         "/dashboard/borrows?success=" +
-          encodeBase64("Cập nhật phiếu mượn thành công")
+        encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       console.log(error);
@@ -508,7 +519,7 @@ class BorrowController {
       await transaction.commit();
       return res.redirect(
         "/dashboard/borrows/reader?success=" +
-          encodeBase64("Cập nhật phiếu mượn thành công")
+        encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       await transaction.rollback();
@@ -552,7 +563,7 @@ class BorrowController {
       await transaction.commit();
       return res.redirect(
         "/dashboard/borrows?success=" +
-          encodeBase64("Cập nhật phiếu mượn thành công")
+        encodeBase64("Cập nhật phiếu mượn thành công")
       );
     } catch (error) {
       await transaction.rollback();

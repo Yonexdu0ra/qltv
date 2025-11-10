@@ -20,7 +20,7 @@ class AuthController {
             res.cookie('access_token', access_token, { httpOnly: true, maxAge: TIME_ONE_WEEK, sameSite: 'lax' });
             const directUrl = req.query.redirect
             const path = role === "Reader" ? "/" : "/dashboard";
-
+                
             return res.redirect(directUrl ? directUrl : path);
         } catch (error) {
             console.log(error.message);

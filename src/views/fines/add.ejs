@@ -62,17 +62,18 @@
     </div>
 
     <button class="bg-green-600 text-white px-4 py-2 rounded">Lưu</button>
-    <a href="/dashboard/fines" class="text-gray-600 hover:underline ml-3">Quay lại</a>
+    <a href="/dashboard/fines" class="text-gray-600 hover:underline ml-3"
+      >Quay lại</a
+    >
   </form>
 </div>
 
 <script>
   const url = new URL(window.location.href);
-  const borrow_id = url.searchParams.get("b") ;
-  const borrow_detail_ids = url.searchParams.get("bd") || '';
+  const borrow_id = url.searchParams.get("b");
+  const borrow_detail_ids = url.searchParams.get("bd") || "";
   const listBorrowDetailIds = borrow_detail_ids.split(",");
- 
-  
+
   const data = [
     {
       value: "DAMAGED",
@@ -92,20 +93,29 @@
   });
   useChoice(
     "#borrow_detail_ids",
-    "/dashboard/borrow-details/search?" + (borrow_id ? "b=" + borrow_id : "") + (borrow_detail_ids ? "&bd=" + borrow_detail_ids : ""),
+    "/dashboard/borrow-details/search?" +
+      (borrow_id ? "b=" + borrow_id : "") +
+      (borrow_detail_ids ? "&bd=" + borrow_detail_ids : ""),
     (data) => {
       return data.data.map((borrowDetail) => {
-        const disabled =
-          ["RETURNED", "REQUESTED", "REJECTED", "CANCELED"].includes(
-            borrowDetail.status
-          );
-          const selected = listBorrowDetailIds.includes(borrowDetail.id.toString());
+        const disabled = [
+          "RETURNED",
+          "REQUESTED",
+          "REJECTED",
+          "CANCELED",
+          "DAMAGED",
+          "LOSTED",
+          "EXPIRED",
+        ].includes(borrowDetail.status);
+        const selected = listBorrowDetailIds.includes(
+          borrowDetail.id.toString()
+        );
         return {
           value: borrowDetail.id,
           label:
             borrowDetail.book.title +
             " - Phiếu mượn: " +
-            borrowDetail.borrow_id,
+            borrowDetail.borrow_id + (" - Trạng thái: " + borrowDetail.status === "RETURNED" ? "Đã trả" : "") ,
           selected: !disabled && selected,
           disabled,
         };

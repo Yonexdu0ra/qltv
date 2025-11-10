@@ -120,7 +120,7 @@
         <div>
           <a href="/dashboard/fines/add?b=<%= borrow.id %>&bd=<%= borrow.borrowDetails.map(borrowDetail => borrowDetail.id).join(',') %>"
             class="bg-red-100 text-red-700 px-2 py-1 rounded text-sm text-center font-medium">Phạt tất cả</a>
-          <a href="/dashboard/borrow-detail/mark-as-returned/<%= borrow.borrowDetails.map(borrowDetail => borrowDetail.id) %>"
+          <a href="/dashboard/borrows/mark-as-returned/<%= borrow.id %>"
             class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm text-center font-medium">Đã trả tất cả</a>
         </div>
         <% } %>

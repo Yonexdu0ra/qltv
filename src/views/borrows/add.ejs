@@ -71,7 +71,8 @@
   useChoice("#books", "/books/search", (data) => {
     return data.data.map((book) => ({
       value: book.id,
-      label: book.title,
+      label: book.title + (book.quantity_available <= 0 ? " - (Hết sách)" : " - còn " + book.quantity_available + " cuốn"),
+      disabled: book.quantity_available <= 0,
     }));
   }).then((obj) => {
     const url = new URL(window.location.href);
@@ -93,4 +94,5 @@
       choiceInner.click();
     }
   });
+  
 </script>

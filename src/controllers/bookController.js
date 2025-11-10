@@ -248,7 +248,7 @@ class BookController {
     try {
       const { rows: books, count: total } =
         await bookServices.getBooksWithPagination(query, {
-          attributes: ["id", "title"],
+          attributes: ["id", "title", "quantity_available"],
         });
       return res.json({ success: true, data: books, total });
     } catch (error) {
@@ -273,7 +273,7 @@ class BookController {
         : parseInt(query.page);
     try {
       const { rows: books, count: totals } =
-       await bookServices.getBooksWithAuthorPagination({ page: 1, limit: 12 }, { attributes: ["id", "title", "image_cover", "slug", "created_at"], authorAttributes: ['id', 'name'], throughAttributes: [] });
+       await bookServices.getBooksWithAuthorPagination({ page: query.page, limit: 12, q: query.q }, { attributes: ["id", "title", "image_cover", "slug", "created_at"], authorAttributes: ['id', 'name'], throughAttributes: [] });
       // fetch 10 books for the top carousel (most recent)
       const { rows: featuredBooks = [] } = await bookServices.getBooksWithPagination({ page: 1, limit: 10 }, { attributes: ["id", "title", "image_cover", "slug"] });
      

@@ -169,7 +169,7 @@ class BorrowServices {
     const offset = (page - 1) * limit;
     const [sortBy, sortOrder] = query.sort
       ? query.sort.split("-")
-      : ["created_at", "ASC"];
+      : ["created_at", "DESC"];
     const order = [
       [
         sortBy ,
